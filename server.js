@@ -1,7 +1,9 @@
 var express = require('express');
 var path = require('path');
 var serveStatic = require('serve-static');
+var compression = require('compression');
 app = express();
+app.use(compression());
 app.use(serveStatic(__dirname + "/dist"));
 var port = process.env.PORT || 5000;
 app.listen(port);
