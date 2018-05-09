@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 
 app.use(express.json())
 
-const server = http.createServer(app).listen(1234, () => {
+const server = app.listen(5000, () => {
   console.log("Express server listening on port 5000");
 })
 
