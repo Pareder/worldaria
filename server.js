@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 
 app.use(express.json())
 
-const server = http.createServer(app).listen(5000, () => {
+const server = http.createServer(app).listen(1234, () => {
   console.log("Express server listening on port 5000");
 })
 
@@ -78,33 +78,3 @@ io.on('connection', (socket) => {
     socket.leave(socket.room)
   })
 })
-
-
-/*io.on('connection', (socket) => {
-  socket.join(`room${ROOM_NUMBER}`)
-  io.to('room').emit('createdRoom', `room${ROOM_NUMBER}`)
- 
-  console.log(clients)
-  console.log(numClients)
-
-  socket.on('sendName', (data) => {
-    socket.join(`room${ROOM_NUMBER}`)
-    USERS[`room${ROOM_NUMBER}`] ? USERS[`room${ROOM_NUMBER}`] = USERS[`room${ROOM_NUMBER}`] : USERS[`room${ROOM_NUMBER}`] = []
-    USERS[`room${ROOM_NUMBER}`].push(data)
-    console.log(USERS)
-    let clients = io.sockets.adapter.rooms[`room${ROOM_NUMBER}`].sockets
-    let numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0
-    if (numClients === 2) {
-      let room = `room${ROOM_NUMBER}`
-      let randomGeo = [...geo.features.sort(compareRandom)]
-      io.sockets.in(room).emit('startGame', { users: USERS[room], geo: randomGeo})
-      io.sockets.on('countryClick', (data) => {
-        io.sockets.in(room).emit('checkAnswer', data)
-      })
-      ROOM_NUMBER++
-    }
-  })
-  socket.on('disconnect', (reason) => {
-    socket.leave(`room${ROOM_NUMBER}`)
-  })
-})*/
