@@ -59,6 +59,7 @@ io.on('connection', (socket) => {
     socket.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
   })
   socket.on('sendInvite', (data) => {
+    socket.sortNumber = data.sort
     io.to(ONLINE_USERS[data.opponentName]).emit('getInvite', data)
   })
   socket.on('cancelInvite', (data) => {
@@ -77,7 +78,7 @@ io.on('connection', (socket) => {
       delete ONLINE_USERS[socket.username]
       io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
     }
-    io.to(ONLINE_USERS[data.opponentName]).emit('opponentsDecision', data.status)    
+    io.to(ONLINE_USERS[data.opponentName]).emit('opponentsDecision', data.status)
   })
   socket.on('createGame', (data) => {
     socket.room = `room${ROOM_NUMBER}`
@@ -85,7 +86,9 @@ io.on('connection', (socket) => {
     USERS[socket.room].unshift(data)
     socket.join(socket.room)
     if (USERS[socket.room].length === 2) {
-      io.sockets.in(socket.room).emit('startGame', { users: USERS[socket.room], countries: [...COUNTRIES.sort(compareRandom)] })
+      io.sockets.adapter.rooms[socket.room].sortNumber = socket.sortNumber
+      io.sockets.adapter.rooms[socket.room].sortedCountries = sortCountries(io.sockets.adapter.rooms[socket.room].sortNumber)
+      io.sockets.in(socket.room).emit('startGame', { users: USERS[socket.room], countries: [...io.sockets.adapter.rooms[socket.room].sortedCountries.sort(compareRandom)] })
       delete ONLINE_USERS[socket.username]
       io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
       ROOM_NUMBER++
@@ -95,17 +98,25 @@ io.on('connection', (socket) => {
     socket.broadcast.to(socket.room).emit('checkAnswer', data)
   })
   socket.on('userLeft', () => {
-    io.sockets.in(socket.room).emit('endMatch')    
+    io.sockets.in(socket.room).emit('endMatch')
     delete USERS[socket.room]
     socket.leave(socket.room)
     ONLINE_USERS[socket.username] = socket.id
     io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
   })
   socket.on('revenge', (data) => {
+    if (io.sockets.adapter.rooms[socket.room].length === 1) {
+      io.sockets.in(socket.room).emit('opponentLeft')
+      return
+    }
     socket.broadcast.to(socket.room).emit('opponentsRevenge')
   })
-  socket.on('revengeDecision', () =>{
-    io.sockets.in(socket.room).emit('revengeGame', [...COUNTRIES.sort(compareRandom)])
+  socket.on('revengeDecision', (data) => {
+    if (data) {
+      io.sockets.in(socket.room).emit('revengeGame', [...io.sockets.adapter.rooms[socket.room].sortedCountries.sort(compareRandom)])
+    } else {
+      socket.broadcast.to(socket.room).emit('revengeDecline')
+    }
   })
   socket.on('disconnect', () => {
     io.sockets.in(socket.room).emit('endMatch')
@@ -121,3 +132,16 @@ io.on('connection', (socket) => {
     io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
   })
 })
+
+const sortCountries = (sort) => {
+  const sortedCountries = []
+  if (sort) {
+    for (let i = 0; i < geo.features.length; i++) {
+      if (geo.features[i].properties.pop_est && geo.features[i].properties.pop_est > sort) {
+        sortedCountries.push(geo.features[i].properties.name)
+      }
+    }
+    return sortedCountries
+  }
+  return COUNTRIES
+}
