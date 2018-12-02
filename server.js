@@ -4,9 +4,41 @@ const history = require('connect-history-api-fallback')
 const compression = require('compression')
 const http = require('http')
 const socket = require('socket.io')
-const geo = require('./dist/json/full.json')
+const fetch = require('node-fetch')
+const nodemailer = require('nodemailer')
+const cron = require('node-cron')
+const fs = require('fs')
 
+// Countries' geojson
+const GEO = require('./dist/json/full.json')
+
+// WEATHER API from https://www.worldweatheronline.com
+let WEATHER_KEY = JSON.parse(fs.readFileSync('WEATHER_API.json', 'utf8')).key
+const WEATHER_API_DATE = new Date(2019, 0, 11)
+
+// Mailer settings from https://app.pepipost.com
+const transporter = nodemailer.createTransport({
+  host: 'smtp.pepipost.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: 'stkrvton',
+    pass: 'MailS3rv3r'
+  }
+})
+
+// Mailer options to send reminder for myself to change WEATHER API key
+const mailOptions = {
+  from: 'stkrvton@pepisandbox.com',
+  to: 'yljfvelk@grr.la',
+  subject: 'Weather API date will be ended soon',
+  text: 'Hello, the weather API key should be updated today. And dont forget to edit WEATHER_API.json file.',
+  html: '<b>Hello, the weather API key should be updated today. And dont forget to edit <h2>WEATHER_API.json file</h2>.</b><br><h1>' + new Date(new Date().setDate(new Date().getDate() + 1)).toDateString() + ' - faster'
+}
+
+// Make express app
 const app = express()
+
 const staticFileMiddleware = express.static(path.join(__dirname + "/dist"), {
   maxAge: 604800000,
   setHeaders: function (res, path) {
@@ -14,6 +46,7 @@ const staticFileMiddleware = express.static(path.join(__dirname + "/dist"), {
     res.setHeader('X-XSS-Protection', '1; mode=block')
     res.setHeader('X-Content-Type-Options', 'nosniff')
     res.setHeader('Cache-Control', 'max-age=604800000')
+    res.setHeader('Referrer-Policy', 'no-referrer')
     res.setHeader('Expires', new Date(Date.now() + 2592000000 * 30).toUTCString())
   }
 })
@@ -30,41 +63,79 @@ app.get('/', (req, res) => {
 app.use(express.json())
 
 const server = http.createServer(app).listen(process.env.PORT || 5000, () => {
-  console.log("Express server listening on port 5000");
+  console.log("Express server listening on port 5000")
 })
 
 const io = socket.listen(server)
 
+// Game variables for online mode
 const USERS = {}
 const ONLINE_USERS = {}
 let ROOM_NUMBER = 0
 const COUNTRIES = []
 
+// Weather information from api
+const WEATHER = {}
+
+// Random sort order
 const compareRandom = () => {
   return Math.random() - 0.5
 }
 
-for (let i = 0; i < geo.features.length; i++) {
-  COUNTRIES.push(geo.features[i].properties.name)
+// Get array of countrie' names
+for (let i = 0; i < GEO.features.length; i++) {
+  COUNTRIES.push(GEO.features[i].properties.name)
 }
 
+// Socket settings
 io.on('connection', (socket) => {
 
+  // Socket query for current weather information
+  socket.on('getWeather', (data) => {
+    if (WEATHER[data]) {
+      if (WEATHER[data].date > new Date(new Date().setDate(new Date().getDate() - 1))) {
+        socket.emit('weatherResponse', WEATHER[data])
+        return
+      }
+    }
+    fetch(`https://api.worldweatheronline.com/premium/v1/weather.ashx?q=${data}&format=JSON&fx=no&mca=no&key=${WEATHER_KEY}`)
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        WEATHER[data] = {
+          c: json.data.current_condition[0].temp_C,
+          desc: json.data.current_condition[0].weatherDesc[0].value,
+          date: new Date()
+        }
+        socket.emit('weatherResponse', WEATHER[data])
+      })
+  })
+
+  // Socket query for logged in user to be pushed in ONLINE_USERS object
   socket.on('sendName', (data) => {
     socket.username = data
     ONLINE_USERS[data] = socket.id
     io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
   })
+
+  // Socket query for getting the list of online users
   socket.on('enterOnlineMode', () => {
     socket.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
   })
+
+  // Socket query for sending invite to game from user to another user
   socket.on('sendInvite', (data) => {
     socket.sortNumber = data.sort
     io.to(ONLINE_USERS[data.opponentName]).emit('getInvite', data)
   })
+
+  // Socket query for cancelling invite from inviting side
   socket.on('cancelInvite', (data) => {
     io.to(ONLINE_USERS[data.opponentName]).emit('declineInvite')
   })
+
+  // Socket query of invited side for making or declining the game
   socket.on('makeDecision', (data) => {
     if (data.status) {
       if (socket.room) {
@@ -80,6 +151,8 @@ io.on('connection', (socket) => {
     }
     io.to(ONLINE_USERS[data.opponentName]).emit('opponentsDecision', data.status)
   })
+
+  // Socket query for making the socket room for players, deleting them from ONLINE_USERS object and emitting them the sorted countries array
   socket.on('createGame', (data) => {
     socket.room = `room${ROOM_NUMBER}`
     USERS[socket.room] ? USERS[socket.room] = USERS[socket.room] : USERS[socket.room] = []
@@ -94,9 +167,13 @@ io.on('connection', (socket) => {
       ROOM_NUMBER++
     }
   })
+
+  // Socket query for clicking the country with the right answer
   socket.on('countryClick', (data) => {
     socket.broadcast.to(socket.room).emit('checkAnswer', data)
   })
+
+  // Socket query for leaving the game to delete user from game
   socket.on('userLeft', () => {
     io.sockets.in(socket.room).emit('endMatch')
     delete USERS[socket.room]
@@ -104,6 +181,8 @@ io.on('connection', (socket) => {
     ONLINE_USERS[socket.username] = socket.id
     io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
   })
+
+  // Socket query for making the revenge
   socket.on('revenge', (data) => {
     if (io.sockets.adapter.rooms[socket.room].length === 1) {
       io.sockets.in(socket.room).emit('opponentLeft')
@@ -111,6 +190,8 @@ io.on('connection', (socket) => {
     }
     socket.broadcast.to(socket.room).emit('opponentsRevenge')
   })
+
+  // Socket query for making the revenge decision
   socket.on('revengeDecision', (data) => {
     if (data) {
       io.sockets.in(socket.room).emit('revengeGame', [...io.sockets.adapter.rooms[socket.room].sortedCountries.sort(compareRandom)])
@@ -118,6 +199,8 @@ io.on('connection', (socket) => {
       socket.broadcast.to(socket.room).emit('revengeDecline')
     }
   })
+
+  // Socket query for disconnecting to delete user from ONLINE_USERS object and the game if it exists
   socket.on('disconnect', () => {
     io.sockets.in(socket.room).emit('endMatch')
     delete USERS[socket.room]
@@ -127,21 +210,46 @@ io.on('connection', (socket) => {
     }
     socket.leave(socket.room)
   })
+
+  // Socket query for signing out to delete the user from ONLINE_USERS object
   socket.on('signOut', () => {
     delete ONLINE_USERS[socket.username]
     io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
   })
 })
 
+// Sort countries by population
 const sortCountries = (sort) => {
   const sortedCountries = []
   if (sort) {
-    for (let i = 0; i < geo.features.length; i++) {
-      if (geo.features[i].properties.pop_est && geo.features[i].properties.pop_est > sort) {
-        sortedCountries.push(geo.features[i].properties.name)
+    for (let i = 0; i < GEO.features.length; i++) {
+      if (GEO.features[i].properties.pop_est && GEO.features[i].properties.pop_est > sort) {
+        sortedCountries.push(GEO.features[i].properties.name)
       }
     }
     return sortedCountries
   }
   return COUNTRIES
+} 
+
+// Make cron tesks to remind me to change WEATHER API key every two month
+function makeCron (date) {
+  const dayBefore = new Date(date).setDate(new Date(date).getDate() - 1)
+  const task = cron.schedule(`0 0 ${new Date(dayBefore).getDate()} ${new Date(date).getMonth() + 1} *`, () => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.log(error)
+      }
+    })
+    console.log(WEATHER_KEY)
+    const newDate = new Date().setMonth(new Date().getMonth() + 2)
+    makeCron(newDate)
+    task.destroy()
+  })
+  const readApiTask = cron.schedule(`0 0 ${new Date(date).getDate()} ${new Date(date).getMonth() + 1} *`, () => {
+    WEATHER_KEY = JSON.parse(fs.readFileSync('WEATHER_API.json', 'utf8')).key
+    readApiTask.destroy()
+  })
 }
+
+makeCron(WEATHER_API_DATE)
