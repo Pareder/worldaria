@@ -8,6 +8,8 @@ const fetch = require('node-fetch')
 const nodemailer = require('nodemailer')
 const cron = require('node-cron')
 const fs = require('fs')
+const Filter = require('bad-words')
+const filter = new Filter()
 
 // Countries' geojson
 const GEO = require('./dist/json/full.json')
@@ -73,6 +75,7 @@ const USERS = {}
 const ONLINE_USERS = {}
 let ROOM_NUMBER = 0
 const COUNTRIES = []
+const CAPITALS = []
 
 // Weather information from api
 const WEATHER = {}
@@ -85,6 +88,7 @@ const compareRandom = () => {
 // Get array of countrie' names
 for (let i = 0; i < GEO.features.length; i++) {
   COUNTRIES.push(GEO.features[i].properties.name)
+  CAPITALS.push(GEO.features[i].properties.capital)
 }
 
 // Socket settings
@@ -127,6 +131,7 @@ io.on('connection', (socket) => {
   // Socket query for sending invite to game from user to another user
   socket.on('sendInvite', (data) => {
     socket.sortNumber = data.sort
+    socket.gameType = data.type
     io.to(ONLINE_USERS[data.opponentName]).emit('getInvite', data)
   })
 
@@ -156,12 +161,18 @@ io.on('connection', (socket) => {
   socket.on('createGame', (data) => {
     socket.room = `room${ROOM_NUMBER}`
     USERS[socket.room] ? USERS[socket.room] = USERS[socket.room] : USERS[socket.room] = []
-    USERS[socket.room].unshift(data)
+    USERS[socket.room].unshift(data.name)
     socket.join(socket.room)
     if (USERS[socket.room].length === 2) {
       io.sockets.adapter.rooms[socket.room].sortNumber = socket.sortNumber
-      io.sockets.adapter.rooms[socket.room].sortedCountries = sortCountries(io.sockets.adapter.rooms[socket.room].sortNumber)
-      io.sockets.in(socket.room).emit('startGame', { users: USERS[socket.room], countries: [...io.sockets.adapter.rooms[socket.room].sortedCountries.sort(compareRandom)] })
+      io.sockets.adapter.rooms[socket.room].gameType = socket.gameType
+      io.sockets.adapter.rooms[socket.room].sortedSubjects = sortSubjects(io.sockets.adapter.rooms[socket.room].sortNumber, io.sockets.adapter.rooms[socket.room].gameType)
+      io.sockets.in(socket.room).emit('startGame', {
+        sort: io.sockets.adapter.rooms[socket.room].sortNumber,
+        type: io.sockets.adapter.rooms[socket.room].gameType,
+        users: USERS[socket.room],
+        subjects: [...io.sockets.adapter.rooms[socket.room].sortedSubjects.sort(compareRandom)]
+      })
       delete ONLINE_USERS[socket.username]
       io.emit('getOnlineUsers', Object.keys(ONLINE_USERS))
       ROOM_NUMBER++
@@ -194,10 +205,24 @@ io.on('connection', (socket) => {
   // Socket query for making the revenge decision
   socket.on('revengeDecision', (data) => {
     if (data) {
-      io.sockets.in(socket.room).emit('revengeGame', [...io.sockets.adapter.rooms[socket.room].sortedCountries.sort(compareRandom)])
+      io.sockets.in(socket.room).emit('revengeGame', [...io.sockets.adapter.rooms[socket.room].sortedSubjects.sort(compareRandom)])
     } else {
       socket.broadcast.to(socket.room).emit('revengeDecline')
     }
+  })
+
+  // Socket query for sending messages to chat
+  socket.on('sendMessage', (data) => {
+    const message = {
+      user: data.user,
+      text: filter.clean(data.text)
+    }
+    io.sockets.in(socket.room).emit('getNewMessages', message)
+  })
+
+  // Socket query for sending a notification that opponent is typing
+  socket.on('typingMessage', (data) => {
+    socket.broadcast.to(socket.room).emit('opponentTyping', data)
   })
 
   // Socket query for disconnecting to delete user from ONLINE_USERS object and the game if it exists
@@ -219,20 +244,20 @@ io.on('connection', (socket) => {
 })
 
 // Sort countries by population
-const sortCountries = (sort) => {
-  const sortedCountries = []
+const sortSubjects = (sort, type) => {
+  const sortedSubjects = []
   if (sort) {
     for (let i = 0; i < GEO.features.length; i++) {
       if (GEO.features[i].properties.pop_est && GEO.features[i].properties.pop_est > sort) {
-        sortedCountries.push(GEO.features[i].properties.name)
+        sortedSubjects.push(type === 'capital' ? GEO.features[i].properties.capital : GEO.features[i].properties.name)
       }
     }
-    return sortedCountries
+    return sortedSubjects
   }
-  return COUNTRIES
-} 
+  return type === 'capital' ? CAPITALS : COUNTRIES
+}
 
-// Make cron tesks to remind me to change WEATHER API key every two month
+// Make cron tasks to remind me to change WEATHER API key every two month
 function makeCron (date) {
   const dayBefore = new Date(date).setDate(new Date(date).getDate() - 1)
   const task = cron.schedule(`0 0 ${new Date(dayBefore).getDate()} ${new Date(date).getMonth() + 1} *`, () => {

@@ -1,7 +1,7 @@
 {
   "name": "test",
   "engines": {
-	"node": "10.3.0"
+    "node": "10.3.0"
   },
   "version": "1.0.0",
   "description": "",
@@ -11,6 +11,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "bad-words": "^3.0.0",
     "compression": "^1.7.2",
     "connect-history-api-fallback": "^1.5.0",
     "cron": "^1.5.0",
