@@ -1,7 +1,6 @@
 {
-  "name": "map",
-  "version": "0.1.0",
-  "private": true,
+  "name": "worldaria",
+  "version": "1.1.0",
   "scripts": {
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
