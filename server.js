@@ -10,29 +10,22 @@ const cron = require('node-cron')
 const fs = require('fs')
 const Filter = require('bad-words')
 const filter = new Filter()
+const CONFIG = require('./config.js')
 
 // Countries' geojson
 const GEO = require('./dist/json/full.json')
 
 // WEATHER API from https://www.worldweatheronline.com
-let WEATHER_KEY = JSON.parse(fs.readFileSync('WEATHER_API.json', 'utf8')).key
+let WEATHER_KEY = CONFIG.weatherKey
 const WEATHER_API_DATE = new Date(2019, 0, 11)
 
 // Mailer settings from https://app.pepipost.com
-const transporter = nodemailer.createTransport({
-  host: 'smtp.pepipost.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'stkrvton',
-    pass: 'MailS3rv3r'
-  }
-})
+const transporter = nodemailer.createTransport({ ...CONFIG.nodemailerOptions })
 
 // Mailer options to send reminder for myself to change WEATHER API key
 const mailOptions = {
-  from: 'stkrvton@pepisandbox.com',
-  to: 'yljfvelk@grr.la',
+  from: CONFIG.emailFrom,
+  to: CONFIG.emailTo,
   subject: 'Weather API date will be ended soon',
   text: 'Hello, the weather API key should be updated today. And dont forget to edit WEATHER_API.json file.',
   html: '<b>Hello, the weather API key should be updated today. And dont forget to edit <h2>WEATHER_API.json file</h2>.</b><br><h1>' + new Date(new Date().setDate(new Date().getDate() + 1)).toDateString() + ' - faster'
@@ -272,7 +265,8 @@ function makeCron (date) {
     task.destroy()
   })
   const readApiTask = cron.schedule(`0 0 ${new Date(date).getDate()} ${new Date(date).getMonth() + 1} *`, () => {
-    WEATHER_KEY = JSON.parse(fs.readFileSync('WEATHER_API.json', 'utf8')).key
+    delete require.cache[require.resolve('./config.js')]
+    WEATHER_KEY = require('./config.js').weatherKey
     readApiTask.destroy()
   })
 }
