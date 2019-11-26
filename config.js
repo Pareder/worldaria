@@ -1,8 +1,10 @@
 module.exports = {
   emailFrom: 'stkrvton@pepisandbox.com',
   emailTo: 'yljfvelk@grr.la',
+  weatherAPI: 'https://api.worldweatheronline.com/premium/v1',
   weatherKey: 'bc656faeac80433a84095248191101',
-  nodemailerOptions: {
+  weatherDate: [2019, 0, 11],
+  nodeMailerOptions: {
     host: 'smtp.pepipost.com',
     port: 587,
     secure: false,

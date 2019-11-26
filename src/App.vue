@@ -10,24 +10,35 @@ import Invite from './modals/Invite'
 
 export default {
   name: 'app',
+
   data () {
     return {
       nickname: '',
       isInvited: false,
       opponent: '',
       mode: null,
-      type: null
+      type: null,
+      sort: null
     }
   },
+
   mounted () {
-    if (this.getCookie('name')) {
-      this.nickname = JSON.parse(this.getCookie('name')).name
+    const name = this.getCookie('name');
+
+    if (name) {
+      this.nickname = JSON.parse(name).name
       this.$socket.emit('sendName', this.nickname)
     }
   },
+
   methods: {
     makeDecision (status) {
-      this.$socket.emit('makeDecision', { myName: this.nickname, opponentName: this.opponent, status: status })
+      this.$socket.emit('makeDecision', {
+        myName: this.nickname,
+        opponentName: this.opponent,
+        status
+      })
+
       if (status) {
         this.$router.push({
           name: 'Online',
@@ -38,26 +49,32 @@ export default {
           }
         })
       }
+
       this.cancelInvite()
     },
+
     cancelInvite () {
       this.isInvited = false
     }
   },
+
   sockets: {
-    getInvite (data) {
+    getInvite ({ myName, sort, type, opponentName }) {
       this.isInvited = true
-      this.opponent = data.myName
-      this.sort = +data.sort
-      this.type = data.type
-      if (this.nickname !== data.opponentName) {
-        this.nickname = data.opponentName
+      this.opponent = myName
+      this.sort = +sort
+      this.type = type
+
+      if (this.nickname !== opponentName) {
+        this.nickname = opponentName
       }
     },
+
     declineInvite () {
       this.cancelInvite()
     }
   },
+
   components: {
     Invite
   }
