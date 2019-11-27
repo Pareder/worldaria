@@ -64,7 +64,7 @@ class Socket {
           }
 
           socket.room = `room${this._roomNumber}`
-          this._rooms[socket.room] = USERS[socket.room] || []
+          this._rooms[socket.room] = this._rooms[socket.room] || []
           this._rooms[socket.room].push(data.myName)
           socket.join(socket.room)
           delete this._availableUsers[socket.username]

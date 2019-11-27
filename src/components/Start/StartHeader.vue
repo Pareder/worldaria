@@ -4,13 +4,18 @@
       Worldaria
       <div class='globe'></div>
     </h1>
-    <SignForm @toggleSignError="$emit('toggleSignError')" @setNickname="$emit('setNickname')" />
+    <SignForm @toggleSignError="$emit('toggleSignError')" @setNickname="setNickname" />
   </div>
 </template>
 <script>
   import SignForm from '../SignForm'
 
   export default {
+    methods: {
+      setNickname(nickname) {
+        this.$emit('setNickname', nickname)
+      }
+    },
     components: {
       SignForm
     }

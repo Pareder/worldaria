@@ -7,7 +7,7 @@ import VueSocketIO from 'vue-socket.io'
 
 Vue.use(VueFire)
 Vue.use(VueResource)
-Vue.use(VueSocketIO, process.env.PORT ? `0.0.0.0${process.env.PORT}` : '192.168.88.4:5000')
+Vue.use(VueSocketIO, process.env.PORT ? `0.0.0.0${process.env.PORT}` : '192.168.1.84:5000')
 
 Vue.router = router
 Vue.config.productionTip = false
