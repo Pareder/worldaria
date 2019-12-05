@@ -8,12 +8,13 @@
     </v-map>
   </div>
 </template>
+
 <script>
 import Vue2Leaflet from 'vue2-leaflet'
 import HomeButton from './HomeButton'
 
 export default {
-  data () {
+  data() {
     return {
       options: {
         map: {
@@ -46,6 +47,7 @@ export default {
       }
     }
   },
+
   props: {
     geojson: {
       type: Array
@@ -72,22 +74,30 @@ export default {
       type: String
     }
   },
-  created () {
+
+  created() {
     this.$parent.$on('zoomCountry', this.zoom)
     this.$parent.$on('setStartZoom', this.setStartZoom)
   },
+
   methods: {
-    zoom (value) {
+    zoom(value) {
       this.$refs.map.mapObject.flyTo({ ...value }, 6)
     },
-    setStartZoom () {
-      this.$refs.map.mapObject.flyTo({ lat: this.options.map.center[0], lng: this.options.map.center[1] }, 3)
+
+    setStartZoom() {
+      this.$refs.map.mapObject.flyTo({
+        lat: this.options.map.center[0],
+        lng: this.options.map.center[1]
+      }, 3)
     },
-    bindTimezone (feature, layer) {
+
+    bindTimezone(feature, layer) {
       layer.bindPopup(layer.feature.properties.time_zone)
       layer.setStyle({ fillColor: this.randomColor() })
     }
   },
+
   components: {
     'v-map': Vue2Leaflet.Map,
     'v-geojson': Vue2Leaflet.GeoJSON,

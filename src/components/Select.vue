@@ -3,19 +3,23 @@
     {{ options[sortBy].text }}
     <br>
     <select @change="onChange" :value="value" @input="$emit('input', $event.target.value)">
-      <option v-for="option in options[sortBy].data" :value="option.value" :key="option.name">{{ option.name }}</option>
+      <option v-for="option in options[sortBy].data" :value="option.value" :key="option.name">
+        {{ option.name }}
+      </option>
     </select>
   </label>
 </template>
+
 <script>
-  import SelectOptions from './SelectOptions'
+  import selectOptions from '../config/selectOptions'
 
   export default {
-    data () {
+    data() {
       return {
         options: null
       }
     },
+
     props: {
       sortBy: {
         type: String
@@ -24,19 +28,19 @@
         type: String
       }
     },
-    created () {
-      this.options = { ...SelectOptions }
+
+    created() {
+      this.options = { ...selectOptions }
     },
+
     methods: {
-      onChange () {
+      onChange() {
         this.$emit('sortBy', this.sortBy)
       }
-    },
-    components: {
-      SelectOptions
     }
   }
 </script>
+
 <style>
   label {
     padding: 10px;

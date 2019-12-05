@@ -1,15 +1,23 @@
 <template>
   <div>
     <Loader v-show="showLoader" />
-    <LearnMode v-if="loaded" :mode="mode" :geojson="geojson" :mapOptions="options" @stopLoader="stopLoader" :country="country" />
+    <LearnMode
+      v-if="loaded"
+      :mode="mode"
+      :geojson="geojson"
+      :mapOptions="options"
+      @stopLoader="stopLoader"
+      :country="country"
+    />
   </div>
 </template>
+
 <script>
 import LearnMode from './LearnMode'
 import Loader from './Loader'
 
 export default {
-  data () {
+  data() {
     return {
       geojson: [],
       options: {
@@ -20,34 +28,42 @@ export default {
       showLoader: true
     }
   },
+
   props: {
     mode: {
       type: String
     }
   },
-  created () {
+
+  created() {
     if (this.latlng) {
       this.options = { ...this.latlng }
     }
+
     this.getContinent()
     this.getOptions()
   },
+
   computed: {
-    name () {
-      return this.$route.params.name ? this.$route.params.name : 'full'
+    name() {
+      return this.$route.params.name || 'full'
     },
-    latlng () {
+
+    latlng() {
       return this.$route.params.latlng
     },
-    country () {
-      return this.$route.params.country ? this.$route.params.country : false
+
+    country() {
+      return this.$route.params.country || false
     }
   },
+
   methods: {
-    stopLoader () {
+    stopLoader() {
       this.showLoader = false
     },
-    getContinent () {
+
+    getContinent() {
       this.$http.get(`../json/${this.name}.json`)
         .then(response => {
           this.geojson = [...response.body.features]
@@ -56,7 +72,8 @@ export default {
           console.log(error)
         })
     },
-    getOptions () {
+
+    getOptions() {
       switch (this.name) {
         case 'full':
           this.options = {
@@ -110,6 +127,7 @@ export default {
       }
     }
   },
+
   components: {
     LearnMode,
     Loader

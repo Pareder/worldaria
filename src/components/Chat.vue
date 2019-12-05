@@ -1,33 +1,47 @@
 <template>
-  <div class="chat" :class="{ fixed: fixed, bottom: bottom, left: left }">
+  <div class="chat" :class="{ fixed, bottom, left }">
     <div class="chat__header flex">
       <div class="flex">
         <div class="chat__new" :class="{ visible: unreadMessages }"></div>
         <p class="text--small">Online chat</p>
       </div>
       <div class="chat__activator" @click="toggleChat">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 459.313 459.314" style="enable-background:new 0 0 459.313 459.314;" xml:space="preserve">
-          <g>
-            <path d="M459.313,229.648c0,22.201-17.992,40.199-40.205,40.199H40.181c-11.094,0-21.14-4.498-28.416-11.774   C4.495,250.808,0,240.76,0,229.66c-0.006-22.204,17.992-40.199,40.202-40.193h378.936   C441.333,189.472,459.308,207.456,459.313,229.648z" fill="#FFFFFF"/>
-          </g>
-        </svg>
+        <DashSvg />
       </div>
     </div>
-    <div class="chat__main" :class="{ chatHidden: chatHidden }">
+    <div class="chat__main" :class="{ chatHidden }">
       <div class="chat__messages">
-        <div v-show="opponentTyping" class="chat__typing dot_animation">{{ opponentName }} is typing<span>.</span><span>.</span><span>.</span></div>
-        <div v-for="(message, id) in chatMessages" :class="message.user === nickname ? `my__message ${sideColors.my}` : `enemy__message ${sideColors.enemy}`" :key="id">{{ message.text }}</div>
+        <div v-show="opponentTyping" class="chat__typing dot_animation">
+          {{ opponentName }} is typing<span>.</span><span>.</span><span>.</span>
+        </div>
+        <div
+          v-for="(message, id) in chatMessages"
+          :class="message.user === nickname ? `my__message ${sideColors.my}` : `enemy__message ${sideColors.enemy}`"
+          :key="id">{{ message.text }}
+        </div>
       </div>
       <form class="chat__form" @submit.prevent="submitMessage" autocomplete="off">
-        <input type="text" name="message" class="chat__input" placeholder="Type message" value="" v-model="messageText" maxlength="255" @input="typingMessage">
+        <input
+          type="text"
+          name="message"
+          class="chat__input"
+          placeholder="Type message"
+          value=""
+          v-model="messageText"
+          maxlength="255"
+          @input="typingMessage"
+        >
         <img class="chat__img" src="../assets/images/paper_plane.svg" width="40" height="40" @click="submitMessage">
       </form>
     </div>
   </div>
 </template>
+
 <script>
+  import DashSvg from './DashSvg';
+
   export default {
-    data () {
+    data() {
       return {
         chatMessages: [],
         messageText: '',
@@ -37,6 +51,7 @@
         typingTimeout: null
       }
     },
+
     props: {
       nickname: {
         type: String
@@ -57,23 +72,25 @@
         type: Boolean
       }
     },
+
     methods: {
-      submitMessage () {
+      submitMessage() {
         if (this.messageText.length > 0) {
           this.$socket.emit('sendMessage', { user: this.nickname, text: this.messageText })
           this.messageText = ''
         }
       },
-      toggleChat () {
+
+      toggleChat() {
         this.chatHidden = !this.chatHidden
-        if (this.unreadMessages) {
-          this.unreadMessages = false
-        }
+        this.unreadMessages = false
       },
-      typingMessage () {
+
+      typingMessage() {
         if (!this.typingTimeout) {
           this.$socket.emit('typingMessage', true)
         }
+
         clearTimeout(this.typingTimeout)
         this.typingTimeout = setTimeout(() => {
           this.typingTimeout = null
@@ -81,29 +98,37 @@
         }, 3000)
       }
     },
+
     sockets: {
-      getNewMessages (data) {
+      getNewMessages(data) {
         this.opponentTyping = false
         this.typingTimeout = null
         this.chatMessages.unshift(data)
+
         if (this.chatHidden) {
           this.unreadMessages = true
         } else {
           this.unreadMessages = false
         }
       },
-      opponentTyping (data) {
+
+      opponentTyping(data) {
         this.opponentTyping = data
       }
+    },
+
+    components: {
+      DashSvg
     }
   }
 </script>
+
 <style scoped>
 ::-webkit-scrollbar {
     width: 5px;
 }
 ::-webkit-scrollbar-track {
-    background: #f1f1f1; 
+    background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
     background: #888;

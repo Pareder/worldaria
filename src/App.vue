@@ -11,7 +11,7 @@ import Invite from './modals/Invite'
 export default {
   name: 'app',
 
-  data () {
+  data() {
     return {
       nickname: '',
       isInvited: false,
@@ -22,7 +22,7 @@ export default {
     }
   },
 
-  mounted () {
+  mounted() {
     const name = this.getCookie('name');
 
     if (name) {
@@ -32,7 +32,7 @@ export default {
   },
 
   methods: {
-    makeDecision (status) {
+    makeDecision(status) {
       this.$socket.emit('makeDecision', {
         myName: this.nickname,
         opponentName: this.opponent,
@@ -53,13 +53,13 @@ export default {
       this.cancelInvite()
     },
 
-    cancelInvite () {
+    cancelInvite() {
       this.isInvited = false
     }
   },
 
   sockets: {
-    getInvite ({ myName, sort, type, opponentName }) {
+    getInvite({ myName, sort, type, opponentName }) {
       this.isInvited = true
       this.opponent = myName
       this.sort = +sort
@@ -70,7 +70,7 @@ export default {
       }
     },
 
-    declineInvite () {
+    declineInvite() {
       this.cancelInvite()
     }
   },

@@ -1,6 +1,7 @@
 <template>
   <div class="flag"></div>
 </template>
+
 <script>
 export default {
   props: {
@@ -9,30 +10,37 @@ export default {
       required: true
     }
   },
+
   computed: {
     imageSource () {
       const formattedName = this.country.replace(/ /g, '').toLowerCase()
       const cryptedName = this.xorEncrypt('worldaria', formattedName)
+
       return `../img/flags/new/${cryptedName}.svg`
     }
   },
+
   watch: {
-    async country () {
+    async country() {
       this.getSvg()
     }
   },
-  async mounted () {
+
+  async mounted() {
     this.getSvg()
   },
+
   methods: {
-    async getSvg () {
+    async getSvg() {
       const svg = await fetch(this.imageSource).then(r => r.text());
       this.$el.innerHTML = svg;
     },
-    keyCharAt (key, i) {
+
+    keyCharAt(key, i) {
       return key.charCodeAt(Math.floor(i % key.length))
     },
-    xorEncrypt (key, data) {
+
+    xorEncrypt(key, data) {
       return data.split('').map((c, i) => {
         return c.charCodeAt(0) ^ this.keyCharAt(key, i)
       }).join('')
@@ -40,6 +48,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
   .flag {
     width: 70%;

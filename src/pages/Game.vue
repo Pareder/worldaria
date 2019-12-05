@@ -7,13 +7,14 @@
     </div>
   </div>
 </template>
+
 <script>
 import SavedGame from '../modals/SavedGame'
 import GameMode from '../components/GameMode'
 import Loader from '../components/Loader'
 
 export default {
-  data () {
+  data() {
     return {
       geojson: [],
       world: [],
@@ -22,19 +23,22 @@ export default {
       showLoader: true
     }
   },
-  created () {
+
+  created() {
     if (localStorage.getItem('guessed') && !this.$route.params.sort) {
       this.saved = true
       return
     }
+
     if (this.$route.params.sort) {
       this.getWorld()
     } else {
       this.getContinent()
     }
   },
+
   methods: {
-    getWorld () {
+    getWorld() {
       this.$http.get(`../json/map.json`)
         .then(response => {
           this.world = [...response.body.features]
@@ -43,34 +47,41 @@ export default {
           console.log(response)
         })
     },
-    getContinent () {
+
+    getContinent() {
       if (localStorage.getItem('fullJSON')) {
+        this.geojson = JSON.parse(localStorage.getItem('fullJSON'))
         this.onSuccessfulLoad()
       } else {
         this.$http.get(`../json/full.json`)
           .then(response => {
-            localStorage.setItem('fullJSON', JSON.stringify([...response.body.features]))
+            this.geojson = [...response.body.features]
+            localStorage.setItem('fullJSON', JSON.stringify(this.geojson))
             this.onSuccessfulLoad()
           }, response => {
             console.log(response)
         })
       }
     },
-    onSuccessfulLoad () {
-      this.geojson = JSON.parse(localStorage.getItem('fullJSON'))
+
+    onSuccessfulLoad() {
       if (this.$route.params.sort) {
         this.geojson = this.geojson.filter(item => item.properties.pop_est > this.$route.params.sort)
       }
+
       this.loaded = true
     },
+
     stopLoader () {
       this.showLoader = false
     },
+
     getSaved () {
       this.saved = false
       this.getContinent()
     }
   },
+
   components: {
     SavedGame,
     GameMode,

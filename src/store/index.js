@@ -9,16 +9,16 @@ const store = new Vuex.Store({
   },
 
   mutations: {
-    SET_GEOJSON (state, payload) {
+    SET_GEOJSON(state, payload) {
       state.geojson = [...payload]
     },
-    SET_START (state) {
+    SET_START(state) {
       state.start = true
     }
   },
 
   actions: {
-    getGeojson ({ commit }, data) {
+    getGeojson({ commit }, data) {
       return new Promise((resolve, reject) => {
         Vue.http.get(`../json/${data}.json`)
           .then(response => {

@@ -6,20 +6,23 @@
     <input type="submit" value="Search" class="btn">
   </form>
 </template>
+
 <script>
   export default {
-    data () {
+    data() {
       return {
         searchingText: null
       }
     },
+
     props: {
       error: {
         type: Boolean
       }
     },
+
     methods: {
-      checkError () {
+      checkError() {
         if (this.error) {
           this.$emit('removeError')
         }
@@ -27,6 +30,7 @@
     }
   }
 </script>
+
 <style scoped>
   input:not([type="checkbox"]) {
     width: 100px;

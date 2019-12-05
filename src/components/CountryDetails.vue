@@ -12,8 +12,12 @@
         <Select sortBy="density" v-model="sort.density" @sortBy="sortBy" />
         <Select sortBy="temperature" v-model="sort.temperature" @sortBy="sortBy" />
         <Checkbox v-model="showTimezone" @toggleTimezone="toggleTimezone" :showTimezone="showTimezone" />
-        <SearchCountriesForm v-model="searchCountry" @search="search" @onClick="onClick" :foundCountries="foundCountries" />
-        <!--<SearchForm @search="search" @removeError="removeError" :error="error" />-->
+        <SearchCountriesForm
+          v-model="searchCountry"
+          @search="search"
+          @onClick="onClick"
+          :foundCountries="foundCountries"
+        />
         <div v-if="!isMobile" class="count">Amount - {{ sortedGeojson.length }}</div>
       </div>
       <div class="opener" @click="openNotification = !openNotification">
@@ -21,10 +25,17 @@
       </div>
     </div>
     <div id="map" v-if="loaded">
-      <Map :geojson="sortedGeojson" :onEachFeature="onEachFeature" :world="world" :timezones="timezones" :toggleTimezone="showTimezone" />
+      <Map
+        :geojson="sortedGeojson"
+        :onEachFeature="onEachFeature"
+        :world="world"
+        :timezones="timezones"
+        :toggleTimezone="showTimezone"
+      />
     </div>
   </div>
 </template>
+
 <script>
 import Loader from './Loader'
 import DetailsModal from '../modals/DetailsModal'
@@ -35,7 +46,7 @@ import Checkbox from './Checkbox'
 import SearchCountriesForm from './SearchCountriesForm'
 
 export default {
-  data () {
+  data() {
     return {
       value: '',
       geojson: [],
@@ -62,11 +73,13 @@ export default {
       foundCountries: []
     }
   },
-  created () {
+
+  created() {
     this.createGeo()
   },
+
   methods: {
-    createGeo () {
+    createGeo() {
       const getMap = new Promise((resolve, reject) => {
         this.$http.get('../json/map.json')
           .then(response => {
@@ -86,9 +99,9 @@ export default {
           })
       })
       Promise.all([getMap, getCustom])
-        .then(values => {
-          this.world = [...values[0]]
-          this.geojson = [...values[1]]
+        .then(([world, geojson]) => {
+          this.world = world
+          this.geojson = geojson
           this.sortedGeojson = [...this.geojson]
           this.loaded = true
         })
@@ -96,7 +109,8 @@ export default {
           console.log(error)
         })
     },
-    onEachFeature (feature, layer) {
+
+    onEachFeature(feature, layer) {
       this.layers.push(layer)
       layer.setStyle({ fillColor: this.randomColor() })
       layer.on('click', () => {
@@ -104,43 +118,50 @@ export default {
         this.isClicked = true
       })
     },
-    closeModal () {
+
+    closeModal() {
       this.isClicked = false
     },
-    sortBy (type) {
+
+    sortBy(type) {
       this.showTimezone = false
       this.sortedGeojson.length = 0
+
       if (this.sort[type] === 'max') {
-        for (let key in this.sort) {
+        for (const key in this.sort) {
           if (key !== type) {
             this.sort[key] = 'all'
           }
         }
-        let max = Math.max.apply(Math, this.geojson.map((o) => {
-          return o.properties[type] ? +o.properties[type] : 0
+
+        const max = Math.max.apply(Math, this.geojson.map(geo => {
+          return geo.properties[type] ? +geo.properties[type] : 0
         }))
-        this.sortedGeojson.push(this.geojson.find((o) => {
-          return +o.properties[type] === max
+        this.sortedGeojson.push(this.geojson.find(geo => {
+          return +geo.properties[type] === max
         }))
       } else if (this.sort[type] === 'min') {
-        for (let key in this.sort) {
+        for (const key in this.sort) {
           if (key !== type) {
             this.sort[key] = 'all'
           }
         }
-        let min = Math.min.apply(Math, this.geojson.map((o) => {
-          return o.properties[type] ? +o.properties[type] : 9999999
+
+        const min = Math.min.apply(Math, this.geojson.map(geo => {
+          return geo.properties[type] ? +geo.properties[type] : 9999999
         }))
-        this.sortedGeojson.push(this.geojson.find((o) => {
-          return +o.properties[type] === min
+        this.sortedGeojson.push(this.geojson.find(geo => {
+          return +geo.properties[type] === min
         }))
       } else {
         this.totalSort()
       }
     },
-    totalSort () {
+
+    totalSort() {
       this.sortedGeojson = [...this.geojson]
-      for (let key in this.sort) {
+
+      for (const key in this.sort) {
         if (!['all', 'max', 'min'].includes(this.sort[key])) {
           if (Math.sign(this.sort[key]) === -1 || Object.is(Math.sign(this.sort[key]), -0)) {
             this.sortedGeojson = this.sortedGeojson.filter(item => +item.properties[key] < Math.abs(this.sort[key]))
@@ -152,25 +173,25 @@ export default {
         }
       }
     },
-    search (value) {
+
+    search(value) {
       this.foundCountries = []
+
       for (let i = 0; i < this.layers.length; i++) {
-        if (value && value.length > 0 && this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
+        if (value && value.length > 0 &&
+          this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
           this.foundCountries.push(this.layers[i].feature.properties.name)
         }
       }
-      this.foundCountries.sort()
 
-      /* const searchingCountry = this.layers.find(item => item.feature.properties.name.toLowerCase() === searchCountry.toLowerCase())
-      if (searchingCountry) {
-        searchingCountry.fire('click')
-        this.error = false
-      } else {
-        this.error = true
-      } */
+      this.foundCountries.sort()
     },
-    onClick (country) {
-      const searchingCountry = this.layers.find(item => item.feature.properties.name.toLowerCase() === country.toLowerCase())
+
+    onClick(country) {
+      const searchingCountry = this.layers.find(item => {
+        return item.feature.properties.name.toLowerCase() === country.toLowerCase()
+      })
+
       if (searchingCountry) {
         searchingCountry.fire('click')
         this.error = false
@@ -178,10 +199,12 @@ export default {
         this.error = true
       }
     },
-    removeError () {
+
+    removeError() {
       this.error = false
-    }, 
-    toggleTimezone () {
+    },
+
+    toggleTimezone() {
       if (!this.timezones) {
         this.$http.get(`../json/timezones.json`)
         .then(response => {
@@ -192,6 +215,7 @@ export default {
       }
     }
   },
+
   components: {
     Loader,
     DetailsModal,
@@ -203,81 +227,82 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss">
-.learn_notification {
-  position: absolute;
-  width: 100%;
-  font-size: 20px;
-  z-index: 900;
-}
-.selectors {
-  overflow: hidden;
-  transition: all 0.5s;
-  height:0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  background-color: #9bffe6;
-}
-.opened {
-  height: auto;
-  padding: 20px;
-}
-.opener {
-  position: absolute;
-  bottom: -30px;
-  width: 100%;
-  height: 30px;
-  line-height: 30px;
-  background-color: #51667f;
-  cursor: pointer;
-}
-img {
-  transform: rotateX(0);
-  transition: all 0.5s;
-}
-.rotate {
-  transform: rotateX(180deg);
-}
 
-.squaredThree {
-  position: relative;
-  padding: 0 10px;
-  label {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+<style scoped lang="scss">
+  .learn_notification {
     position: absolute;
-    bottom: 0;
-    left: calc(50% - 10px);
-    background: linear-gradient(to top, #222 0%, #45484d 100%);
-    border-radius: 4px;
-    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4);
-    &:after {
-      content: '';
-      width: 9px;
-      height: 5px;
+    width: 100%;
+    font-size: 20px;
+    z-index: 900;
+  }
+  .selectors {
+    overflow: hidden;
+    transition: all 0.5s;
+    height:0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: #9bffe6;
+  }
+  .opened {
+    height: auto;
+    padding: 20px;
+  }
+  .opener {
+    position: absolute;
+    bottom: -30px;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    background-color: #51667f;
+    cursor: pointer;
+  }
+  img {
+    transform: rotateX(0);
+    transition: all 0.5s;
+  }
+  .rotate {
+    transform: rotateX(180deg);
+  }
+
+  .squaredThree {
+    position: relative;
+    padding: 0 10px;
+    label {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
       position: absolute;
-      top: 4px;
-      left: 4px;
-      border: 3px solid #fcfff4;
-      border-top: none;
-      border-right: none;
-      background: transparent;
-      opacity: 0;
-      transform: rotate(-45deg);
+      bottom: 0;
+      left: calc(50% - 10px);
+      background: linear-gradient(to top, #222 0%, #45484d 100%);
+      border-radius: 4px;
+      box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4);
+      &:after {
+        content: '';
+        width: 9px;
+        height: 5px;
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        border: 3px solid #fcfff4;
+        border-top: none;
+        border-right: none;
+        background: transparent;
+        opacity: 0;
+        transform: rotate(-45deg);
+      }
+      &:hover::after {
+        opacity: 0.3;
+      }
     }
-    &:hover::after {
-      opacity: 0.3;
+    input[type=checkbox] {
+      visibility: hidden;
+      &:checked + label:after {
+        opacity: 1;
+      }
     }
   }
-  input[type=checkbox] {
-    visibility: hidden;
-    &:checked + label:after {
-      opacity: 1;
-    }    
-  }
-}
 </style>

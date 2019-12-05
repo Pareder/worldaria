@@ -6,21 +6,24 @@
     <label for="squaredThree"></label>
   </div>
 </template>
+
 <script>
 export default {
-  data () {
+  data() {
     return {
       checkBox: false
     }
   },
+
   methods: {
-    onChange () {
+    onChange() {
       this.$emit('input', this.checkBox)
       this.$emit('toggleTimezone')
     }
   }
 }
 </script>
+
 <style scoped lang="scss">
   .squaredThree {
     position: relative;

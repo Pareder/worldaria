@@ -1,45 +1,66 @@
 <template>
   <div class="relative">
     <div class="search">
-      <input class="search__input search_icon" type="text" placeholder="Search" v-model="searchCountry" @input="onInput($event.target.value)">
-      <div v-if="foundCountries.length > 0" class="foundCountries">{{ foundCountries.length }}</div>
+      <input
+        class="search__input search_icon"
+        type="text"
+        placeholder="Search"
+        v-model="searchCountry"
+        @input="onInput($event.target.value)"
+      >
+      <div v-if="foundCountries.length > 0" class="foundCountries">
+        {{ foundCountries.length }}
+      </div>
     </div>
     <transition name="slide-fade">
       <div v-if="searchCountry" class="found">
         <div v-if="foundCountries.length === 0">No countries found</div>
-        <div v-for="(country, id) in foundCountries" :key="id" class="found__country" @click="$emit('onClick', country)">{{ country }}</div>
+        <div
+          v-for="(country, id) in foundCountries"
+          :key="id"
+          class="found__country"
+          @click="$emit('onClick', country)"
+        >
+          {{ country }}
+        </div>
       </div>
     </transition>
   </div>
 </template>
+
 <script>
   export default {
-    data () {
+    data() {
       return {
         searchCountry: ''
       }
     },
+
     props: {
       foundCountries: {
         type: Array
       }
     },
-    created () {
+
+    created() {
       this.$parent.$on('clearSearch', this.clearSearch)
     },
+
     methods: {
-      onInput (value) {
+      onInput(value) {
         if (value) {
           this.$emit('input', value)
           this.$emit('search', value)
         }
       },
-      clearSearch () {
+
+      clearSearch() {
         this.searchCountry = ''
       }
     }
   }
 </script>
+
 <style scoped>
   .relative {
     position: relative;

@@ -5,24 +5,26 @@
       <select @change="createGeo" v-model="history">
         <option v-for="(date, id) in options.slider.data" :key="id" :value="date">{{ date }}</option>
       </select>
-      <img :src="`../img/${playPressed ? 'stop' : 'play2'}.svg`" width="32" height="32" @click="playHistory" class="btn-history"/>
-     </div>
+      <PlayerImg :playPressed="playPressed" @onClick="playHistory" />
+    </div>
     <div v-else class="slider">
       <vue-slider ref="slider" v-bind="options.slider" v-model="history" @callback="createGeo"></vue-slider>
-      <img :src="`../img/${playPressed ? 'stop' : 'play'}.svg`" width="32" height="32" @click="playHistory" class="btn-history"/>
+      <PlayerImg :playPressed="playPressed" @onClick="playHistory" />
     </div>
     <div id="map" v-if="loaded">
       <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
     </div>
   </div>
 </template>
+
 <script>
 import vueSlider from 'vue-slider-component'
 import Loader from './Loader'
 import Map from './Map'
+import PlayerImg from './PlayerImg'
 
 export default {
-  data () {
+  data() {
     return {
       world: [],
       geojson: [],
@@ -86,11 +88,13 @@ export default {
       count: 0
     }
   },
-  created () {
+
+  created() {
     this.createMap()
   },
+
   methods: {
-    createMap () {
+    createMap() {
       this.$http.get(`../json/map.json`)
         .then((response) => {
           this.world = [...response.body.features]
@@ -99,9 +103,11 @@ export default {
           console.log(response)
       })
     },
-    createGeo () {
-      let period = this.history.replace(' ', '').toLowerCase()
+
+    createGeo() {
+      const period = this.history.replace(' ', '').toLowerCase()
       this.count = this.options.slider.data.indexOf(this.history)
+
       this.$http.get(`../json/history/${period}.json`)
       .then(response => {
         this.geojson = [...response.body.features]
@@ -110,31 +116,38 @@ export default {
         console.log(response)
       })
     },
-    onEachFeature (feature, layer) {
+
+    onEachFeature(feature, layer) {
       layer.setStyle({ fillColor: this.randomColor() })
       layer.bindPopup(layer.feature.properties.name)
     },
-    playHistory () {
+
+    playHistory() {
       if (this.isMobile && !this.playPressed) {
         this.playPressed = true
+
         this.interval = setInterval(() => {
           this.count++
+
           if (this.count > this.options.slider.data.length - 1) {
             clearInterval(this.interval)
             return
           }
+
           this.history = this.options.slider.data[this.count]
           this.createGeo()
         }, 2000)
       } else if (!this.playPressed) {
         this.playPressed = true
         this.$refs.slider.setIndex(this.$refs.slider.getIndex() + 1)
+
         this.interval = setInterval(() => {
           if (this.$refs.slider.getIndex() === 21) {
             clearInterval(this.interval)
             this.playPressed = false
             return
           }
+
           this.$refs.slider.setIndex(this.$refs.slider.getIndex() + 1)
         }, 2000)
       } else if (this.interval) {
@@ -143,55 +156,46 @@ export default {
       }
     }
   },
+
   components: {
     Loader,
     vueSlider,
-    Map
+    Map,
+    PlayerImg
   }
 }
 </script>
+
 <style scoped>
-.leaflet-pane {
-  z-index: 1;
-}
-.selecter {
-  position: absolute;
-  z-index: 800;
-  top: 15px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-select {
-  width: 150px;
-  padding: 5px 10px;
-  border: 1px solid #2c3e50;
-  outline: 0;
-  border-radius: 5px;
-  font: 15px 'Montserrat';
-  transition: all 0.3s;
-}
-select:focus {
-  box-shadow: 0 0 5px #2c3e50;
-}
-.slider {
-  position: fixed;
-  z-index: 800;
-  bottom: 20px;
-  width: 100%;
-  display: flex;
-}
-.btn-history {
-  position: relative;
-  left: 10px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.slider .btn-history {
-  top: -5px;
-}
-.btn-history:hover {
-  transform: scale(1.1);
-}
+  .leaflet-pane {
+    z-index: 1;
+  }
+  .selecter {
+    position: absolute;
+    z-index: 800;
+    top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  select {
+    width: 150px;
+    padding: 5px 10px;
+    border: 1px solid #2c3e50;
+    outline: 0;
+    border-radius: 5px;
+    font: 15px 'Montserrat';
+    transition: all 0.3s;
+  }
+  select:focus {
+    box-shadow: 0 0 5px #2c3e50;
+  }
+  .slider {
+    position: fixed;
+    z-index: 800;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+  }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <transition name="notification--animated" appear>
-      <div v-if="!enemyTurn" class="notification" :class="{ danger: danger }">
+      <div v-if="!enemyTurn" class="notification" :class="{ danger }">
         <p class="time"><span>Time: {{ seconds }}</span></p>
         <p class="attempts"><span>Attempts: {{ attempts }}</span></p>
         <SvgIcon v-if="gameType === 'flag'" :country="subject" />
@@ -18,6 +18,7 @@
     </transition>
   </div>
 </template>
+
 <script>
   import SvgIcon from './SvgIcon'
   import UsersList from './UsersList'
@@ -55,12 +56,14 @@
         type: Boolean
       }
     },
+
     components: {
       SvgIcon,
       UsersList
     }
   }
 </script>
+
 <style scoped>
   .time, .attempts {
     position: absolute;

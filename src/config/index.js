@@ -11,3 +11,25 @@ const Firebase = initializeApp({
 
 export const database = Firebase.database()
 export const auth = Firebase.auth()
+export const populationOptions = [
+  {
+    id: 'all',
+    value: '',
+    name: 'All'
+  },
+  {
+    id: '5m',
+    value: 5000000,
+    name: '> 5 M'
+  },
+  {
+    id: '10m',
+    value: 10000000,
+    name: '> 10 M'
+  },
+  {
+    id: '50m',
+    value: 50000000,
+    name: '> 50 M'
+  }
+]

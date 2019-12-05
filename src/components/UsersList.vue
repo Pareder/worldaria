@@ -1,12 +1,17 @@
 <template>
   <ul class="users">
-    <li v-for="(user, id) in users" :key="id" class="user__score" :class="user === nickname ? 'mySide' : enemyGuess ? 'enemyGuess' : ''">
+    <li
+      v-for="(user, id) in users"
+      :key="id"
+      class="user__score"
+      :class="user === nickname ? 'mySide' : enemyGuess ? 'enemyGuess' : ''"
+    >
       <span>{{ user }}</span>
-      <span v-if="user === nickname">{{ score.my }}</span>
-      <span v-else>{{ score.enemy }}</span>
+      <span v-if="user === nickname">{{ user === nickname ? score.my : score.enemy }}</span>
     </li>
   </ul>
 </template>
+
 <script>
   export default {
     props: {
@@ -25,6 +30,7 @@
     }
   }
 </script>
+
 <style scoped>
   .users {
     width: 100%;

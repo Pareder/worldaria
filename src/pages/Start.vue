@@ -6,7 +6,7 @@
       <div class="left">
         <StartButtons
           name="Game"
-          description="In Game mode you have 5 attempts for each country. Each right answer will give you 1 point. After 5 wrong attempts you will lose 1 point. You can save your current game anytime just quiting it if you are guessing by name."
+          description="In Game mode you have 5 attempts for each country. Each right answer will give you 1 point.After 5 wrong attempts you will lose 1 point. You can save your current game anytime just quiting it if you are guessing by name."
           @buttonClick="chooseGameMode"
         />
         <StartButtons
@@ -45,6 +45,7 @@
     <LearnMode v-if="learnMode" @close="closeModal" />
   </div>
 </template>
+
 <script>
 import StartBackground from '../components/Start/StartBackground'
 import StartHeader from '../components/Start/StartHeader'
@@ -54,7 +55,7 @@ import ChooseMode from '../modals/ChooseMode'
 import LearnMode from '../modals/LearnMode'
 
 export default {
-  data () {
+  data() {
     return {
       start: false,
       nickname: '',
@@ -64,44 +65,57 @@ export default {
       signInError: false
     }
   },
-  created () {
-    if (this.getCookie('name')) {
-      this.nickname = JSON.parse(this.getCookie('name')).name
+
+  created() {
+    const cookie = this.getCookie('name')
+
+    if (cookie) {
+      this.nickname = JSON.parse(cookie).name
     }
   },
-  beforeRouteEnter (to, from, next) {
+
+  beforeRouteEnter(to, from, next) {
     if (from.name) {
       next(vm => {
         vm.start = true
       })
     }
+
     next()
   },
+
   methods: {
-    startPressed () {
+    startPressed() {
       this.start = true
     },
-    setNickname (name) {
+
+    setNickname(name) {
       this.nickname = name
     },
-    chooseGameMode () {
+
+    chooseGameMode() {
       this.gameMode = true
     },
-    chooseLearnMode () {
+
+    chooseLearnMode() {
       this.learnMode = true
     },
-    chooseDifficulty () {
+
+    chooseDifficulty() {
       this.difficulty = true
     },
-    closeModal () {
+
+    closeModal() {
       this.difficulty = false
       this.gameMode = false
       this.learnMode = false
     },
-    toggleSignError () {
+
+    toggleSignError() {
       this.signInError = false
     },
-    checkOnlineRoute () {
+
+    checkOnlineRoute() {
       if (!this.nickname) {
         this.signInError = true
         return
@@ -110,6 +124,7 @@ export default {
       }
     }
   },
+
   components: {
     StartBackground,
     StartHeader,
@@ -120,14 +135,15 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss">
-.start-page {
-  min-height: 100vh;
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  background-color: rgba(0,0,0,0.5);
-}
+
+<style scoped>
+  .start-page {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 </style>
