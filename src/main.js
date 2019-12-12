@@ -4,6 +4,7 @@ import router from './router'
 import VueResource from 'vue-resource'
 import VueFire from 'vuefire'
 import VueSocketIO from 'vue-socket.io'
+import { getCookie, compareRandom, randomColor } from '../utils'
 
 Vue.use(VueFire)
 Vue.use(VueResource)
@@ -24,22 +25,10 @@ const checkMobile = () => {
 
   return true;
 }
-const getRandomNumber = range => {
-  return Math.floor(Math.random() * range)
-}
 
-Vue.prototype.getCookie = name => {
-  let matches = document.cookie.match(
-    new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + "=([^;]*)")
-  )
-  return matches ? decodeURIComponent(matches[1]) : undefined
-}
-Vue.prototype.compareRandom = () => {
-  return Math.random() - 0.5
-}
-Vue.prototype.randomColor = () => {
-  return `rgb(${getRandomNumber(255)},${getRandomNumber(255)},${getRandomNumber(255)})`
-}
+Vue.prototype.getCookie = getCookie
+Vue.prototype.compareRandom = compareRandom
+Vue.prototype.randomColor = randomColor
 Vue.prototype.isMobile = checkMobile()
 
 new Vue({

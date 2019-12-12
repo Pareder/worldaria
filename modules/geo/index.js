@@ -5,13 +5,12 @@ class Geo {
     this._geoData = geoData
     this._countries = []
     this._capitals = []
+
+    this.init()
   }
 
   static create() {
-    const geo = new Geo(geoData)
-    geo.init()
-
-    return geo
+    return new Geo(geoData)
   }
 
   init() {

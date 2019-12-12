@@ -7,7 +7,7 @@ class WeatherAPI {
     this._weatherAPI = weatherAPI
     this._weatherKey = weatherKey
     this._fetch = fetch
-    this._weather = null
+    this._weather = {}
   }
 
   static create(weatherAPI, weatherKey) {
