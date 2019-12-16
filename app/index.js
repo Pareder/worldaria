@@ -13,21 +13,21 @@ class App {
     this._history = history
     this._compression = compression
     this._app = express()
+
+    this.init()
   }
 
-  static create(config, weather, pathname = '/../dist') {
+  static create(config, weather) {
     const mailer = Mailer.create(config)
     const cron = Cron.create(mailer, weather)
-    const app = new App(config, cron, express, history, compression)
-    app.init(pathname)
 
-    return app
+    return new App(config, cron, express, history, compression)
   }
 
-  init(pathname) {
+  init(pathname = '/../dist') {
     this._cron.makeTask(new Date(...this._config.weatherDate))
 
-    const staticFileMiddleware = express.static(path.join(__dirname + pathname), {
+    const staticFileMiddleware = this._express.static(path.join(__dirname + pathname), {
       maxAge: 604800000,
       setHeaders: function (res) {
         res.setHeader('X-FRAME-OPTIONS', 'DENY')
