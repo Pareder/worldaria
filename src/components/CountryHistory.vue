@@ -94,27 +94,16 @@ export default {
   },
 
   methods: {
-    createMap() {
-      this.$http.get(`../json/map.json`)
-        .then((response) => {
-          this.world = [...response.body.features]
-          this.createGeo()
-        }, response => {
-          console.log(response)
-      })
+    async createMap() {
+      this.world = await this.$api.getMapJSON()
+      await this.createGeo()
     },
 
-    createGeo() {
+    async createGeo() {
       const period = this.history.replace(' ', '').toLowerCase()
       this.count = this.options.slider.data.indexOf(this.history)
-
-      this.$http.get(`../json/history/${period}.json`)
-      .then(response => {
-        this.geojson = [...response.body.features]
-        this.loaded = true
-      }, response => {
-        console.log(response)
-      })
+      this.geojson = await this.$api.getGeoJSON(`history/${period}`)
+      this.loaded = true
     },
 
     onEachFeature(feature, layer) {

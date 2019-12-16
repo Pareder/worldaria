@@ -24,44 +24,27 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     if (localStorage.getItem('guessed') && !this.$route.params.sort) {
       this.saved = true
       return
     }
 
     if (this.$route.params.sort) {
-      this.getWorld()
+      await this.getWorld()
     } else {
-      this.getContinent()
+      await this.getContinent()
     }
   },
 
   methods: {
-    getWorld() {
-      this.$http.get(`../json/map.json`)
-        .then(response => {
-          this.world = [...response.body.features]
-          this.getContinent()
-        }, response => {
-          console.log(response)
-        })
+    async getWorld() {
+      this.world = await this.$api.getMapJSON()
     },
 
-    getContinent() {
-      if (localStorage.getItem('fullJSON')) {
-        this.geojson = JSON.parse(localStorage.getItem('fullJSON'))
-        this.onSuccessfulLoad()
-      } else {
-        this.$http.get(`../json/full.json`)
-          .then(response => {
-            this.geojson = [...response.body.features]
-            localStorage.setItem('fullJSON', JSON.stringify(this.geojson))
-            this.onSuccessfulLoad()
-          }, response => {
-            console.log(response)
-        })
-      }
+    async getContinent() {
+      this.geojson = await this.$api.getFullJSON()
+      this.onSuccessfulLoad()
     },
 
     onSuccessfulLoad() {
@@ -72,13 +55,13 @@ export default {
       this.loaded = true
     },
 
-    stopLoader () {
+    stopLoader() {
       this.showLoader = false
     },
 
-    getSaved () {
+    async getSaved() {
       this.saved = false
-      this.getContinent()
+      await this.getContinent()
     }
   },
 

@@ -36,19 +36,14 @@ export default {
     }
   },
 
-  created() {
-    this.createGeo()
+  async created() {
+    await this.createGeo()
   },
 
   methods: {
-    createGeo() {
-      this.$http.get(`../json/${this.subject}.json`)
-        .then(response => {
-          this.geojson = [...response.body.features]
-          this.loaded = true
-        }, response => {
-          console.log(response)
-      })
+    async createGeo() {
+      this.geojson = await this.$api.getGeoJSON(this.subject)
+      this.loaded = true
     },
 
     onEachFeature(feature, layer) {

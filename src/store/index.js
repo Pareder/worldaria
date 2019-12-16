@@ -12,23 +12,16 @@ const store = new Vuex.Store({
     SET_GEOJSON(state, payload) {
       state.geojson = [...payload]
     },
+
     SET_START(state) {
       state.start = true
     }
   },
 
   actions: {
-    getGeojson({ commit }, data) {
-      return new Promise((resolve, reject) => {
-        Vue.http.get(`../json/${data}.json`)
-          .then(response => {
-            commit('SET_GEOJSON', response.body.features)
-            resolve()
-          })
-          .catch(error => {
-            reject(error)
-          })
-      })
+    async getGeoJSON({ commit }, data) {
+      const geojson = await Vue.$api.getGeoJSON(data)
+      commit('SET_GEOJSON', geojson)
     }
   }
 })
