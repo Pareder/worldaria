@@ -1,13 +1,14 @@
 import Vue from 'vue'
 
 class API {
-  constructor(http, notify) {
+  constructor(http, notify, localStorage) {
     this._http = http
     this._notify = notify
+    this._localStorage = localStorage
   }
 
   static create() {
-    return new API(Vue.http, Vue.notify)
+    return new API(Vue.http, Vue.notify, localStorage)
   }
 
   getGeoJSON(name) {
@@ -15,7 +16,8 @@ class API {
       this._http.get(`../json/${name}.json`)
         .then(response => {
           resolve(response.body.features)
-        }, error => {
+        })
+        .catch(error => {
           this._notify({
             group: 'error',
             type: 'error',
@@ -41,14 +43,14 @@ class API {
 
   _getJSONWithLocalStorage(itemName, jsonName) {
     return new Promise(resolve => {
-      const json = localStorage.getItem(itemName)
+      const json = this._localStorage.getItem(itemName)
 
       if (json) {
         resolve(JSON.parse(json))
       } else {
         this.getGeoJSON(jsonName)
           .then(data => {
-            localStorage.setItem(itemName, JSON.stringify(data))
+            this._localStorage.setItem(itemName, JSON.stringify(data))
             resolve(data)
           })
       }
