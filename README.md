@@ -16,14 +16,24 @@
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Starts the server
 ```
 npm start
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
 ```
 
 ### Compiles and minifies for production
 ```
 npm run build
+```
+
+### Runs unit tests
+```
+npm run test
 ```
 
 ### Lints and fixes files
