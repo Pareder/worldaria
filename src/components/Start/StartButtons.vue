@@ -17,6 +17,7 @@
     <button v-else class="btn btn--start" @click="$emit('buttonClick')">{{ name | capitalize }}</button>
   </div>
 </template>
+
 <script>
   export default {
     props: {
@@ -36,8 +37,9 @@
         type: Boolean
       }
     },
+
     filters: {
-      capitalize (value) {
+      capitalize(value) {
         if (!value) return ''
         value = value.toString()
         return value.charAt(0).toUpperCase() + value.slice(1)
@@ -45,6 +47,7 @@
     }
   }
 </script>
+
 <style scoped>
   .mode {
     position: relative;

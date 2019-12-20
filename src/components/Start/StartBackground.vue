@@ -4,6 +4,7 @@
     <source src="../../assets/video/earth3.mp4" type="video/mp4">
   </video>
 </template>
+
 <style scoped>
   .start-bg {
     position: absolute;

@@ -2,6 +2,7 @@
   <div id="app">
     <router-view></router-view>
     <Invite v-if="isInvited" :opponent="opponent" @makeDecision="makeDecision" :mode="sort" :type="type" />
+    <notifications group="error" position="top left" />
   </div>
 </template>
 
@@ -76,6 +77,7 @@ export default {
   },
 
   components: {
+    Notification,
     Invite
   }
 }

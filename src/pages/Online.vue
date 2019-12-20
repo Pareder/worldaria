@@ -137,27 +137,19 @@ export default {
   },
 
   methods: {
-    getContinent(sort) {
-      this.$http.get(`../json/map.json`)
-        .then(response => {
-          this.world = [...response.body.features]
-          this.$http.get(`../json/full.json`)
-            .then(response => {
-              if (sort) {
-                this.geojson = response.body.features.filter(feature => feature.properties.pop_est > sort)
-              } else {
-                this.geojson = [...response.body.features]
-              }
+    async getContinent(sort) {
+      this.world = await this.$api.getMapJSON()
+      const geojson = await this.$api.getFullJSON()
 
-              if (this.nickname === this.users[0]) {
-                this.makeInterval()
-              }
-            }, response => {
-              console.log(response)
-            })
-        }, response => {
-          console.log(response)
-        })
+      if (sort) {
+        this.geojson = geojson.filter(feature => feature.properties.pop_est > sort)
+      } else {
+        this.geojson = geojson
+      }
+
+      if (this.nickname === this.users[0]) {
+        this.makeInterval()
+      }
     },
 
     onEachFeature(feature, layer) {
@@ -271,9 +263,9 @@ export default {
       }
     },
 
-    startGame(data) {
+    async startGame(data) {
       this.gameType = data.type
-      this.getContinent(data.sort)
+      await this.getContinent(data.sort)
       this.chooseOpponent = false
       this.users = [...data.users]
       this.subjects = [...data.subjects]

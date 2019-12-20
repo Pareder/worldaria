@@ -63,14 +63,9 @@ export default {
       this.showLoader = false
     },
 
-    getContinent() {
-      this.$http.get(`../json/${this.name}.json`)
-        .then(response => {
-          this.geojson = [...response.body.features]
-          this.loaded = true
-        }, error => {
-          console.log(error)
-        })
+    async getContinent() {
+      this.geojson = await this.$api.getGeoJSON(this.name)
+      this.loaded = true
     },
 
     getOptions() {

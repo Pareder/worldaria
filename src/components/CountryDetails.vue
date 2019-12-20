@@ -80,25 +80,7 @@ export default {
 
   methods: {
     createGeo() {
-      const getMap = new Promise((resolve, reject) => {
-        this.$http.get('../json/map.json')
-          .then(response => {
-            resolve(response.body.features)
-          })
-          .catch(error => {
-            reject(error)
-          })
-      })
-      const getCustom = new Promise((resolve, reject) => {
-        this.$http.get(`../json/custom.json`)
-          .then(response => {
-            resolve(response.body.features)
-          })
-          .catch(error => {
-            reject(error)
-          })
-      })
-      Promise.all([getMap, getCustom])
+      Promise.all([this.$api.getMapJSON(), this.$api.getGeoJSON('custom')])
         .then(([world, geojson]) => {
           this.world = world
           this.geojson = geojson
@@ -204,15 +186,8 @@ export default {
       this.error = false
     },
 
-    toggleTimezone() {
-      if (!this.timezones) {
-        this.$http.get(`../json/timezones.json`)
-        .then(response => {
-          this.timezones = [...response.body.features]
-        }, response => {
-          console.log(response)
-        })
-      }
+    async toggleTimezone() {
+      this.timezones = await this.$api.getTimezoneJSON()
     }
   },
 

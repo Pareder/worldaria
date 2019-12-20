@@ -87,45 +87,23 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     if (this.$route.params.sort && this.botMode !== 'impossible') {
-        this.getWorld()
+        await this.getWorld()
       } else {
-        this.getCountries()
+        await this.getCountries()
       }
   },
 
   methods: {
-    getWorld() {
-      if (localStorage.getItem('mapJSON')) {
-        this.world = JSON.parse(localStorage.getItem('mapJSON'))
-        this.getCountries()
-      } else {
-        this.$http.get(`../json/map.json`)
-          .then(response => {
-            this.world = [...response.body.features]
-            localStorage.setItem('mapJSON', JSON.stringify(this.world))
-            this.getCountries()
-          }, response => {
-            console.log(response)
-          })
-      }
+    async getWorld() {
+      this.world = await this.$api.getMapJSON()
+      await this.getCountries()
     },
 
-    getCountries() {
-      if (localStorage.getItem('fullJSON')) {
-        this.geojson = JSON.parse(localStorage.getItem('fullJSON'))
-        this.onSuccessfulLoad()
-      } else {
-        this.$http.get(`../json/full.json`)
-          .then(response => {
-            this.geojson = [...response.body.features]
-            localStorage.setItem('fullJSON', JSON.stringify(this.geojson))
-            this.onSuccessfulLoad()
-          }, error => {
-            console.log(error)
-          })
-      }
+    async getCountries() {
+      this.geojson = await this.$api.getFullJSON()
+      this.onSuccessfulLoad()
     },
 
     onSuccessfulLoad() {

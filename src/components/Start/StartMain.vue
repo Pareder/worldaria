@@ -1,7 +1,9 @@
 <template>
   <div class="start">
     <div v-if="!start" class="start__animation">
-      <h2 class="start__heading" :class="{ lineMovement: startPressing }">Worldaria is the first educational geographical game in which you need to guess countries and even more!</h2>
+      <h2 class="start__heading" :class="{ lineMovement: startPressing }">
+        Worldaria is the first educational geographical game in which you need to guess countries and even more!
+      </h2>
       <button class="btn btn--start" @click="startPressed">Start</button>
     </div>
     <slot v-else></slot>
@@ -9,18 +11,20 @@
 </template>
 <script>
 export default {
-  data () {
+  data() {
     return {
       startPressing: false
     }
   },
+
   props: {
     start: {
       type: Boolean
     }
   },
+
   methods: {
-    startPressed () {
+    startPressed() {
       this.startPressing = true
       setTimeout(() => {
         this.$emit('start')
@@ -29,6 +33,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
   .start {
     width: 100%;
