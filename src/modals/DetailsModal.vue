@@ -53,7 +53,7 @@
           </tr>
           <tr>
             <td>Population Density</td>
-            <td>{{ country.density }} per km<sup>2</sup></td>
+            <td>{{ (country.pop_est / country.area).toFixed(2) }} per km<sup>2</sup></td>
           </tr>
           <tr>
             <td>Life expectancy</td>
