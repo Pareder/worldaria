@@ -7,7 +7,7 @@
       :class="user === nickname ? 'mySide' : enemyGuess ? 'enemyGuess' : ''"
     >
       <span>{{ user }}</span>
-      <span v-if="user === nickname">{{ user === nickname ? score.my : score.enemy }}</span>
+      <span>{{ user === nickname ? score.my : score.enemy }}</span>
     </li>
   </ul>
 </template>
