@@ -1,3 +1,4 @@
+require('dotenv').config()
 const http = require('http')
 const socket = require('socket.io')
 const Filter = require('bad-words')

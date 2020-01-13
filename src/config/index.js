@@ -1,16 +1,36 @@
-import { initializeApp } from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/database'
 
-const Firebase = initializeApp({
-  apiKey: "AIzaSyDDdp4R4-LEcTuEvSq5OigTJAiFt20tpcI",
-  authDomain: "worldaria-ebeba.firebaseapp.com",
-  databaseURL: "https://worldaria-ebeba.firebaseio.com",
-  projectId: "worldaria-ebeba",
-  storageBucket: "worldaria-ebeba.appspot.com",
-  messagingSenderId: "170761938430"
-})
+function getDatabase() {
+  const envVariables = [
+    'VUE_APP_API_KEY',
+    'VUE_APP_AUTH_DOMAIN',
+    'VUE_APP_DATABASE_URL',
+    'VUE_APP_PROJECT_ID',
+    'VUE_APP_STORAGE_BUCKET',
+    'VUE_APP_MESSAGING_SENDER_ID'
+  ]
 
-export const database = Firebase.database()
-export const auth = Firebase.auth()
+  for (const variable of envVariables) {
+    if (!(variable in process.env)) {
+      throw new Error(`Variable ${variable} is not set in .env file`)
+    }
+  }
+
+  return firebase
+    .initializeApp({
+      apiKey: process.env.VUE_APP_API_KEY,
+      authDomain: process.env.VUE_APP_AUTH_DOMAIN,
+      databaseURL: process.env.VUE_APP_DATABASE_URL,
+      projectId: process.env.VUE_APP_PROJECT_ID,
+      storageBucket: process.env.VUE_APP_STORAGE_BUCKET,
+      messagingSenderId: process.env.VUE_APP_MESSAGING_SENDER_ID
+    })
+    .database()
+}
+
+export const database = getDatabase()
+
 export const populationOptions = [
   {
     id: 'all',
