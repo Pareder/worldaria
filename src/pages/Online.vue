@@ -265,7 +265,6 @@ export default {
 
     async startGame(data) {
       this.gameType = data.type
-      await this.getContinent(data.sort)
       this.chooseOpponent = false
       this.users = [...data.users]
       this.subjects = [...data.subjects]
@@ -279,6 +278,8 @@ export default {
         this.sideColors.enemy = 'blue'
         this.sideColors.my = 'tomato'
       }
+
+      await this.getContinent(data.sort)
     },
 
     checkAnswer(data) {
