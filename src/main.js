@@ -10,7 +10,7 @@ import plugins from './plugins'
 
 Vue.use(rtdbPlugin)
 Vue.use(VueResource)
-Vue.use(VueSocketIO, `${window.location.hostname}:5000`)
+Vue.use(VueSocketIO, window.location.hostname + (process.env.NODE_ENV === 'production' ? '' : ':5000'))
 Vue.use(Notifications)
 Vue.use(plugins)
 
