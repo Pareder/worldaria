@@ -1,6 +1,13 @@
 <template>
   <div>
-    <v-map ref="map" :minZoom="2" :options="mapOptions ? mapOptions : options.map" class="fullHeight">
+    <v-map
+      ref="map"
+      :minZoom="2"
+      :center="mapOptions ? mapOptions.center : options.map.center"
+      :zoom="mapOptions ? mapOptions.zoom : options.map.zoom"
+      :maxBounds="mapOptions ? mapOptions.maxBounds : options.map.maxBounds"
+      class="fullHeight"
+    >
       <HomeButton />
       <v-geojson v-if="world && world.length > 0" :geojson="world" :options="options.world"></v-geojson>
       <v-geojson :geojson="geojson" :options="options.geojson"></v-geojson>
@@ -10,7 +17,7 @@
 </template>
 
 <script>
-import Vue2Leaflet from 'vue2-leaflet'
+import {LMap, LGeoJson} from 'vue2-leaflet'
 import HomeButton from './HomeButton'
 
 export default {
@@ -99,8 +106,8 @@ export default {
   },
 
   components: {
-    'v-map': Vue2Leaflet.Map,
-    'v-geojson': Vue2Leaflet.GeoJSON,
+    'v-map': LMap,
+    'v-geojson': LGeoJson,
     HomeButton,
   }
 }

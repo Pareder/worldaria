@@ -87,9 +87,6 @@ export default {
           this.sortedGeojson = [...this.geojson]
           this.loaded = true
         })
-        .catch(error => {
-          console.log(error)
-        })
     },
 
     onEachFeature(feature, layer) {
