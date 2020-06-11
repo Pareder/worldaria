@@ -1,14 +1,19 @@
 <template>
   <div>
     <Loader v-show="!loaded" />
-    <div v-if="isMobile" class="selecter">
+    <div v-if="isMobile" class="select">
       <select @change="createGeo" v-model="history">
-        <option v-for="(date, id) in options.slider.data" :key="id" :value="date">{{ date }}</option>
+        <option v-for="(date, id) in sliderOptions.data" :key="id" :value="date">{{ date }}</option>
       </select>
       <PlayerImg :playPressed="playPressed" @onClick="playHistory" />
     </div>
     <div v-else class="slider">
-      <vue-slider ref="slider" v-bind="options.slider" v-model="history" @callback="createGeo"></vue-slider>
+      <vue-slider
+        ref="slider"
+        v-bind="sliderOptions"
+        v-model="history"
+        @change="createGeo"
+      />
       <PlayerImg :playPressed="playPressed" @onClick="playHistory" />
     </div>
     <div id="map" v-if="loaded">
@@ -18,7 +23,8 @@
 </template>
 
 <script>
-import vueSlider from 'vue-slider-component'
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/antd.css'
 import Loader from './Loader'
 import Map from './Map'
 import PlayerImg from './PlayerImg'
@@ -28,58 +34,39 @@ export default {
     return {
       world: [],
       geojson: [],
-      options: {
-        slider: {
-          width: "80%",
-          tooltip: "always",
-          lazy: true,
-          disabled: false,
-          piecewise: true,
-          piecewiseLabel: true,
-          style: {
-            "margin-left": "10%"
-          },
-          data: [
-            "2000 BC",
-            "1000 BC",
-            "500 BC",
-            "200 BC",
-            "1 BC",
-            "400",
-            "600",
-            "800",
-            "1000",
-            "1279",
-            "1492",
-            "1530",
-            "1650",
-            "1715",
-            "1783",
-            "1815",
-            "1880",
-            "1914",
-            "1920",
-            "1938",
-            "1945",
-            "1994"
-          ],
-          piecewiseStyle: {
-            "backgroundColor": "#fff",
-            "visibility": "visible",
-            "width": "12px",
-            "height": "12px"
-          },
-          piecewiseActiveStyle: {
-            "backgroundColor": "#3498db"
-          },
-          labelActiveStyle: {
-            "color": "#3498db"
-          },
-          bgStyle: {
-            "backgroundColor": "#fff",
-            "boxShadow": "inset 0 0 3px rgba(0,0,0,.36)"
-          }
-        }
+      sliderOptions: {
+        width: '80%',
+        tooltip: 'always',
+        lazy: true,
+        marks: true,
+        useKeyboard: true,
+        style: {
+          marginLeft: '10%'
+        },
+        data: [
+          '2000 BC',
+          '1000 BC',
+          '500 BC',
+          '200 BC',
+          '1 BC',
+          '400',
+          '600',
+          '800',
+          '1000',
+          '1279',
+          '1492',
+          '1530',
+          '1650',
+          '1715',
+          '1783',
+          '1815',
+          '1880',
+          '1914',
+          '1920',
+          '1938',
+          '1945',
+          '1994'
+        ]
       },
       loaded: false,
       history: '2000 BC',
@@ -101,7 +88,7 @@ export default {
 
     async createGeo() {
       const period = this.history.replace(' ', '').toLowerCase()
-      this.count = this.options.slider.data.indexOf(this.history)
+      this.count = this.sliderOptions.data.indexOf(this.history)
       this.geojson = await this.$api.getGeoJSON(`history/${period}`)
       this.loaded = true
     },
@@ -118,12 +105,12 @@ export default {
         this.interval = setInterval(() => {
           this.count++
 
-          if (this.count > this.options.slider.data.length - 1) {
+          if (this.count > this.sliderOptions.data.length - 1) {
             clearInterval(this.interval)
             return
           }
 
-          this.history = this.options.slider.data[this.count]
+          this.history = this.sliderOptions.data[this.count]
           this.createGeo()
         }, 2000)
       } else if (!this.playPressed) {
@@ -148,7 +135,7 @@ export default {
 
   components: {
     Loader,
-    vueSlider,
+    VueSlider,
     Map,
     PlayerImg
   }
@@ -159,7 +146,7 @@ export default {
   .leaflet-pane {
     z-index: 1;
   }
-  .selecter {
+  .select {
     position: absolute;
     z-index: 800;
     top: 15px;
