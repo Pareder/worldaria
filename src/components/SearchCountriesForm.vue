@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="parent">
     <div class="search">
       <input
         class="search__input search_icon"
@@ -8,7 +8,7 @@
         v-model="searchCountry"
         @input="onInput($event.target.value)"
       >
-      <div v-if="foundCountries.length > 0" class="foundCountries">
+      <div v-if="showAmount && foundCountries.length > 0" class="foundCountries">
         {{ foundCountries.length }}
       </div>
     </div>
@@ -39,6 +39,10 @@
     props: {
       foundCountries: {
         type: Array
+      },
+      showAmount: {
+        type: Boolean,
+        default: true
       }
     },
 
@@ -48,10 +52,7 @@
 
     methods: {
       onInput(value) {
-        if (value) {
-          this.$emit('input', value)
-          this.$emit('search', value)
-        }
+        this.$emit('search', value)
       },
 
       clearSearch() {
@@ -62,8 +63,10 @@
 </script>
 
 <style scoped>
-  .relative {
+  .parent {
     position: relative;
+    padding: 0 10px;
+    z-index: 1;
   }
   .found {
     position: absolute;

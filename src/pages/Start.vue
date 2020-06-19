@@ -5,43 +5,43 @@
     <StartMain :start="start" @start="startPressed">
       <div class="left">
         <StartButtons
-          name="Game"
-          description="In Game mode you have 5 attempts for each country. Each right answer will give you 1 point.After 5 wrong attempts you will lose 1 point. You can save your current game anytime just quiting it if you are guessing by name."
+          :name="buttons.GAME.name"
+          :description="buttons.GAME.description"
           @buttonClick="chooseGameMode"
         />
         <StartButtons
-          name="Online"
-          description="In Online mode you will play with real person one by one. Each player has 15 seconds to guess the country. After 5 wrong attempts you will not lose points."
+          :name="buttons.ONLINE.name"
+          :description="buttons.ONLINE.description"
           :signInError="signInError"
           @buttonClick="checkOnlineRoute"
         />
         <StartButtons
-          name="Bot"
-          description="In Bot mode you will play with bot, whose difficulty you can choose. You have 15 seconds to guess the country."
+          :name="buttons.BOT.name"
+          :description="buttons.BOT.description"
           @buttonClick="chooseDifficulty"
         />
       </div>
       <div class="right">
         <StartButtons
-          name="Learn"
-          description="In Learn mode you have unlimited attempts. After 5 wrong attempts the right country will be accentuated. You can use search bar to find the right country."
+          :name="buttons.LEARN.name"
+          :description="buttons.LEARN.description"
           @buttonClick="chooseLearnMode"
         />
         <StartButtons
-          name="Details"
-          description="In Details mode you can learn additional information about countries."
+          :name="buttons.DETAILS.name"
+          :description="buttons.DETAILS.description"
+          :link="buttons.DETAILS.link"
           isRoute
-          link="/learn/details"
         />
         <StartButtons
-          name="History"
-          description="In History mode you can learn historical countries."
+          :name="buttons.HISTORY.name"
+          :description="buttons.HISTORY.description"
+          :link="buttons.HISTORY.link"
           isRoute
-          link="/learn/history"
         />
       </div>
     </StartMain>
-    <ChooseMode v-if="difficulty || gameMode" @close="closeModal" :bot="difficulty ? true : false" />
+    <ChooseMode v-if="difficulty || gameMode" @close="closeModal" :bot="difficulty" />
     <LearnMode v-if="learnMode" @close="closeModal" />
   </div>
 </template>
@@ -53,6 +53,7 @@ import StartMain from '../components/Start/StartMain'
 import StartButtons from '../components/Start/StartButtons'
 import ChooseMode from '../modals/ChooseMode'
 import LearnMode from '../modals/LearnMode'
+import buttons from './config/buttons'
 
 export default {
   data() {
@@ -62,7 +63,8 @@ export default {
       gameMode: false,
       learnMode: false,
       difficulty: false,
-      signInError: false
+      signInError: false,
+      buttons
     }
   },
 

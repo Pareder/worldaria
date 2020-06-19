@@ -17,8 +17,9 @@
           @search="search"
           @onClick="onClick"
           :foundCountries="foundCountries"
+          :showAmount="false"
         />
-        <div v-if="!isMobile" class="count">Amount - {{ sortedGeojson.length }}</div>
+        <div v-if="!isMobile" class="count">Amount - {{ foundCountries.length || sortedGeojson.length }}</div>
       </div>
       <div class="opener" @click="openNotification = !openNotification">
         <img src="../assets/images/down.svg" width="16" height="16" :class="openNotification ? 'rotate' : ''">
@@ -155,6 +156,9 @@ export default {
 
     search(value) {
       this.foundCountries = []
+      if (!value) {
+        return
+      }
 
       for (let i = 0; i < this.layers.length; i++) {
         if (value && value.length > 0 &&
@@ -221,6 +225,7 @@ export default {
   .opened {
     height: auto;
     padding: 20px;
+    overflow: visible;
   }
   .opener {
     position: absolute;
