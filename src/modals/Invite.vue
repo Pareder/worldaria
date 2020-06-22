@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {populationOptions} from '../config';
+import { populationOptions } from '../config'
 
 export default {
   props: {
@@ -39,7 +39,7 @@ export default {
     modeName() {
       const option = populationOptions.find(option => option.value === this.mode)
 
-      return option && option.description || 'all'
+      return option?.description || 'all'
     }
   },
 

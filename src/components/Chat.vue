@@ -38,7 +38,7 @@
 </template>
 
 <script>
-  import DashSvg from './DashSvg';
+  import DashSvg from './DashSvg'
 
   export default {
     data() {

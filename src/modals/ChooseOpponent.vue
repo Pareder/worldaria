@@ -30,10 +30,9 @@
               >
             </div>
             <li
-              class="user"
-              v-for="(user, id) in (searchName ? foundUsers : users)"
-              v-if="user !== nickname"
               :key="id"
+              class="user"
+              v-for="(user, id) in usersList"
             >
               {{ user }}
               <ul class="game_options">
@@ -100,7 +99,7 @@
 </template>
 
 <script>
-import { populationOptions } from '../config';
+import { populationOptions } from '../config'
 
 export default {
   data() {
@@ -125,6 +124,12 @@ export default {
     },
     opponentDecline: {
       type: Boolean
+    }
+  },
+
+  computed: {
+    usersList() {
+      return (this.searchName ? this.foundUsers : this.users).filter(user => user !== this.nickname)
     }
   },
 

@@ -43,7 +43,6 @@ import Loader from '../components/Loader'
 import Map from '../components/Map'
 import OnlineModal from '../modals/OnlineModal'
 import ChooseOpponent from '../modals/ChooseOpponent'
-import SvgIcon from '../components/SvgIcon'
 import Notification from '../components/Notification'
 import Chat from '../components/Chat'
 
@@ -348,7 +347,6 @@ export default {
     Map,
     OnlineModal,
     ChooseOpponent,
-    SvgIcon,
     Notification,
     Chat
   }

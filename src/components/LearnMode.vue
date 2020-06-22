@@ -116,8 +116,7 @@ export default {
       this.foundCountries = []
 
       for (let i = 0; i < this.layers.length; i++) {
-        if (value && value.length > 0 &&
-          this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
+        if (value?.length > 0 && this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
           if (!this.guessed.includes(this.layers[i].feature.properties.name)) {
             this.layers[i].setStyle({ fillColor: this.randomColor() })
           }

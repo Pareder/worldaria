@@ -29,7 +29,7 @@ const checkMobile = () => {
     return (rect.width - RATIO < WIDTH)
   }
 
-  return true;
+  return true
 }
 
 Vue.prototype.getCookie = getCookie

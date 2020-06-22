@@ -42,7 +42,6 @@ import Loader from './Loader'
 import DetailsModal from '../modals/DetailsModal'
 import Map from './Map'
 import Select from './Select'
-import SearchForm from './SearchForm'
 import Checkbox from './Checkbox'
 import SearchCountriesForm from './SearchCountriesForm'
 
@@ -161,8 +160,7 @@ export default {
       }
 
       for (let i = 0; i < this.layers.length; i++) {
-        if (value && value.length > 0 &&
-          this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
+        if (value?.length > 0 && this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
           this.foundCountries.push(this.layers[i].feature.properties.name)
         }
       }
@@ -197,7 +195,6 @@ export default {
     DetailsModal,
     Map,
     Select,
-    SearchForm,
     Checkbox,
     SearchCountriesForm
   }

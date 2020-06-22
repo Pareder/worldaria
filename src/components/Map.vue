@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import {LMap, LGeoJson} from 'vue2-leaflet'
+import { LMap, LGeoJson } from 'vue2-leaflet'
 import HomeButton from './HomeButton'
 
 export default {

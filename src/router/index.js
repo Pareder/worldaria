@@ -312,8 +312,8 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title)
-  const nearestWithMeta = to.matched.slice().reverse().find(r => r.meta && r.meta.metaTags)
+  const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta?.title)
+  const nearestWithMeta = to.matched.slice().reverse().find(r => r.meta?.metaTags)
 
   if (nearestWithTitle) {
     document.title = nearestWithTitle.meta.title

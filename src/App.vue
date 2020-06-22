@@ -24,7 +24,7 @@ export default {
   },
 
   mounted() {
-    const name = this.getCookie('name');
+    const name = this.getCookie('name')
 
     if (name) {
       this.nickname = JSON.parse(name).name
@@ -77,7 +77,6 @@ export default {
   },
 
   components: {
-    Notification,
     Invite
   }
 }

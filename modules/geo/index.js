@@ -1,4 +1,4 @@
-const geoData = require('../../dist/json/full.json')
+const geoData = require('../../public/json/full.json')
 
 class Geo {
   constructor(geoData) {

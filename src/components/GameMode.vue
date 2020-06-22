@@ -151,7 +151,7 @@ export default {
           continue
         }
 
-        this.capitals.push({name: this.countries[randomNumber].capital, isAnswered: false})
+        this.capitals.push({ name: this.countries[randomNumber].capital, isAnswered: false })
       }
 
       this.capitals.sort(this.compareRandom)

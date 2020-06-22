@@ -32,8 +32,8 @@ export default {
 
   methods: {
     async getSvg() {
-      const svg = await fetch(this.imageSource).then(r => r.text());
-      this.$el.innerHTML = svg;
+      const svg = await fetch(this.imageSource).then(r => r.text())
+      this.$el.innerHTML = svg
     },
 
     keyCharAt(key, i) {
