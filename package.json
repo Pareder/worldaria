@@ -1,9 +1,13 @@
 {
   "name": "worldaria",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "engines": {
     "node": "12.13.1"
   },
+  "repository": "https://github.com/Pareder/worldaria.git",
+  "author": "Pareder",
+  "license": "MIT",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "serve": "vue-cli-service serve",
