@@ -3,7 +3,7 @@
     <div class="modal-backdrop"></div>
     <div class="modal">
       <div class="modal-content start">
-  class="{      <div class="status">
+        <div class="status">
           <span>
             <img src="../assets/images/saved.svg" width="32" height="32">
             You have saved game.
@@ -20,14 +20,14 @@
 </template>
 
 <script>
-export default {
-  methods: {
-    deleteStorage() {
-      localStorage.removeItem('guessed')
-      this.$emit('getSaved')
+  export default {
+    methods: {
+      deleteStorage() {
+        localStorage.removeItem('guessed')
+        this.$emit('getSaved')
+      }
     }
   }
-}
 </script>
 
 <style scoped>
@@ -43,6 +43,7 @@ export default {
     justify-content: center;
     align-items: center;
   }
+
   .modal-backdrop {
     position: fixed;
     top: 0;
@@ -52,6 +53,7 @@ export default {
     z-index: 1040;
     background-color: #A3CCFF;
   }
+
   .modal-content {
     width: 100%;
     max-width: 500px;
@@ -61,6 +63,7 @@ export default {
     font-size: 24px;
     box-shadow: 0px 0px 11px rgba(0, 0, 0, 0.3);
   }
+
   .modal-content::before {
     background: linear-gradient(to right, #9BFFE6 0%, #A3CCFF 100%);
     content: "";
@@ -68,9 +71,11 @@ export default {
     height: 5px;
     width: 100%;
   }
+
   .start {
     animation: tiltup 0.7s;
   }
+
   .status {
     padding: 20px;
     display: flex;
@@ -79,12 +84,14 @@ export default {
     align-items: center;
     border-bottom: 1px solid #e5e5e5;
   }
+
   .buttons {
     margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
   }
+
   .buttons > button {
     margin-bottom: 10px;
     text-overflow: ellipsis;
