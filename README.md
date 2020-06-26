@@ -13,6 +13,12 @@
 * **Details:** you can learn additional information (area, population, etc.) about countries just clicking on them.
 * **History:** you can learn historical countries of different periods.
 
+## Maps
+
+All used maps have [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) format. Some of them were found in open repositories like these (https://github.com/AshKyd/geojson-regions, https://github.com/mledoze/countries, etc.) and others were converted from Shapefile ([downloaded here](https://gadm.org/)) to GeoJSON using https://mapshaper.org/.
+
+All countries' statistics were found in open sources and updated manually.
+
 ## Used
 
 * [Vue.js](https://vuejs.org)
