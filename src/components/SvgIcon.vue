@@ -22,18 +22,17 @@ export default {
 
   watch: {
     async country() {
-      this.getSvg()
+      await this.getSvg()
     }
   },
 
   async mounted() {
-    this.getSvg()
+    await this.getSvg()
   },
 
   methods: {
     async getSvg() {
-      const svg = await fetch(this.imageSource).then(r => r.text())
-      this.$el.innerHTML = svg
+      this.$el.innerHTML = await fetch(this.imageSource).then(r => r.text())
     },
 
     keyCharAt(key, i) {

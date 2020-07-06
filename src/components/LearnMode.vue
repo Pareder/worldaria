@@ -77,9 +77,9 @@ export default {
 
   methods: {
     onEachFeature(feature, layer) {
-      layer.bindPopup(layer.feature.properties.name + (layer.feature.properties.capital ?
-        '<br>Capital - ' + layer.feature.properties.capital :
-        ''
+      layer.bindPopup(layer.feature.properties.name + (layer.feature.properties.capital
+        ? '<br>Capital - ' + layer.feature.properties.capital
+        : ''
       ))
       this.layers.push(layer)
       layer.on('click', () => {

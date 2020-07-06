@@ -120,7 +120,6 @@ export default {
     checkOnlineRoute() {
       if (!this.nickname) {
         this.signInError = true
-        return
       } else {
         this.$router.push('/online')
       }
