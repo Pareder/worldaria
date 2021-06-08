@@ -105,6 +105,7 @@ export default {
     sortBy(type) {
       this.showTimezone = false
       this.sortedGeojson.length = 0
+      this.layers.length = 0
 
       if (this.sort[type] === 'max') {
         for (const key in this.sort) {
@@ -278,5 +279,9 @@ export default {
         opacity: 1;
       }
     }
+  }
+  .count {
+    width: 140px;
+    text-align: left;
   }
 </style>

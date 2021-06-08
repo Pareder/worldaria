@@ -59,9 +59,6 @@ export default {
     geojson: {
       type: Array
     },
-    geoj: {
-      type: Array
-    },
     onEachFeature: {
       type: Function
     },
