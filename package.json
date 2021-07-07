@@ -19,6 +19,7 @@
     "pre-commit": "npm test"
   },
   "dependencies": {
+    "@mapbox/leaflet-pip": "^1.1.0",
     "bad-words": "^3.0.3",
     "compression": "^1.7.4",
     "connect-history-api-fallback": "^1.6.0",

@@ -119,23 +119,30 @@
             <router-link
               :to="mode === 'hard' ? '/hard' : '/game'"
               tag="button"
-              class="btn btn--small"
+              class="btn"
             >
               Name
             </router-link>
             <router-link
               :to="{ name: 'Flag', params: { mode, sort } }"
               tag="button"
-              class="btn btn--small"
+              class="btn"
             >
               Flag
             </router-link>
             <router-link
               :to="{ name: 'Capital', params: { mode, sort } }"
               tag="button"
-              class="btn btn--small"
+              class="btn"
             >
               Capital
+            </router-link>
+            <router-link
+              :to="{ name: 'Area', params: { mode, sort } }"
+              tag="button"
+              class="btn"
+            >
+              Area
             </router-link>
           </div>
         </div>

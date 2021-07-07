@@ -10,7 +10,7 @@
     >
       <HomeButton />
       <v-geojson v-if="world && world.length > 0" :geojson="world" :options="options.world"></v-geojson>
-      <v-geojson :geojson="geojson" :options="options.geojson"></v-geojson>
+      <v-geojson v-if="geojson && geojson.length > 0" :geojson="geojson" :options="options.geojson"></v-geojson>
       <v-geojson v-if="timezones && toggleTimezone" :geojson="timezones" :options="options.timezone"></v-geojson>
     </v-map>
   </div>

@@ -3,7 +3,7 @@
     <SavedGame v-if="saved" @getSaved="getSaved" />
     <div v-else>
       <Loader v-show="showLoader" /> 
-      <GameMode v-if="loaded" :mode="'game'" :geojson="geojson" @stopLoader="stopLoader" :world="world" />
+      <GameMode v-if="loaded" mode="game" :geojson="geojson" @stopLoader="stopLoader" :world="world" />
     </div>
   </div>
 </template>

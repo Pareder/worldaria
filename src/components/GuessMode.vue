@@ -18,37 +18,44 @@
           <p class="right-answers">
             <span class="bold">{{ game.rightAnswers }}</span> of {{ geojson.length }}
           </p>
-          <SvgIcon v-if="guessBy === 'flag' && game.count !== subjects.length" :country="subjects[game.count]" />
+          <SvgIcon
+            v-if="guessBy === 'flag' && game.count !== subjects.length"
+            :country="currentSubjectValue"
+          />
           <div class="subject" v-else-if="game.count !== subjects.length">
-            {{ subjects[game.count] }}
+            {{ currentSubjectValue }}
           </div>
-          <div class="digits">
-            Score: {{ game.score }}
-            <span class="attempts">
-              Attempts: 
-              <span
-                :class="attemptsAnimation ? 'attempts_animation' : ''"
-                @animationend="endAttemptsAnimation"
-                @webkitAnimationEnd="endAttemptsAnimation"
-                @msAnimationEnd="endAttemptsAnimation"
-                @mozAnimationEnd="endAttemptsAnimation"
-              >
-                {{ game.attempts }}
-              </span>
-            </span>
-          </div>
+          <v-map v-if="isAreaMode" :options="options" class="map" ref="map">
+            <v-geojson
+              :geojson="[geojson[subjects[game.count]]]"
+              :options="countryOptions"
+              @ready="zoomCountry"
+            ></v-geojson>
+          </v-map>
+          <GameInfo :score="game.score" :attempts="game.attempts"/>
         </div>
       </div>
-      <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
+      <Map
+        ref="worldMap"
+        :botMode="isAreaMode ? 'extreme' : null"
+        :geojson="geojson"
+        :onEachFeature="onEachFeature"
+        :world="world"
+      />
     </div>
   </div>
 </template>
 
 <script>
+  import L from 'leaflet'
+  import { LMap, LGeoJson } from 'vue2-leaflet'
+  import leafletPip from '@mapbox/leaflet-pip'
   import Loader from './Loader'
   import Map from './Map'
   import SvgIcon from './SvgIcon'
   import Modal from '../modals/Modal'
+  import GameInfo from './GameInfo'
+  import Drag from '../utils/Drag'
 
   export default {
     data() {
@@ -64,10 +71,27 @@
         },
         loaded: false,
         animation: false,
-        attemptsAnimation: false,
         seconds: 15,
         interval: null,
-        danger: false
+        danger: false,
+        options: {
+          renderer: L.svg(),
+          dragging: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          scrollWheelZoom: false,
+          keyboard: false,
+          touchZoom: false,
+          tap: false
+        },
+        countryOptions: {
+          fill: true,
+          fillColor: '#fff',
+          fillOpacity: 1,
+          stroke: true,
+          weight: 2,
+          color: '#000'
+        }
       }
     },
 
@@ -80,12 +104,31 @@
       }
     },
 
+    computed: {
+      guessedField() {
+        return this.guessBy === 'capital' ? 'capital' : 'name'
+      },
+
+      isAreaMode() {
+        return this.guessBy === 'area'
+      },
+
+      currentSubjectValue() {
+        const id = this.subjects[this.game.count]
+        return this.geojson[id].properties[this.guessedField]
+      }
+    },
+
     async created() {
       if (this.$route.params.sort) {
         await this.getWorld()
       } else {
         await this.getCountries()
       }
+    },
+
+    destroyed() {
+      clearInterval(this.interval)
     },
 
     methods: {
@@ -113,9 +156,7 @@
       },
 
       getSubjects() {
-        this.subjects = this.guessBy === 'capital' ?
-          this.geojson.map(item => item.properties.capital) :
-          this.geojson.map(item => item.properties.name)
+        this.subjects = this.geojson.map((_, id) => id)
         this.subjects.sort(this.compareRandom)
       },
 
@@ -135,36 +176,76 @@
         }, 1000)
       },
 
+      zoomCountry() {
+        new Drag(document.querySelector('.map'), this.onDrop)
+        this.setMiniMap()
+      },
+
+      setMiniMap() {
+        this.$nextTick(() => {
+          const group = new L.featureGroup()
+          this.$refs.map.mapObject.eachLayer(layer => {
+            if (layer.feature) {
+              group.addLayer(layer)
+            }
+          })
+
+          this.$refs.map.mapObject.fitBounds(group.getBounds())
+        })
+      },
+
       onEachFeature(feature, layer) {
         layer.bindPopup(layer.feature.properties.name)
         layer.on('click', () => {
+          if (this.isAreaMode) {
+            return this.answerWrong()
+          }
+
           this.show(layer)
         }, this)
       },
 
       show(layer) {
-        if (layer.feature.properties.name === this.subjects[this.game.count] ||
-          layer.feature.properties.capital === this.subjects[this.game.count]) {
+        if (layer.feature.properties[this.guessedField] === this.currentSubjectValue) {
           layer.setStyle({ fillColor: this.randomColor() })
           layer.off('click')
+          this.answerCorrect()
+          return
+        }
+
+        this.answerWrong()
+      },
+
+      onDrop(event) {
+        // TODO: Seems like this code smells
+        const map = this.$refs.worldMap.$refs.map.mapObject
+        const coordinates = map.containerPointToLatLng(L.point([event.clientX, event.clientY]))
+        const layers = leafletPip.pointInLayer(coordinates, map)
+        for (const layer of layers) {
+          if (layer.feature.properties.name === this.currentSubjectValue) {
+            layer.setStyle({ fillColor: this.randomColor() })
+            this.answerCorrect()
+            return
+          }
+        }
+
+        this.answerWrong()
+      },
+
+      answerCorrect() {
+        this.game.score++
+        this.game.rightAnswers++
+        this.animation = true
+        this.resetData()
+      },
+
+      answerWrong() {
+        this.game.attempts--
+        if (this.game.attempts === 0) {
+          this.subjects.push(this.subjects[this.game.count])
+          this.game.score--
           this.animation = true
           this.resetData()
-          this.game.score++
-          this.game.rightAnswers++
-
-          if (this.game.count !== this.geojson.length) {
-            // end of the game
-          }
-        } else {
-          this.attemptsAnimation = true
-          this.game.attempts--
-
-          if (this.game.attempts === 0) {
-            this.animation = true
-            this.resetData()
-            this.subjects.push(this.subjects[this.game.count])
-            this.game.score--
-          }
         }
       },
 
@@ -173,14 +254,14 @@
         this.game.attempts = 5
         this.seconds = 15
         this.danger = false
+
+        if (this.isAreaMode) {
+          this.setMiniMap()
+        }
       },
 
       endAnimation() {
         this.animation = false
-      },
-
-      endAttemptsAnimation() {
-        this.attemptsAnimation = false
       }
     },
 
@@ -188,7 +269,10 @@
       Loader,
       Map,
       SvgIcon,
-      Modal
+      Modal,
+      GameInfo,
+      'v-map': LMap,
+      'v-geojson': LGeoJson
     }
   }
 </script>
@@ -198,6 +282,7 @@
     position: absolute;
     right: 50px;
     top: 50px;
+    z-index: 1000;
     width: 300px;
     padding: 20px 20px 10px 20px;
     display: flex;
@@ -205,8 +290,8 @@
     align-items: center;
     color: #404040;
     background-color: #fff;
-    box-shadow: 0px 0px 11px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    border-radius: 5px;
+    box-shadow: 0 0 11px rgba(0, 0, 0, 0.3);
   }
   .time {
     position: absolute;
@@ -226,23 +311,17 @@
     margin: 10px 0;
     font-size: 22px;
   }
-  .digits {
-    width: 100%;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-  }
   .animation {
     animation-name: next;
     animation-duration: 0.5s;
     animation-timing-function: cubic-bezier(.17,.67,.36,1.39);
   }
-  .attempts_animation {
-    animation: attempts 1s ease;
-  }
   .danger {
     animation: danger 1s infinite;
+  }
+  .map {
+    height: 200px;
+    background-color: transparent;
   }
   @keyframes next {
     50% {
@@ -252,20 +331,6 @@
     100% {
       transform: translateX(0);
       opacity: 1;
-    }
-  }
-  @keyframes attempts {
-    25% {
-      color: tomato;
-    }
-    50% {
-      color: #404040;
-    }
-    75% {
-      color: tomato;
-    }
-    100% {
-      color: #404040;
     }
   }
   @keyframes danger {

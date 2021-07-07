@@ -305,6 +305,25 @@ const router = new Router({
       }
     },
     {
+      name: 'Area',
+      path: '/area',
+      component: GuessMode,
+      props: { guessBy: 'area' },
+      meta: {
+        title: 'Worldaria area mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.'
+          },
+          {
+            property: 'og:description',
+            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.'
+          }
+        ]
+      }
+    },
+    {
       path: '*',
       redirect: '/'
     }

@@ -59,7 +59,7 @@ export default {
         this.$emit('toggleSignError')
         this.$emit('setNickname', this.nickname)
 
-        const date = new Date(new Date().getTime() + 60 * 1000 * 1000)
+        const date = new Date(new Date().setFullYear(new Date().getFullYear() + 1)) // 1 year more
         USERS.child(md5(this.nickname + date.toUTCString())).set({
           name: this.nickname
         })
