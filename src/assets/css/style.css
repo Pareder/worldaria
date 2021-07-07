@@ -83,7 +83,8 @@
   text-align: center;
   font-size: 16px;
 }
-.leaflet-control-container .leaflet-top.leaflet-left {
+.leaflet-control-container .leaflet-top.leaflet-left,
+.leaflet-control-container .leaflet-bottom.leaflet-right{
   display: none;
 }
 .bold {

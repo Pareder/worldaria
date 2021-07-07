@@ -23,21 +23,7 @@
       <div class="country" v-if="game.count !== countries.length">
         {{ countries[game.count].name }}
       </div>
-      <div class="digits">
-        Score: {{ game.score }}
-        <span class="attempts">
-          Attempts: 
-          <span
-            :class="attemptsAnimation ? 'attempts_animation' : ''"
-            @animationend="endAttemptsAnimation"
-            @webkitAnimationEnd="endAttemptsAnimation"
-            @msAnimationEnd="endAttemptsAnimation"
-            @mozAnimationEnd="endAttemptsAnimation"
-          >
-            {{ game.attempts }}
-          </span>
-        </span>
-      </div>
+      <GameInfo :score="game.score" :attempts="game.attempts"/>
     </div>
     <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
   </div>
@@ -47,6 +33,7 @@
 import Modal from '../modals/Modal'
 import Map from './Map'
 import Capital from '../modals/Capital'
+import GameInfo from './GameInfo'
 
 export default {
   data() {
@@ -59,7 +46,6 @@ export default {
         rightAnswers: 0
       },
       animation: false,
-      attemptsAnimation: false,
       right: false,
       capitals: [],
       guessedCountries: []
@@ -125,7 +111,6 @@ export default {
         layer.setStyle({ fillColor: this.randomColor() })
         layer.off('click')        
       } else {
-        this.attemptsAnimation = true
         this.game.attempts--
 
         if (this.game.attempts === 0) {
@@ -184,10 +169,6 @@ export default {
 
     endAnimation() {
       this.animation = false
-    },
-
-    endAttemptsAnimation() {
-      this.attemptsAnimation = false
     }
   },
 
@@ -195,6 +176,7 @@ export default {
     Map,
     Modal,
     Capital,
+    GameInfo
   }
 }
 </script>
@@ -223,13 +205,6 @@ export default {
   .country {
     font-size: 22px;
   }
-  .digits {
-    width: 100%;
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-  }
   @media screen and (max-width: 400px) {
     .notification {
       right: 0;
@@ -242,9 +217,6 @@ export default {
     animation-duration: 0.5s;
     animation-timing-function: ease-in-out;
   }
-  .attempts_animation {
-    animation: attempts 1s ease;
-  }
   @keyframes next {
     50% {
       transform: translateX(400px);
@@ -253,20 +225,6 @@ export default {
     100% {
       transform: translateX(0);
       opacity: 1;
-    }
-  }
-  @keyframes attempts {
-    25% {
-      color: tomato;
-    }
-    50% {
-      color: #404040;
-    }
-    75% {
-      color: tomato;
-    }
-    100% {
-      color: #404040;
     }
   }
 </style>

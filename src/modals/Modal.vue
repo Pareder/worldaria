@@ -28,7 +28,7 @@
               <h1>Leaderboard</h1>
               <ol>
                 <li
-                  v-for="(user, id) in reverseLeaders(leaderboard)"
+                  v-for="(user, id) in reversedLeaders "
                   :key="id"
                   :class="user['.key'] === hash ? 'leader' : ''"
                 >
@@ -59,7 +59,8 @@ export default {
   data() {
     return {
       nickname: 'Anonymous',
-      hash: ''
+      hash: '',
+      leaderboard: []
     }
   },
 
@@ -98,6 +99,10 @@ export default {
         default:
           return 'regions'
       }
+    },
+
+    reversedLeaders() {
+      return this.leaderboard.slice().reverse()
     }
   },
 
@@ -125,12 +130,6 @@ export default {
           }
         })
       }
-    }
-  },
-
-  methods: {
-    reverseLeaders(array) {
-      return array.slice().reverse()
     }
   }
 }
