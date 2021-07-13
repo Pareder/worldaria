@@ -8,23 +8,11 @@
       @check="checkCapital"
     />
     <Modal v-if="game.count === countries.length" :mode="mode" :score="game.score" />
-    <div
-      v-else
-      class="notification"
-      :class="{ animation }"
-      @animationend="endAnimation"
-      @webkitAnimationEnd="endAnimation"
-      @msAnimationEnd="endAnimation"
-      @mozAnimationEnd="endAnimation"
-    >
-      <p>
-        <span class="bold">{{ game.rightAnswers }}</span> of {{ geojson.length }}
-      </p>
+    <Drawer v-else :game="game">
       <div class="country" v-if="game.count !== countries.length">
         {{ countries[game.count].name }}
       </div>
-      <GameInfo :score="game.score" :attempts="game.attempts"/>
-    </div>
+    </Drawer>
     <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
   </div>
 </template>
@@ -33,7 +21,7 @@
 import Modal from '../modals/Modal'
 import Map from './Map'
 import Capital from '../modals/Capital'
-import GameInfo from './GameInfo'
+import Drawer from './Drawer'
 
 export default {
   data() {
@@ -43,9 +31,9 @@ export default {
         count: 0,
         attempts: 5,
         score: 0,
-        rightAnswers: 0
+        rightAnswers: 0,
+        length: this.geojson.length
       },
-      animation: false,
       right: false,
       capitals: [],
       guessedCountries: []
@@ -114,7 +102,6 @@ export default {
         this.game.attempts--
 
         if (this.game.attempts === 0) {
-          this.animation = true
           this.countries.push(this.countries[this.game.count])
           this.game.count++
           this.game.attempts = 5
@@ -148,7 +135,6 @@ export default {
       }
 
       this.right = false
-      this.animation = true
       this.guessedCountries.push(this.countries[this.game.count].name)
       this.game.count++
 
@@ -165,10 +151,6 @@ export default {
           score: this.game.score
         }))
       }
-    },
-
-    endAnimation() {
-      this.animation = false
     }
   },
 
@@ -176,55 +158,13 @@ export default {
     Map,
     Modal,
     Capital,
-    GameInfo
+    Drawer
   }
 }
 </script>
+
 <style scoped>
-  .notification {
-    position: absolute;
-    right: 50px;
-    top: 50px;
-    width: 300px;
-    padding: 20px 20px 10px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #404040;
-    background-color: #fff;
-    box-shadow: 0px 0px 11px rgba(0, 0, 0, 0.3);
-    z-index: 900;
-  }
-  .notification p {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    margin: 0;
-    font-size: 14px;
-  }
   .country {
     font-size: 22px;
-  }
-  @media screen and (max-width: 400px) {
-    .notification {
-      right: 0;
-      top: 0;
-      width: 100%;
-    }
-  }
-  .animation {
-    animation-name: next;
-    animation-duration: 0.5s;
-    animation-timing-function: ease-in-out;
-  }
-  @keyframes next {
-    50% {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
   }
 </style>

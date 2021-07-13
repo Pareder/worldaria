@@ -117,7 +117,7 @@
           </div>
           <div v-else class="buttons">
             <router-link
-              :to="mode === 'hard' ? '/hard' : '/game'"
+              :to="{ name: mode === 'hard' ? 'Hard' : 'Game', params: { sort } }"
               tag="button"
               class="btn"
             >

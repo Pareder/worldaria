@@ -1,9 +1,9 @@
 <template>
   <div v-if="!getChildren">
     <Loader v-show="!loaded" />
-    <div class="learn_notification">
-      Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}
-    </div>
+    <Drawer>
+      <span class="text">Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}</span>
+    </Drawer>
     <div id="map" v-if="loaded">
       <Map :geojson="geojson" :onEachFeature="onEachFeature" />
     </div>
@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import router from '../router'
 import Loader from './Loader'
+import Drawer from './Drawer'
 import Map from './Map'
 
 export default {
@@ -55,14 +55,14 @@ export default {
 
     changeRoute(layer) {
       if (this.subject === 'continents') {
-        router.push({ 
+        this.$router.push({
           name: 'SubjectContinent',
           params: { 
             name: layer.feature.properties.continent.replace(/ /g, '').toLowerCase(), 
           }
         })
       } else if (this.subject === 'regions') {
-        router.push({
+        this.$router.push({
           name: 'SubjectCountry',
           params: { 
             name: layer.feature.properties.name.replace(/ /g, '').toLowerCase(),
@@ -70,8 +70,8 @@ export default {
             latlng: {
               center: layer.getCenter(),
               maxBounds: [
-              layer._bounds.getNorthEast(),
-              layer._bounds.getSouthWest()
+                layer._bounds.getNorthEast(),
+                layer._bounds.getSouthWest()
               ],
               zoom: 4
             }
@@ -83,32 +83,19 @@ export default {
 
   components: {
     Loader,
+    Drawer,
     Map
   }
 }
 </script>
 
 <style scoped>
-  .learn_notification {
-    position: absolute;
-    right: 50px;
-    top: 50px;
-    width: 300px;
-    padding: 10px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .text {
     font-size: 22px;
-    color: #404040;
-    background-color: #fff;
-    box-shadow: 0px 0px 11px rgba(0, 0, 0, 0.3);
-    z-index: 900;
   }
+
   @media screen and (max-width: 400px) {
-    .learn_notification {
-      right: 0;
-      top: 10px;
-      width: 100%;
+    .text {
       font-size: 20px;
     }
   }

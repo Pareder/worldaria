@@ -15,23 +15,31 @@
       :reason="reason"
       :nickname="nickname"
       :enemy="enemy"
-      :score="game.score"
+      :score="game.scores"
       :colors="sideColors"
     />
     <div class="modal-backdrop" v-if="loaded && enemyTurn"></div>
     <div v-if="loaded" id="map">
-      <Notification v-if="!enemyLeft && game.count !== subjects.length"
-        :enemyTurn="enemyTurn"
-        :danger="danger"
+      <Drawer
+        v-if="!enemyLeft && game.count !== geojson.length"
+        :hasTimeLimit="!enemyTurn"
+        :game="enemyTurn ? undefined : game"
         :seconds="seconds"
-        :attempts="game.attempts"
-        :subject="subjects[game.count]"
-        :gameType="gameType"
-        :users="users"
-        :nickname="nickname"
-        :score="game.score"
-        :enemyGuess="enemyGuess"
-      />
+      >
+        <template v-if="!enemyTurn" v-slot:header>
+          Attempts: {{ game.attempts }}
+        </template>
+        <div v-if="!enemyTurn" class="fullWidth">
+          <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
+          <div v-else class="text--big">
+            {{ subjects[game.count] }}
+          </div>
+          <UsersList :users="users" :nickname="nickname" :score="game.scores" />
+        </div>
+        <div v-else class="text--big enemyTurn dot_animation">
+          Opponent's Turn<span>.</span><span>.</span><span>.</span>
+        </div>
+      </Drawer>
       <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" :sideColors="sideColors" />
       <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
     </div>
@@ -43,7 +51,9 @@ import Loader from '../components/Loader'
 import Map from '../components/Map'
 import OnlineModal from '../modals/OnlineModal'
 import ChooseOpponent from '../modals/ChooseOpponent'
-import Notification from '../components/Notification'
+import Drawer from '../components/Drawer'
+import SvgIcon from '../components/SvgIcon'
+import UsersList from '../components/UsersList'
 import Chat from '../components/Chat'
 
 export default {
@@ -57,7 +67,7 @@ export default {
       game: {
         count: 0,
         attempts: 5,
-        score: {
+        scores: {
           my: 0,
           enemy: 0
         },
@@ -73,7 +83,6 @@ export default {
         enemy: ''
       },
       enemyTurn: true,
-      enemyGuess: false,
       enemyLeft: false,
       reason: '',
       chooseOpponent: true,
@@ -165,7 +174,7 @@ export default {
       if (layer.feature.properties[propertyName] === this.subjects[this.game.count]) {
         layer.setStyle({ fillColor: this.sideColors.my })
         layer.off('click')
-        this.game.score.my++
+        this.game.scores.my++
         this.enemyTurn = true
         this.$socket.emit('countryClick', true)
         this.$emit('setStartZoom')
@@ -289,12 +298,7 @@ export default {
           .find(layer => layer.feature.properties[propertyName] === this.subjects[this.game.count])
           .setStyle({ fillColor: this.sideColors.enemy })
           .off('click')
-        this.game.score.enemy++
-        this.enemyGuess = true
-
-        setTimeout(() => {
-          this.enemyGuess = false
-        }, 1000)
+        this.game.scores.enemy++
       }
 
       this.resetData()
@@ -317,7 +321,7 @@ export default {
       this.game = {
         count: 0,
         attempts: 5,
-        score: {
+        scores: {
           my: 0,
           enemy: 0
         }
@@ -347,7 +351,9 @@ export default {
     Map,
     OnlineModal,
     ChooseOpponent,
-    Notification,
+    Drawer,
+    SvgIcon,
+    UsersList,
     Chat
   }
 }
@@ -362,5 +368,14 @@ export default {
     left: 0;
     z-index: 1000;
     background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .fullWidth {
+    width: 100%;
+  }
+
+  .text--big {
+    user-select: none;
+    font-size: 22px;
   }
 </style>

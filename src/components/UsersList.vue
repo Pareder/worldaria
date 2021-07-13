@@ -4,7 +4,7 @@
       v-for="(user, id) in users"
       :key="id"
       class="user__score"
-      :class="user === nickname ? 'mySide' : enemyGuess ? 'enemyGuess' : ''"
+      :class="{ mySide: user === nickname }"
     >
       <span>{{ user }}</span>
       <span>{{ user === nickname ? score.my : score.enemy }}</span>
@@ -23,9 +23,6 @@
       },
       score: {
         type: Object
-      },
-      enemyGuess: {
-        type: Boolean
       }
     }
   }
@@ -54,16 +51,5 @@
   }
   .user__score:nth-child(2).mySide {
     box-shadow: 0 0 10px tomato;
-  }
-  .enemyGuess {
-    animation: enemyGuess 1s;
-  }
-  @keyframes enemyGuess {
-    50% {
-      box-shadow: 0 0 10px 2px #91dc5a;
-    }
-    100% {
-      box-shadow: 0 0 1px #91dc5a;
-    }
   }
 </style>

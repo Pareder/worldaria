@@ -3,38 +3,22 @@
     <Loader v-show="!loaded" />
     <Modal v-if="loaded && game.count === subjects.length" />
     <div v-if="loaded" id="map">
-      <div>
-        <div
-          class="notification"
-          :class="{ animation, danger }"
-          @animationend="endAnimation"
-          @webkitAnimationEnd="endAnimation"
-          @msAnimationEnd="endAnimation"
-          @mozAnimationEnd="endAnimation"
-        >
-          <p class="time" v-if="($route.params && $route.params.mode === 'hard') || $route.path === '/hard'">
-            Time: {{ seconds }}
-          </p>
-          <p class="right-answers">
-            <span class="bold">{{ game.rightAnswers }}</span> of {{ geojson.length }}
-          </p>
-          <SvgIcon
-            v-if="guessBy === 'flag' && game.count !== subjects.length"
-            :country="currentSubjectValue"
-          />
-          <div class="subject" v-else-if="game.count !== subjects.length">
-            {{ currentSubjectValue }}
-          </div>
-          <v-map v-if="isAreaMode" :options="options" class="map" ref="map">
-            <v-geojson
-              :geojson="[geojson[subjects[game.count]]]"
-              :options="countryOptions"
-              @ready="zoomCountry"
-            ></v-geojson>
-          </v-map>
-          <GameInfo :score="game.score" :attempts="game.attempts"/>
+      <Drawer :game="game" :hasTimeLimit="hasTimeLimit" :seconds="seconds">
+        <SvgIcon
+          v-if="guessBy === 'flag' && game.count !== subjects.length"
+          :country="currentSubjectValue"
+        />
+        <div v-else-if="game.count !== subjects.length" class="subject">
+          {{ currentSubjectValue }}
         </div>
-      </div>
+        <v-map v-if="isAreaMode" :options="options" class="map" ref="map">
+          <v-geojson
+            :geojson="[geojson[subjects[game.count]]]"
+            :options="countryOptions"
+            @ready="zoomCountry"
+          ></v-geojson>
+        </v-map>
+      </Drawer>
       <Map
         ref="worldMap"
         :botMode="isAreaMode ? 'extreme' : null"
@@ -54,7 +38,7 @@
   import Map from './Map'
   import SvgIcon from './SvgIcon'
   import Modal from '../modals/Modal'
-  import GameInfo from './GameInfo'
+  import Drawer from './Drawer'
   import Drag from '../utils/Drag'
 
   export default {
@@ -64,16 +48,15 @@
         geojson: null,
         subjects: null,
         game: {
+          length: 0,
           count: 0,
           attempts: 5,
           score: 0,
           rightAnswers: 0
         },
         loaded: false,
-        animation: false,
         seconds: 15,
         interval: null,
-        danger: false,
         options: {
           renderer: L.svg(),
           dragging: false,
@@ -105,6 +88,10 @@
     },
 
     computed: {
+      hasTimeLimit() {
+        return this.$route.params?.mode === 'hard' || this.$route.path === '/hard'
+      },
+
       guessedField() {
         return this.guessBy === 'capital' ? 'capital' : 'name'
       },
@@ -147,10 +134,11 @@
           this.geojson = this.geojson.filter(item => item.properties.pop_est > this.$route.params.sort)
         }
 
+        this.game.length = this.geojson.length
         this.getSubjects()
         this.loaded = true
 
-        if (this.$route.params.mode === 'hard' || this.$route.path === '/hard') {
+        if (this.hasTimeLimit) {
           this.makeInterval()
         }
       },
@@ -164,13 +152,8 @@
         this.interval = setInterval(() => {
           this.seconds--
 
-          if (this.seconds === 3) {
-            this.danger = true
-          }
-
           if (this.seconds === 0) {
             this.game.score--
-            this.animation = true
             this.resetData()
           }
         }, 1000)
@@ -235,7 +218,7 @@
       answerCorrect() {
         this.game.score++
         this.game.rightAnswers++
-        this.animation = true
+
         this.resetData()
       },
 
@@ -244,7 +227,6 @@
         if (this.game.attempts === 0) {
           this.subjects.push(this.subjects[this.game.count])
           this.game.score--
-          this.animation = true
           this.resetData()
         }
       },
@@ -253,15 +235,10 @@
         this.game.count++
         this.game.attempts = 5
         this.seconds = 15
-        this.danger = false
 
         if (this.isAreaMode) {
           this.setMiniMap()
         }
-      },
-
-      endAnimation() {
-        this.animation = false
       }
     },
 
@@ -270,7 +247,7 @@
       Map,
       SvgIcon,
       Modal,
-      GameInfo,
+      Drawer,
       'v-map': LMap,
       'v-geojson': LGeoJson
     }
@@ -278,64 +255,13 @@
 </script>
 
 <style scoped>
-  .notification {
-    position: absolute;
-    right: 50px;
-    top: 50px;
-    z-index: 1000;
-    width: 300px;
-    padding: 20px 20px 10px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #404040;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 11px rgba(0, 0, 0, 0.3);
-  }
-  .time {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    margin: 0;
-    font-size: 14px;
-  }
-  .right-answers {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    margin: 0;
-    font-size: 14px;
-  }
   .subject {
     margin: 10px 0;
     font-size: 22px;
   }
-  .animation {
-    animation-name: next;
-    animation-duration: 0.5s;
-    animation-timing-function: cubic-bezier(.17,.67,.36,1.39);
-  }
-  .danger {
-    animation: danger 1s infinite;
-  }
+
   .map {
     height: 200px;
     background-color: transparent;
-  }
-  @keyframes next {
-    50% {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  @keyframes danger {
-    50% {
-      box-shadow: 0 0 20px 5px inset tomato;
-    }
   }
 </style>

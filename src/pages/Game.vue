@@ -32,9 +32,9 @@ export default {
 
     if (this.$route.params.sort) {
       await this.getWorld()
-    } else {
-      await this.getContinent()
     }
+
+    await this.getContinent()
   },
 
   methods: {
