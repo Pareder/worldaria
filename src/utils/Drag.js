@@ -23,7 +23,11 @@ class Drag {
       event.target.style.opacity = 0
     })
 
-    this.node.addEventListener('drag', event => {
+    document.addEventListener('dragenter', event => event.preventDefault())
+
+    document.addEventListener('dragover', event => {
+      event.preventDefault()
+
       let { x, y } = event
       // Odd glitch
       if (x === 0 && y === 0) {
@@ -40,8 +44,8 @@ class Drag {
       this.lastDragY = y
     })
 
-    this.node.addEventListener('dragend', event => {
-      event.target.style.opacity = 1
+    document.addEventListener('drop', event => {
+      this.node.style.opacity = 1
       this.clone.parentNode.removeChild(this.clone)
       this.clone = null
       this.onDrop(event)
