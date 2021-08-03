@@ -23,7 +23,6 @@ All countries' statistics were found in open sources and updated manually.
 ## Used
 
 * [Vue.js](https://vuejs.org)
-* [Vuex](https://vuex.vuejs.org)
 * [Leaflet](https://leafletjs.com)
 * [Express](https://expressjs.com/)
 * [Firebase](https://firebase.google.com)
