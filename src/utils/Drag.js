@@ -25,7 +25,6 @@ class Drag {
 
   onDragStart(e) {
     const event = this.getEvent(e)
-    console.log(event)
     this.dragClickOffsetX = event.layerX || event.clientX
     this.dragClickOffsetY = event.layerY || event.clientY
     this.makeClone()
@@ -54,8 +53,6 @@ class Drag {
       return
     }
 
-    console.log(clientX, this.dragClickOffsetX)
-    console.log(clientY, this.dragClickOffsetY)
     this.translate(clientX - this.dragClickOffsetX, clientY - this.dragClickOffsetY)
     this.lastDragX = clientX
     this.lastDragY = clientY
@@ -64,8 +61,8 @@ class Drag {
   onDragEnd(e) {
     const event = this.getEvent(e)
     this.node.style.opacity = 1
-    // this.clone.parentNode.removeChild(this.clone)
-    // this.clone = null
+    this.clone.parentNode.removeChild(this.clone)
+    this.clone = null
     this.onDrop(event)
 
     document.removeEventListener('dragover', this.onDragOver)

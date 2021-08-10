@@ -94,6 +94,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overscroll-behavior: none;
 }
 #app {
   min-height: 100vh;
