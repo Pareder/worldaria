@@ -28,7 +28,7 @@
               <h1>Leaderboard</h1>
               <ol>
                 <li
-                  v-for="(user, id) in reversedLeaders "
+                  v-for="(user, id) in leaders "
                   :key="id"
                   :class="user['.key'] === hash ? 'leader' : ''"
                 >
@@ -51,16 +51,15 @@
 </template>
 
 <script>
+import { ref, query, orderByChild, limitToLast, onValue, update } from 'firebase/database'
 import { database } from '../config'
-
-const USERS = database.ref('users')
 
 export default {
   data() {
     return {
       nickname: 'Anonymous',
       hash: '',
-      leaderboard: []
+      leaderboard: {}
     }
   },
 
@@ -101,13 +100,12 @@ export default {
       }
     },
 
-    reversedLeaders() {
-      return this.leaderboard.slice().reverse()
+    leaders() {
+      return Object.entries(this.leaderboard).sort(([,a], [,b]) => b.score - a.score).map(([key, data]) => ({
+        ...data,
+        '.key': key,
+      }))
     }
-  },
-
-  firebase: {
-    leaderboard: USERS.orderByChild('score').limitToLast(5)
   },
 
   created() {
@@ -118,16 +116,25 @@ export default {
     }
 
     if (this.mode === 'game' && !this.$route.params.sort) {
+      onValue(query(ref(database, 'users'), orderByChild('score'), limitToLast(5)), snapshot => {
+        console.log(snapshot.val())
+        this.leaderboard = snapshot.val()
+      })
+
       if (this.hash) {
-        const dbScore = USERS.child(this.hash + '/score')
-        dbScore.on('value', (snapshot) => {
-          if (snapshot.val() < this.score) {
-            const date = new Date().toUTCString()
-            USERS.child(this.hash).update({
-              score: this.score,
-              scoreDate: date
+        onValue(ref(database, `users/${this.hash}`), snapshot => {
+          const user = snapshot.val()
+          if (!user.score || user.score < this.score) {
+            update(ref(database), {
+              [`users/${this.hash}`]: {
+                ...user,
+                score: this.score,
+                scoreDate: new Date().toUTCString()
+              }
             })
           }
+        }, {
+          onlyOnce: true
         })
       }
     }

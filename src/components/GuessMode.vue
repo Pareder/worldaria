@@ -33,13 +33,13 @@
 <script>
   import L from 'leaflet'
   import { LMap, LGeoJson } from 'vue2-leaflet'
-  import leafletPip from '@mapbox/leaflet-pip'
   import Loader from './Loader'
   import Map from './Map'
   import SvgIcon from './SvgIcon'
   import Modal from '../modals/Modal'
   import Drawer from './Drawer'
   import Drag from '../utils/Drag'
+  import pointInLayer from '../utils/pointInLayer'
 
   export default {
     data() {
@@ -203,7 +203,7 @@
         // TODO: Seems like this code smells
         const map = this.$refs.worldMap.$refs.map.mapObject
         const coordinates = map.containerPointToLatLng(L.point([event.clientX, event.clientY]))
-        const layers = leafletPip.pointInLayer(coordinates, map)
+        const layers = pointInLayer(coordinates, map)
         for (const layer of layers) {
           if (layer.feature.properties.name === this.currentSubjectValue) {
             layer.setStyle({ fillColor: this.randomColor() })

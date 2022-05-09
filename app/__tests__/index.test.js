@@ -1,3 +1,4 @@
+import path from 'path'
 import App from '../../app'
 import expressMock from '../__mocks__/ExpressMock'
 
@@ -49,7 +50,10 @@ describe('App', () => {
       const app = getModel({express})
       app.init(pathname)
 
-      expect(express.static).toBeCalledWith(expect.stringContaining(`worldaria/app/path`), expect.any(Object))
+      expect(express.static).toBeCalledWith(
+        expect.stringContaining(path.join('worldaria/app/path')),
+        expect.any(Object)
+      )
     })
   })
 })

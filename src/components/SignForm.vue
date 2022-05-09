@@ -26,9 +26,8 @@
 
 <script>
 import md5 from 'md5'
+import { ref, set } from 'firebase/database'
 import { database } from '../config'
-
-const USERS = database.ref('users')
 
 export default {
   data() {
@@ -60,7 +59,7 @@ export default {
         this.$emit('setNickname', this.nickname)
 
         const date = new Date(new Date().setFullYear(new Date().getFullYear() + 1)) // 1 year more
-        USERS.child(md5(this.nickname + date.toUTCString())).set({
+        set(ref(database, 'users/' + md5(this.nickname + date.toUTCString())), {
           name: this.nickname
         })
         this.authUser = true
