@@ -1,0 +1,30 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Test and build
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test_and_build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+    
+      # extract `engines.node` from package.json and save it to output
+      - name: Get Node.JS version from package.json
+        id: get-versions
+        run: echo ::set-output name=node::$(jq -r .engines.node ./package.json)
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{steps.get-versions.outputs.node}}
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build --if-present
+      
