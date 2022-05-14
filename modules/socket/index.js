@@ -83,9 +83,7 @@ class Socket {
 
         if (this._rooms[socket.room].length === 2) {
           const sortedSubjects = this._sortSubjects(socket.sortNumber, socket.gameType)
-          this._io.sockets.adapter.rooms[socket.room].sortNumber = socket.sortNumber
-          this._io.sockets.adapter.rooms[socket.room].gameType = socket.gameType
-          this._io.sockets.adapter.rooms[socket.room].sortedSubjects = sortedSubjects
+          this._io.sockets.adapter.rooms.get(socket.room).sortedSubjects = sortedSubjects
           this._io.sockets.in(socket.room).emit('startGame', {
             sort: socket.sortNumber,
             type: socket.gameType,
@@ -116,7 +114,7 @@ class Socket {
 
       // Socket query for making the revenge
       socket.on('revenge', () => {
-        if (this._io.sockets.adapter.rooms[socket.room].length === 1) {
+        if (this._io.sockets.adapter.rooms.get(socket.room).size === 1) {
           this._io.sockets.in(socket.room).emit('opponentLeft')
           return
         }
@@ -129,7 +127,7 @@ class Socket {
         if (data) {
           this._io.sockets.in(socket.room).emit(
             'revengeGame',
-            [...this._io.sockets.adapter.rooms[socket.room].sortedSubjects.sort(compareRandom)]
+            [...this._io.sockets.adapter.rooms.get(socket.room).sortedSubjects.sort(compareRandom)]
           )
         } else {
           socket.broadcast.to(socket.room).emit('revengeDecline')
