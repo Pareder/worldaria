@@ -3,7 +3,7 @@ import VueResource from 'vue-resource'
 import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
 import Notifications from 'vue-notification'
-import VueAnalytics from 'vue-analytics'
+import VueGtag from 'vue-gtag'
 import App from './App.vue'
 import router from './router'
 import { getCookie, compareRandom, randomColor } from '../utils'
@@ -14,10 +14,9 @@ Vue.use(new VueSocketIO({
   connection: SocketIO(process.env.NODE_ENV === 'production' ? window.location.host : `${window.location.hostname}:5000`)
 }))
 Vue.use(Notifications)
-Vue.use(VueAnalytics, {
-  id: process.env.VUE_APP_GA_ID,
-  router
-})
+Vue.use(VueGtag, {
+  config: { id: process.env.VUE_APP_GA_ID }
+}, router)
 Vue.use(plugins)
 
 Vue.router = router
