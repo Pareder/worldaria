@@ -27,6 +27,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "express": "^4.17.1",
     "firebase": "^9.8.0",
+    "firebaseui": "^0.600.0",
     "leaflet": "^1.6.0",
     "md5": "^2.2.1",
     "node-cron": "^2.0.3",

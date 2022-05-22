@@ -41,7 +41,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   label {
     padding: 10px;
   }

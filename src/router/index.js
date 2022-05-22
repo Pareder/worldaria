@@ -10,6 +10,7 @@ import ChooseSubject from '../components/ChooseSubject'
 import CountryDetails from '../components/CountryDetails'
 import CountryHistory from '../components/CountryHistory'
 import GuessMode from '../components/GuessMode'
+import Login from '../pages/Login'
 
 Vue.use(Router)
 
@@ -18,6 +19,11 @@ const router = new Router({
   base: '/',
   linkActiveClass: 'active',
   routes: [
+    {
+      name: 'Login',
+      path: '/login',
+      component: Login,
+    },
     {
       name: 'Start',
       path: '/',

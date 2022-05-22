@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import Invite from './modals/Invite'
 
 export default {
@@ -14,7 +15,9 @@ export default {
 
   data() {
     return {
-      nickname: '',
+      appData: {
+        user: null
+      },
       isInvited: false,
       opponent: '',
       mode: null,
@@ -23,19 +26,24 @@ export default {
     }
   },
 
-  mounted() {
-    const name = this.getCookie('name')
-
-    if (name) {
-      this.nickname = JSON.parse(name).name
-      this.$socket.emit('sendName', this.nickname)
+  provide() {
+    return {
+      appData: this.appData
     }
+  },
+
+  mounted() {
+    const auth = getAuth()
+    onAuthStateChanged(auth, user => {
+      this.appData.user = user
+      this.$socket.emit('sendName', user.displayName)
+    })
   },
 
   methods: {
     makeDecision(status) {
       this.$socket.emit('makeDecision', {
-        myName: this.nickname,
+        myName: this.appData.user.displayName,
         opponentName: this.opponent,
         status
       })
@@ -60,15 +68,11 @@ export default {
   },
 
   sockets: {
-    getInvite({ myName, sort, type, opponentName }) {
+    getInvite({ myName, sort, type }) {
       this.isInvited = true
       this.opponent = myName
       this.sort = +sort
       this.type = type
-
-      if (this.nickname !== opponentName) {
-        this.nickname = opponentName
-      }
     },
 
     declineInvite() {

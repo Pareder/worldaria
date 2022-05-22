@@ -1,7 +1,7 @@
 <template>
   <div class="start-page">
     <StartBackground />
-    <StartHeader @toggleSignError="toggleSignError" @setNickname="setNickname" />
+    <StartHeader />
     <StartMain :start="start" @start="startPressed">
       <div class="left">
         <StartButtons
@@ -59,7 +59,6 @@ export default {
   data() {
     return {
       start: false,
-      nickname: '',
       gameMode: false,
       learnMode: false,
       difficulty: false,
@@ -68,13 +67,7 @@ export default {
     }
   },
 
-  created() {
-    const cookie = this.getCookie('name')
-
-    if (cookie) {
-      this.nickname = JSON.parse(cookie).name
-    }
-  },
+  inject: ['appData'],
 
   beforeRouteEnter(to, from, next) {
     if (from.name) {
@@ -89,10 +82,6 @@ export default {
   methods: {
     startPressed() {
       this.start = true
-    },
-
-    setNickname(name) {
-      this.nickname = name
     },
 
     chooseGameMode() {
@@ -113,12 +102,8 @@ export default {
       this.learnMode = false
     },
 
-    toggleSignError() {
-      this.signInError = false
-    },
-
     checkOnlineRoute() {
-      if (!this.nickname) {
+      if (!this.appData.user) {
         this.signInError = true
       } else {
         this.$router.push('/online')
