@@ -8,12 +8,15 @@ on:
 
 jobs:
   test_and_build:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'DO NOT MERGE') }}
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+      
+      # check for "DO NOT MERGE" label and exit if it exists
+      - name: Label check
+        if: contains(github.event.pull_request.labels.*.name, 'DO NOT MERGE')
+        run: exit 1
     
       # extract `engines.node` from package.json and save it to output
       - name: Get Node.JS version from package.json
