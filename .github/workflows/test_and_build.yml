@@ -8,6 +8,7 @@ on:
 
 jobs:
   test_and_build:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'DO NOT MERGE') }}
 
     runs-on: ubuntu-latest
 
