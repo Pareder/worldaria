@@ -36,7 +36,9 @@ export default {
     const auth = getAuth()
     onAuthStateChanged(auth, user => {
       this.appData.user = user
-      this.$socket.emit('sendName', user.displayName)
+      if (user) {
+        this.$socket.emit('sendName', user.displayName)
+      }
     })
   },
 
