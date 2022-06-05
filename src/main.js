@@ -6,7 +6,7 @@ import Notifications from 'vue-notification'
 import VueGtag from 'vue-gtag'
 import App from './App.vue'
 import router from './router'
-import { getCookie, compareRandom, randomColor } from '../utils'
+import { compareRandom, randomColor } from '../utils'
 import plugins from './plugins'
 
 Vue.use(VueResource)
@@ -35,7 +35,6 @@ const checkMobile = () => {
   return true
 }
 
-Vue.prototype.getCookie = getCookie
 Vue.prototype.compareRandom = compareRandom
 Vue.prototype.randomColor = randomColor
 Vue.prototype.isMobile = checkMobile()

@@ -1,4 +1,4 @@
-import { compareRandom, getCookie, randomColor } from '../../utils'
+import { compareRandom, randomColor } from '../../utils'
 
 describe('utils', () => {
   describe('compareRandom method', () => {
@@ -7,23 +7,6 @@ describe('utils', () => {
 
       expect(number).toBeGreaterThanOrEqual(-0.5)
       expect(number).toBeLessThanOrEqual(0.5)
-    })
-  })
-
-  describe('getCookie method', () => {
-    it('Should return undefined if no cookie stored', () => {
-      expect(getCookie('name')).toBeUndefined()
-    })
-
-    it('Should return correct result', () => {
-      const cookie = 'cookie'
-      Object.defineProperty(global.document, 'cookie', {
-        value: {
-          match: jest.fn(() => [, cookie])
-        }
-      })
-
-      expect(getCookie('name')).toEqual(cookie)
     })
   })
 
