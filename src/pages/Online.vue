@@ -76,7 +76,6 @@ export default {
       seconds: 15,
       interval: null,
       danger: false,
-      nickname: '',
       users: [],
       sideColors: {
         my: '',
@@ -94,7 +93,13 @@ export default {
     }
   },
 
+  inject: ['appData'],
+
   computed: {
+    nickname() {
+      return this.appData.user.displayName
+    },
+
     enemy() {
       return this.users.filter((item) => item !== this.nickname).toString()
     },
@@ -108,21 +113,9 @@ export default {
     }
   },
 
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      if (!vm.getCookie('name')) {
-        vm.$router.push('/')
-      }
-    })
-  },
-
   created() {
+    this.$socket.emit('enterOnlineMode')
     this.gameType = this.$route.params.type
-
-    if (this.getCookie('name')) {
-      this.nickname = JSON.parse(this.getCookie('name')).name
-      this.$socket.emit('enterOnlineMode')
-    }
 
     if (typeof this.invited === 'boolean') {
       this.chooseOpponent = this.invited

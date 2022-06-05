@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import Start from '../pages/Start'
 import Game from '../pages/Game'
 import Learn from '../pages/Learn'
@@ -10,6 +11,7 @@ import ChooseSubject from '../components/ChooseSubject'
 import CountryDetails from '../components/CountryDetails'
 import CountryHistory from '../components/CountryHistory'
 import GuessMode from '../components/GuessMode'
+import Login from '../pages/Login'
 
 Vue.use(Router)
 
@@ -18,6 +20,11 @@ const router = new Router({
   base: '/',
   linkActiveClass: 'active',
   routes: [
+    {
+      name: 'Login',
+      path: '/login',
+      component: Login,
+    },
     {
       name: 'Start',
       path: '/',
@@ -216,6 +223,7 @@ const router = new Router({
       path: '/online',
       component: Online,
       meta: {
+        auth: true,
         title: 'Worldaria online mode',
         metaTags: [
         {
@@ -331,6 +339,16 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+  if (to.matched.some(r => r.meta?.auth)) {
+    onAuthStateChanged(getAuth(), user => {
+      if (!user) {
+        next({
+          path: '/'
+        })
+      }
+    })
+  }
+
   const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta?.title)
   const nearestWithMeta = to.matched.slice().reverse().find(r => r.meta?.metaTags)
 
