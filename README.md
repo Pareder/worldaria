@@ -1,6 +1,5 @@
-# [Worldaria](http://worldaria.herokuapp.com)
+# [Worldaria](https://worldaria.onrender.com/)
 [![dependencies Status](https://img.shields.io/librariesio/github/Pareder/worldaria)](https://img.shields.io)
-[![Heroku](http://heroku-badge.herokuapp.com/?app=worldaria&style=flat&svg=1)](http://worldaria.herokuapp.com)
 <p align="center">
   <img src="public/img/logo/512x512.png" alt="Worldaria">
 </p>
