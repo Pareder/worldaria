@@ -1,7 +1,7 @@
 # [Worldaria](https://worldaria.onrender.com/)
 [![dependencies Status](https://img.shields.io/librariesio/github/Pareder/worldaria)](https://img.shields.io)
 <p align="center">
-  <img src="public/img/logo/512x512.png" alt="Worldaria">
+  <img src="client/public/img/logo/512x512.png" alt="Worldaria">
 </p>
 
 **Worldaria** is the geographical game to learn countries and regions of our planet. There are 6 modes to try:
@@ -28,34 +28,31 @@ All countries' statistics were found in open sources and updated manually.
 * [socket.io](https://socket.io)
 
 ## Project Setup
-```
+```sh
 npm install
 ```
 
 ### Starts the server
-```
+```sh
 npm start
 ```
 
 ### Compiles and hot-reloads for development
-```
-npm run serve
+```sh
+npm run dev
 ```
 
 ### Compiles and minifies for production
-```
+```sh
 npm run build
 ```
 
 ### Runs unit tests
-```
+```sh
 npm run test
 ```
 
 ### Lints and fixes files
-```
+```sh
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
