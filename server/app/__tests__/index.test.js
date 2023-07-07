@@ -1,4 +1,3 @@
-import path from 'path'
 import App from '../index'
 import expressMock from '../__mocks__/ExpressMock'
 
@@ -9,13 +8,13 @@ const CONFIG = {
     secure: false,
     auth: {
       user: 'user',
-      pass: 'pass'
-    }
+      pass: 'pass',
+    },
   },
-  weatherDate: [2019, 1, 1]
+  weatherDate: [2019, 1, 1],
 }
 const getMailer = () => ({
-  makeTask: jest.fn()
+  makeTask: jest.fn(),
 })
 
 function getModel({config, mailer, express, history, compression} = {}) {
@@ -24,7 +23,7 @@ function getModel({config, mailer, express, history, compression} = {}) {
     mailer || getMailer(),
     express || expressMock,
     history || jest.fn(),
-    compression || jest.fn()
+    compression || jest.fn(),
   )
 }
 
@@ -45,14 +44,14 @@ describe('App', () => {
     })
 
     it('Should call express static with correct parameters', () => {
-      const pathname = '/path'
+      const pathname = 'path'
       const express = expressMock
       const app = getModel({express})
       app.init(pathname)
 
       expect(express.static).toBeCalledWith(
-        expect.stringContaining(path.join('worldaria/app/path')),
-        expect.any(Object)
+        expect.stringContaining(pathname),
+        expect.any(Object),
       )
     })
   })

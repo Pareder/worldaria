@@ -5,7 +5,7 @@
       <span class="text">Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}</span>
     </Drawer>
     <div id="map" v-if="loaded">
-      <Map :geojson="geojson" :onEachFeature="onEachFeature" />
+      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" />
     </div>
   </div>
   <router-view v-else></router-view>
@@ -13,9 +13,10 @@
 
 <script>
 import api from '@/api'
+import randomColor from '@/utils/randomColor';
 import Loader from '@/components/Loader.vue'
 import Drawer from '@/components/Drawer.vue'
-import Map from '@/components/Map.vue'
+import MapComponent from '@/components/MapComponent.vue'
 
 export default {
   data() {
@@ -48,7 +49,7 @@ export default {
     },
 
     onEachFeature(feature, layer) {
-      layer.setStyle({ fillColor: this.randomColor() })
+      layer.setStyle({ fillColor: randomColor() })
       layer.on('click', () => {
         this.changeRoute(layer)
       })
@@ -85,7 +86,7 @@ export default {
   components: {
     Loader,
     Drawer,
-    Map
+    MapComponent,
   }
 }
 </script>

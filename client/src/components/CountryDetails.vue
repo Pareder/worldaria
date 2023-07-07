@@ -4,13 +4,13 @@
     <DetailsModal v-if="isClicked" :country="selectedCountry" @close="closeModal" />
     <div class="learn_notification">
       <div class="selectors" :class="openNotification ? 'opened' : ''">
-        <Select sortBy="area" v-model="sort.area" @sortBy="sortBy" />
-        <Select sortBy="pop_est" v-model="sort.pop_est" @sortBy="sortBy" />
-        <Select sortBy="growthRate" v-model="sort.growthRate" @sortBy="sortBy" />
-        <Select sortBy="gdp" v-model="sort.gdp" @sortBy="sortBy" />
-        <Select sortBy="expectancy" v-model="sort.expectancy" @sortBy="sortBy" />
-        <Select sortBy="density" v-model="sort.density" @sortBy="sortBy" />
-        <Select sortBy="temperature" v-model="sort.temperature" @sortBy="sortBy" />
+        <SelectComponent sortBy="area" v-model="sort.area" @sortBy="sortBy" />
+        <SelectComponent sortBy="pop_est" v-model="sort.pop_est" @sortBy="sortBy" />
+        <SelectComponent sortBy="growthRate" v-model="sort.growthRate" @sortBy="sortBy" />
+        <SelectComponent sortBy="gdp" v-model="sort.gdp" @sortBy="sortBy" />
+        <SelectComponent sortBy="expectancy" v-model="sort.expectancy" @sortBy="sortBy" />
+        <SelectComponent sortBy="density" v-model="sort.density" @sortBy="sortBy" />
+        <SelectComponent sortBy="temperature" v-model="sort.temperature" @sortBy="sortBy" />
         <Checkbox v-model="showTimezone" @toggleTimezone="toggleTimezone" :showTimezone="showTimezone" />
         <SearchCountriesForm
           v-model="searchCountry"
@@ -26,7 +26,7 @@
       </div>
     </div>
     <div id="map" v-if="loaded">
-      <Map
+      <MapComponent
         :geojson="sortedGeojson"
         :onEachFeature="onEachFeature"
         :world="world"
@@ -39,10 +39,11 @@
 
 <script>
 import api from '@/api'
+import randomColor from '@/utils/randomColor';
 import Loader from '@/components/Loader.vue'
 import DetailsModal from '@/modals/DetailsModal.vue'
-import Map from '@/components/Map.vue'
-import Select from '@/components/Select.vue'
+import MapComponent from '@/components/MapComponent.vue'
+import SelectComponent from '@/components/SelectComponent.vue'
 import Checkbox from '@/components/Checkbox.vue'
 import SearchCountriesForm from '@/components/SearchCountriesForm.vue'
 
@@ -92,7 +93,7 @@ export default {
 
     onEachFeature(feature, layer) {
       this.layers.push(layer)
-      layer.setStyle({ fillColor: this.randomColor() })
+      layer.setStyle({ fillColor: randomColor() })
       layer.on('click', () => {
         this.selectedCountry = layer.feature.properties
         this.isClicked = true
@@ -195,8 +196,8 @@ export default {
   components: {
     Loader,
     DetailsModal,
-    Map,
-    Select,
+    MapComponent,
+    SelectComponent,
     Checkbox,
     SearchCountriesForm
   }

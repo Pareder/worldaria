@@ -1,7 +1,7 @@
 function express() {
   return {
     use: jest.fn(),
-    get: jest.fn()
+    get: jest.fn(),
   }
 }
 

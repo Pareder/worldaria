@@ -21,6 +21,9 @@ body {
   position: relative;
   width: 200px;
   height: 50px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   line-height: 1;
   background: transparent;
   color: #2c3e50;
@@ -35,6 +38,7 @@ body {
   outline: none;
   overflow: hidden;
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 .btn:hover {
   background: #51667f;

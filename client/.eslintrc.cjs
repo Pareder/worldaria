@@ -11,5 +11,11 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 'latest'
+  },
+  globals: {
+    "vi": true
+  },
+  rules: {
+    'vue/multi-word-component-names': 'off'
   }
 }

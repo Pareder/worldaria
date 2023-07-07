@@ -51,10 +51,10 @@ export default {
     answer(id) {
       this.end = true
       if (this.capitals[id].name === this.rightCapital) {
-        this.capitals[id].isAnswered = 'right'
+        this.$emit('answer', id, 'right')
         this.answered = true
       } else {
-        this.capitals[id].isAnswered = 'wrong'
+        this.$emit('answer', id, 'wrong')
       }
       setTimeout(() => {
         this.$emit('check', this.answered)

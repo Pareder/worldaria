@@ -1,4 +1,9 @@
-import geoData from 'client/public/json/full.json'
+import { readFileSync } from 'fs'
+import path from 'path'
+
+const geoData = JSON.parse(readFileSync(path.resolve('../client/public/json/full.json')))
+// TODO: uncomment when Node.js will support JSON modules https://nodejs.org/docs/latest-v18.x/api/esm.html#json-modules
+// import geoData from 'client/public/json/full.json' assert { type: 'json' }
 
 class Geo {
   constructor(geoData) {
@@ -33,4 +38,4 @@ class Geo {
   }
 }
 
-module.exports = Geo
+export default Geo

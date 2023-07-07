@@ -95,21 +95,18 @@
           <div v-if="bot" class="buttons">
             <router-link
               :to="{ name: 'Bot', params: { mode, sort, by: 'name' }}"
-              tag="button"
               class="btn btn--small"
             >
               Name
             </router-link>
             <router-link
               :to="{ name: 'Bot', params: { mode, sort, by: 'flag' }}"
-              tag="button"
               class="btn btn--small"
             >
               Flag
             </router-link>
             <router-link
               :to="{ name: 'Bot', params: { mode, sort, by: 'capital' }}"
-              tag="button"
               class="btn btn--small"
             >
               Capital
@@ -118,28 +115,24 @@
           <div v-else class="buttons">
             <router-link
               :to="{ name: mode === 'hard' ? 'Hard' : 'Game', params: { sort } }"
-              tag="button"
               class="btn"
             >
               Name
             </router-link>
             <router-link
               :to="{ name: 'Flag', params: { mode, sort } }"
-              tag="button"
               class="btn"
             >
               Flag
             </router-link>
             <router-link
               :to="{ name: 'Capital', params: { mode, sort } }"
-              tag="button"
               class="btn"
             >
               Capital
             </router-link>
             <router-link
               :to="{ name: 'Area', params: { mode, sort } }"
-              tag="button"
               class="btn"
             >
               Area

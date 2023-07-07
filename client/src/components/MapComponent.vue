@@ -19,6 +19,7 @@
 <script>
 import { LMap, LGeoJson } from '@vue-leaflet/vue-leaflet'
 
+import randomColor from '@/utils/randomColor';
 import HomeButton from '@/components/HomeButton.vue'
 
 export default {
@@ -99,7 +100,7 @@ export default {
 
     bindTimezone(feature, layer) {
       layer.bindPopup(layer.feature.properties.time_zone)
-      layer.setStyle({ fillColor: this.randomColor() })
+      layer.setStyle({ fillColor: randomColor() })
     }
   },
 

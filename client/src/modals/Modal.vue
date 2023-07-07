@@ -30,7 +30,7 @@
             You have guessed all the countries.
           </div>
         </div>
-        <router-link v-if="isMobile" to="/" tag="button" class="btn btn--mobile">Home</router-link>
+        <router-link v-if="isMobile" to="/" class="btn btn--mobile">Home</router-link>
       </div>
     </div>
   </div>

@@ -132,4 +132,28 @@ export default {
     align-items: baseline;
     background-color: rgba(0, 0, 0, 0.5);
   }
+
+  .left, .right {
+      width: 50%;
+      padding: 20px 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.6;
+      font-size: 20px;
+      opacity: 0;
+      animation: opacityChanger 1s forwards;
+  }
+
+  @media screen and (max-width: 650px) {
+      .left, .right {
+          width: 100%;
+          padding: 20px;
+          font-size: 18px;
+      }
+      .right {
+          padding: 20px 20px 40px;
+      }
+  }
 </style>

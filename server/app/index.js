@@ -25,10 +25,10 @@ class App {
     return new App(config, cron, express, history, compression)
   }
 
-  init(pathname = 'client/dist') {
+  init(pathname = '../client/dist') {
     this._cron.makeTask(new Date(...this._config.weatherDate))
 
-    const staticFileMiddleware = this._express.static(path.join(__dirname + pathname), {
+    const staticFileMiddleware = this._express.static(path.resolve(pathname), {
       maxAge: 604800000,
       setHeaders: function (res) {
         res.setHeader('X-FRAME-OPTIONS', 'DENY')
@@ -37,7 +37,7 @@ class App {
         res.setHeader('Cache-Control', 'max-age=604800000')
         res.setHeader('Referrer-Policy', 'no-referrer')
         res.setHeader('Expires', new Date(Date.now() + 2592000000 * 30).toUTCString())
-      }
+      },
     })
 
     this._app.use(this._compression())
@@ -46,7 +46,7 @@ class App {
     this._app.use(staticFileMiddleware)
     this._app.use(this._express.json())
     this._app.get('/', (req, res) => {
-      res.render(path.join(__dirname + '/index.html'))
+      res.sendFile(path.resolve(`${pathname}/index.html`))
     })
   }
 
@@ -55,4 +55,4 @@ class App {
   }
 }
 
-module.exports = App
+export default App

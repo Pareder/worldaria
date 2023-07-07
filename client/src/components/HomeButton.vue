@@ -1,6 +1,8 @@
 <template>
   <div class="home">
-    <router-link to="/" tag="img" src="../img/back.svg" width="32" height="32"></router-link>
+    <router-link to="/">
+      <img src="/img/back.svg" width="32" height="32">
+    </router-link>
   </div>
 </template>
 

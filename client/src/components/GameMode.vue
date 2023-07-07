@@ -6,6 +6,7 @@
       :capitals="capitals"
       :rightCapital="countries[game.count].capital"
       @check="checkCapital"
+      @answer="onAnswer"
     />
     <Modal v-if="game.count === countries.length" :mode="mode" :score="game.score" />
     <Drawer v-else :game="game">
@@ -13,13 +14,14 @@
         {{ countries[game.count].name }}
       </div>
     </Drawer>
-    <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
   </div>
 </template>
 
 <script>
+import randomColor from '@/utils/randomColor';
 import Modal from '@/modals/Modal.vue'
-import Map from '@/components/Map.vue'
+import MapComponent from '@/components/MapComponent.vue'
 import Capital from '@/modals/Capital.vue'
 import Drawer from '@/components/Drawer.vue'
 
@@ -79,7 +81,7 @@ export default {
   methods: {
     onEachFeature(feature, layer) {
       if (!this.$route.params.sort && this.guessedCountries.includes(layer.feature.properties.name)) {
-        layer.setStyle({ fillColor: this.randomColor() })
+        layer.setStyle({ fillColor: randomColor() })
       } else {
         layer.bindPopup(layer.feature.properties.name)
         layer.on('click', () => {
@@ -96,7 +98,7 @@ export default {
         this.right = true
         this.game.score++
         this.game.rightAnswers++
-        layer.setStyle({ fillColor: this.randomColor() })
+        layer.setStyle({ fillColor: randomColor() })
         layer.off('click')        
       } else {
         this.game.attempts--
@@ -151,11 +153,15 @@ export default {
           score: this.game.score
         }))
       }
+    },
+
+    onAnswer(id, isAnswered) {
+      this.capitals[id].isAnswered = isAnswered
     }
   },
 
   components: {
-    Map,
+    MapComponent,
     Modal,
     Capital,
     Drawer

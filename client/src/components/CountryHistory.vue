@@ -11,15 +11,16 @@
       <PlayerImg :playPressed="playPressed" @onClick="playHistory" />
     </div>
     <div id="map" v-if="loaded">
-      <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
+      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
     </div>
   </div>
 </template>
 
 <script>
 import api from '@/api'
+import randomColor from '@/utils/randomColor';
 import Loader from '@/components/Loader.vue'
-import Map from '@/components/Map.vue'
+import MapComponent from '@/components/MapComponent.vue'
 import PlayerImg from '@/components/PlayerImg.vue'
 
 export default {
@@ -87,7 +88,7 @@ export default {
     },
 
     onEachFeature(feature, layer) {
-      layer.setStyle({ fillColor: this.randomColor() })
+      layer.setStyle({ fillColor: randomColor() })
       layer.bindPopup(layer.feature.properties.name)
     },
 
@@ -128,7 +129,7 @@ export default {
 
   components: {
     Loader,
-    Map,
+    MapComponent,
     PlayerImg
   }
 }

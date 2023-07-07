@@ -1,10 +1,11 @@
-import { notify } from "@kyvg/vue3-notification";
+import { notify } from '@kyvg/vue3-notification'
+import type { NotificationsOptions } from '@kyvg/vue3-notification'
 import type { FeatureCollection } from 'geojson'
 
 class API {
   constructor(
     private http: typeof fetch,
-    private notifyFn: typeof notify,
+    private notifyFn: (args: NotificationsOptions | string) => void,
     private storage: Storage
   ) {}
 

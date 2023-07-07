@@ -31,7 +31,7 @@
           Opponent's Turn<span>.</span><span>.</span><span>.</span>
         </div>
       </Drawer>
-      <Map :geojson="geojson" :onEachFeature="onEachFeature" :botMode="botMode" :world="world" />
+      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :botMode="botMode" :world="world" />
     </div>
   </div>
 </template>
@@ -40,7 +40,7 @@
 import api from '@/api'
 import Loader from '@/components/Loader.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
-import Map from '@/components/Map.vue'
+import MapComponent from '@/components/MapComponent.vue'
 import Drawer from '@/components/Drawer.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 import UsersList from '@/components/UsersList.vue'
@@ -244,10 +244,10 @@ export default {
   },
 
   components: {
-    Loader,
-    OnlineModal,
-    Map,
     Drawer,
+    Loader,
+    MapComponent,
+    OnlineModal,
     SvgIcon,
     UsersList
   }

@@ -88,7 +88,7 @@ class Socket {
             sort: socket.sortNumber,
             type: socket.gameType,
             users: this._rooms[socket.room],
-            subjects: sortedSubjects.sort(compareRandom)
+            subjects: sortedSubjects.sort(compareRandom),
           })
 
           delete this._availableUsers[socket.username]
@@ -127,7 +127,7 @@ class Socket {
         if (data) {
           this._io.sockets.in(socket.room).emit(
             'revengeGame',
-            [...this._io.sockets.adapter.rooms.get(socket.room).sortedSubjects.sort(compareRandom)]
+            [...this._io.sockets.adapter.rooms.get(socket.room).sortedSubjects.sort(compareRandom)],
           )
         } else {
           socket.broadcast.to(socket.room).emit('revengeDecline')
@@ -138,7 +138,7 @@ class Socket {
       socket.on('sendMessage', data => {
         const message = {
           user: data.user,
-          text: this._filter.clean(data.text)
+          text: this._filter.clean(data.text),
         }
         this._io.sockets.in(socket.room).emit('getNewMessages', message)
       })
@@ -187,4 +187,4 @@ class Socket {
   }
 }
 
-module.exports = Socket
+export default Socket

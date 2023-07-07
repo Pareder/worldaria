@@ -19,7 +19,7 @@
           ></v-geojson>
         </v-map>
       </Drawer>
-      <Map
+      <MapComponent
         ref="worldMap"
         :botMode="isAreaMode ? 'extreme' : null"
         :geojson="geojson"
@@ -35,8 +35,9 @@
   import { LMap, LGeoJson } from '@vue-leaflet/vue-leaflet'
 
   import api from '@/api'
+  import randomColor from '@/utils/randomColor';
   import Loader from '@/components/Loader.vue'
-  import Map from '@/components/Map.vue'
+  import MapComponent from '@/components/MapComponent.vue'
   import SvgIcon from '@/components/SvgIcon.vue'
   import Modal from '@/modals/Modal.vue'
   import Drawer from '@/components/Drawer.vue'
@@ -192,7 +193,7 @@
 
       show(layer) {
         if (layer.feature.properties[this.guessedField] === this.currentSubjectValue) {
-          layer.setStyle({ fillColor: this.randomColor() })
+          layer.setStyle({ fillColor: randomColor() })
           layer.off('click')
           this.answerCorrect()
           return
@@ -208,7 +209,7 @@
         const layers = pointInLayer(coordinates, map)
         for (const layer of layers) {
           if (layer.feature.properties.name === this.currentSubjectValue) {
-            layer.setStyle({ fillColor: this.randomColor() })
+            layer.setStyle({ fillColor: randomColor() })
             this.answerCorrect()
             return
           }
@@ -246,7 +247,7 @@
 
     components: {
       Loader,
-      Map,
+      MapComponent,
       SvgIcon,
       Modal,
       Drawer,

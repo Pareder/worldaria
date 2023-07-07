@@ -5,16 +5,16 @@ const geoData = {
     {
       properties: {
         name: 'name1',
-        capital: 'capital1'
-      }
+        capital: 'capital1',
+      },
     },
     {
       properties: {
         name: 'name2',
-        capital: 'capital2'
-      }
-    }
-  ]
+        capital: 'capital2',
+      },
+    },
+  ],
 }
 
 describe('Geo', () => {

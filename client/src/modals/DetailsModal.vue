@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td>Area</td>
-            <td>{{ country.area | formatNumber }} km<sup>2</sup></td>
+            <td>{{ formatNumber(country.area) }} km<sup>2</sup></td>
           </tr>
           <tr>
             <td>Type</td>
@@ -45,7 +45,7 @@
           </tr>
           <tr v-if="country.pop_est !== -99">
             <td>Population</td>
-            <td>{{ country.pop_est | formatNumber }}</td>
+            <td>{{ formatNumber(country.pop_est) }}</td>
           </tr>
           <tr v-if="country.growthRate">
             <td>Growth Rate per year</td>
@@ -65,15 +65,15 @@
           </tr>
           <tr>
             <td>Economy</td>
-            <td>{{ country.economy | formatString }}</td>
+            <td>{{ formatString(country.economy) }}</td>
           </tr>
           <tr>
             <td>Income group</td>
-            <td>{{ country.income_grp | formatString }}</td>
+            <td>{{ formatString(country.income_grp) }}</td>
           </tr>
           <tr v-if="country.gdp !== -99">
             <td>Gross Domestic Product Per Capita</td>
-            <td>${{ country.gdp | formatNumber }}</td>
+            <td>${{ formatNumber(country.gdp) }}</td>
           </tr>
           <tr v-if="country.military">
             <td>Military expenditures</td>
@@ -91,9 +91,9 @@
             <td>Average Temperature</td>
             <td>{{ country.temperature}} °C</td>
           </tr>
-          <tr v-if="temperatureQuery">
+          <tr v-if="currentTemperature">
             <td>Current Temperature</td>
-            <td>{{ country.current_temperature.desc }}, {{ country.current_temperature.c }} °C</td>
+            <td>{{ currentTemperature.desc }}, {{ currentTemperature.c }} °C</td>
           </tr>
           <tr v-if="country.hdi">
             <td class="relative">
@@ -139,33 +139,20 @@
 </template>
 
 <script>
+import { socket } from '@/socket'
 import InformationSvg from '@/components/InformationSvg.vue'
 
 export default {
   data() {
     return {
       end: false,
-      temperatureQuery: false
+      currentTemperature: false
     }
   },
 
   props: {
     country: {
       type: Object
-    }
-  },
-
-  filters: {
-    formatString(value) {
-      return value.substring(3)
-    },
-
-    formatNumber(value) {
-      const schema = ['', 'K', 'M', 'B']
-      const base = Math.log10(value)
-      const index = Math.floor(base / 3)
-  
-      return (value / Math.pow(10, 3 * index)).toFixed(2) + schema[index]
     }
   },
 
@@ -176,22 +163,30 @@ export default {
   },
 
   created() {
-    this.$socket.emit('getWeather', this.country.capital)
+    socket.emit('getWeather', this.country.capital)
+    socket.on('weatherResponse', data => {
+      this.currentTemperature = data
+    })
   },
 
   methods: {
+    formatString(value) {
+      return value.substring(3)
+    },
+
+    formatNumber(value) {
+      const schema = ['', 'K', 'M', 'B']
+      const base = Math.log10(value)
+      const index = Math.floor(base / 3)
+
+      return (value / Math.pow(10, 3 * index)).toFixed(2) + schema[index]
+    },
+
     closeModal() {
       this.end = true
       setTimeout(() => {
         this.$emit('close')
       }, 600)
-    }
-  },
-
-  sockets: {
-    weatherResponse(data) {
-      this.country.current_temperature = { ...data }
-      this.temperatureQuery = true
     }
   },
 

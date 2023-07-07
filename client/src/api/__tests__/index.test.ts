@@ -1,24 +1,53 @@
-import API from '@/api'
+import { API } from '@/api'
 
-const getHTTP = value => {
+const getHTTP = (value?: any): typeof fetch => {
+  return vi.fn(async () => ({
+    json: vi.fn(async () => ({
+      features: value || [],
+    })),
+    headers: {
+      [Symbol.iterator]: vi.fn(),
+      append: vi.fn(),
+      delete: vi.fn(),
+      get: vi.fn(),
+      has: vi.fn(),
+      set: vi.fn(),
+      forEach: vi.fn(),
+      entries: vi.fn(),
+      keys: vi.fn(),
+      values: vi.fn(),
+    } as Headers,
+    ok: true,
+    redirected: false,
+    status: 200,
+    statusText: 'Success',
+    type: 'basic' as ResponseType,
+    url: '',
+    clone: vi.fn(),
+    body: null,
+    bodyUsed: false,
+    arrayBuffer: vi.fn(),
+    blob: vi.fn(),
+    formData: vi.fn(),
+    text: vi.fn(),
+  }))
+}
+
+const notifyMock = vi.fn()
+
+const getLocalStorage = (value?: any) => {
   return {
-    get: jest.fn(async () => ({
-      body: {
-        features: value || []
-      }
-    }))
+    getItem: vi.fn(() => value),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
+    key: vi.fn(),
+    length: 0,
   }
 }
-const notifyMock = jest.fn()
-const getLocalStorage = value => {
-  return {
-    getItem: jest.fn(() => value),
-    setItem: jest.fn()
-  }
-}
 
-function getModel({ http, notify, localStorage } = {}) {
-  return new API(http || getHTTP(), notify || notifyMock, localStorage || getLocalStorage())
+function getModel({ http = getHTTP(), notify = notifyMock, localStorage = getLocalStorage() } = {}) {
+  return new API(http, notify, localStorage)
 }
 
 describe('API', () => {
@@ -34,17 +63,15 @@ describe('API', () => {
       const model = getModel({ http })
       await model.getGeoJSON('name')
 
-      expect(http.get).toBeCalledWith('../json/name.json')
+      expect(http).toBeCalledWith('../json/name.json')
     })
 
     it('Should call notify with correct parameters in case of error', async () => {
       const errorMessage = 'error message'
-      const http = {
-        get: jest.fn(async () => {
-          throw new Error(errorMessage)
-        })
-      }
-      const notify = jest.fn()
+      const http = vi.fn(async () => {
+        throw new Error(errorMessage)
+      })
+      const notify = vi.fn()
       const model = getModel({ http, notify })
       await model.getGeoJSON('name')
 
@@ -89,7 +116,7 @@ describe('API', () => {
       const model = getModel({ http })
       await model.getFullJSON()
 
-      expect(http.get).toBeCalledWith('../json/full.json')
+      expect(http).toBeCalledWith('../json/full.json')
     })
 
     it('Should call localStorage setItem with correct parameter if not stored in localStorage', async () => {
@@ -135,7 +162,7 @@ describe('API', () => {
       const model = getModel({ http })
       await model.getMapJSON()
 
-      expect(http.get).toBeCalledWith('../json/map.json')
+      expect(http).toBeCalledWith('../json/map.json')
     })
 
     it('Should call localStorage setItem with correct parameter if not stored in localStorage', async () => {
@@ -181,7 +208,7 @@ describe('API', () => {
       const model = getModel({ http })
       await model.getTimezoneJSON()
 
-      expect(http.get).toBeCalledWith('../json/timezones.json')
+      expect(http).toBeCalledWith('../json/timezones.json')
     })
 
     it('Should call localStorage setItem with correct parameter if not stored in localStorage', async () => {

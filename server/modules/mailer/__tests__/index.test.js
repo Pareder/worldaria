@@ -6,11 +6,11 @@ const nodeMailerOptions = {
   secure: false,
   auth: {
     user: 'user',
-    pass: 'pass'
-  }
+    pass: 'pass',
+  },
 }
 const getTransporter = () => ({
-  sendMail: jest.fn()
+  sendMail: jest.fn(),
 })
 
 function getModel({ transporter, mailOptions } = {}) {
@@ -28,14 +28,14 @@ describe('Mailer', () => {
     it('Should call transporter sendMail with correct parameters', () => {
       const transporter = getTransporter()
       const mailOptions = {
-        option: 'option'
+        option: 'option',
       }
       const model = getModel({ transporter, mailOptions })
       model.sendMail()
 
       expect(transporter.sendMail).toBeCalledWith({
         ...mailOptions,
-        html: expect.any(String)
+        html: expect.any(String),
       }, expect.any(Function))
     })
   })

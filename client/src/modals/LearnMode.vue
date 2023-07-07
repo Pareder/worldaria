@@ -10,9 +10,9 @@
             Learn countries by
           </div>
           <div class="buttons">
-            <router-link to="/learn/full" tag="button" class="btn btn--small">Full</router-link>
-            <router-link to="/learn/continent" tag="button" class="btn btn--small">Lands</router-link>
-            <router-link to="/learn/countries" tag="button" class="btn btn--small">Regions</router-link>
+            <router-link to="/learn/full" class="btn btn--small">Full</router-link>
+            <router-link to="/learn/continent" class="btn btn--small">Lands</router-link>
+            <router-link to="/learn/countries" class="btn btn--small">Regions</router-link>
           </div>
         </div>
       </div>

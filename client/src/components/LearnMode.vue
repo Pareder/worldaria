@@ -10,15 +10,16 @@
         :foundCountries="foundCountries"
       />
     </Drawer>
-    <Map :geojson="geojson" :onEachFeature="onEachFeature" :mapOptions="mapOptions" />
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :mapOptions="mapOptions" />
   </div>
 </template>
 
 <script>
+import randomColor from '@/utils/randomColor';
 import Modal from '@/modals/Modal.vue'
 import Drawer from '@/components/Drawer.vue'
 import SearchCountriesForm from '@/components/SearchCountriesForm.vue'
-import Map from '@/components/Map.vue'
+import MapComponent from '@/components/MapComponent.vue'
 
 export default {
   data() {
@@ -83,7 +84,7 @@ export default {
         this.game.count++
         this.game.attempts = 5
         this.guessed.push(layer.feature.properties.name)
-        layer.setStyle({ fillColor: this.randomColor() })
+        layer.setStyle({ fillColor: randomColor() })
         layer.getElement().classList.remove('guess_me')
         layer.off('click')
         this.searchCountry = ''
@@ -104,7 +105,7 @@ export default {
       for (let i = 0; i < this.layers.length; i++) {
         if (value?.length > 0 && this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
           if (!this.guessed.includes(this.layers[i].feature.properties.name)) {
-            this.layers[i].setStyle({ fillColor: this.randomColor() })
+            this.layers[i].setStyle({ fillColor: randomColor() })
           }
 
           this.foundCountries.push(this.layers[i].feature.properties.name)
@@ -142,10 +143,10 @@ export default {
   },
 
   components: {
+    MapComponent,
     Modal,
     Drawer,
     SearchCountriesForm,
-    Map
   }
 }
 </script>

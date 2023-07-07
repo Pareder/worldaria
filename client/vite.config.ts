@@ -18,4 +18,7 @@ export default defineConfig({
       requireReturnsDefault: true,
     },
   },
+  test: {
+    globals: true,
+  },
 })

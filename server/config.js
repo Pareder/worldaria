@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   emailFrom: process.env.MAILER_EMAIL_FROM,
   emailTo: process.env.MAILER_EMAIL_TO,
   weatherAPI: 'https://api.worldweatheronline.com/premium/v1',
@@ -10,7 +10,7 @@ module.exports = {
     secure: false,
     auth: {
       user: process.env.MAILER_USER,
-      pass: process.env.MAILER_PASSWORD
-    }
-  }
+      pass: process.env.MAILER_PASSWORD,
+    },
+  },
 }

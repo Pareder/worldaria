@@ -41,7 +41,7 @@
         </div>
       </Drawer>
       <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" :sideColors="sideColors" />
-      <Map :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
+      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
     </div>
   </div>
 </template>
@@ -49,7 +49,7 @@
 <script>
 import api from '@/api'
 import Loader from '@/components/Loader.vue'
-import Map from '@/components/Map.vue'
+import MapComponent from '@/components/MapComponent.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
 import ChooseOpponent from '@/modals/ChooseOpponent.vue'
 import Drawer from '@/components/Drawer.vue'
@@ -342,7 +342,7 @@ export default {
 
   components: {
     Loader,
-    Map,
+    MapComponent,
     OnlineModal,
     ChooseOpponent,
     Drawer,

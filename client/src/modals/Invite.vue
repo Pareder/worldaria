@@ -6,7 +6,7 @@
         <div class="status">
           <img class="status__img" src="../assets/images/global.svg" width="32" height="32" />
           You have been invited to game in mode
-          <span class="mode__name">{{ type | capitalize }}</span>
+          <span class="mode__name">{{ capitalizedType }}</span>
           <span class="population">population: {{ modeName }}</span>
           by <span class="opponentColor">{{ opponent }}</span>
         </div>
@@ -36,24 +36,21 @@ export default {
   },
 
   computed: {
+    capitalizedType() {
+      if (!this.type) {
+        return ''
+      }
+
+      const value = this.type.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    },
+
     modeName() {
       const option = populationOptions.find(option => option.value === this.mode)
 
       return option?.description || 'all'
     }
   },
-
-  filters: {
-    capitalize(value) {
-      if (!value) {
-        return ''
-      }
-
-      value = value.toString()
-
-      return value.charAt(0).toUpperCase() + value.slice(1)
-    }
-  }
 }
 </script>
 

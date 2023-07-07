@@ -1,15 +1,15 @@
 import Cron from '../index'
 
 const getMailer = () => ({
-  sendMail: jest.fn()
+  sendMail: jest.fn(),
 })
 const getWeatherAPI = () => ({
-  setWeatherKey: jest.fn()
+  setWeatherKey: jest.fn(),
 })
 const getNodeCron = () => ({
   schedule: jest.fn(() => ({
-    destroy: jest.fn()
-  }))
+    destroy: jest.fn(),
+  })),
 })
 
 function getModel({ mailer, weatherAPI, nodeCron } = {}) {

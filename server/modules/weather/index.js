@@ -24,18 +24,18 @@ class WeatherAPI {
           format: 'JSON',
           fx: 'no',
           mca: 'no',
-          key: this._weatherKey
-        }
+          key: this._weatherKey,
+        },
       }))
       const json = await response.json()
       this._weather[city] = {
         c: json.data.current_condition[0].temp_C,
         desc: json.data.current_condition[0].weatherDesc[0].value,
-        date: Date.now()
+        date: Date.now(),
       }
     }
 
-    return this._weather[city];
+    return this._weather[city]
   }
 
   setWeatherKey(weatherKey) {
@@ -43,4 +43,4 @@ class WeatherAPI {
   }
 }
 
-module.exports = WeatherAPI
+export default WeatherAPI

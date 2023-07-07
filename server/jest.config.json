@@ -1,0 +1,7 @@
+{
+  "setupFiles": ["<rootDir>/test-setup.js"],
+  "moduleNameMapper": {
+    "client/(.*)": "<rootDir>/../client/$1"
+  },
+  "transform": {}
+}

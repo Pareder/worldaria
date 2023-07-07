@@ -24,7 +24,7 @@ class Cron {
         const newDate = new Date().setMonth(new Date().getMonth() + 2)
         this.makeTask(newDate)
         mailTask.destroy()
-      }
+      },
     )
 
     const readApiTask = this._nodeCron.schedule(
@@ -33,9 +33,9 @@ class Cron {
         delete require.cache[require.resolve('../config.js')]
         this._weatherAPI.setWeatherKey(require('../config.js').weatherKey)
         readApiTask.destroy()
-      }
+      },
     )
   }
 }
 
-module.exports = Cron
+export default Cron
