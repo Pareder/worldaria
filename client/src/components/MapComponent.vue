@@ -81,11 +81,6 @@ export default {
     }
   },
 
-  created() {
-    this.$parent.$on('zoomCountry', this.zoom)
-    this.$parent.$on('setStartZoom', this.setStartZoom)
-  },
-
   methods: {
     zoom(value) {
       this.$refs.map.mapObject.flyTo({ ...value }, 6)

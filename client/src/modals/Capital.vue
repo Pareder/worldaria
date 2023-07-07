@@ -4,7 +4,7 @@
     <div class="modal">
       <div class="modal-content" :class="end ? 'end' : 'start'">
         <div class="status">
-          <img src="../assets/images/question-mark.svg" height="24" width="24" />
+          <img src="@/assets/images/question-mark.svg" height="24" width="24" />
           What is the capital of {{ country }}?
         </div>
         <div class="capitals">

@@ -30,13 +30,14 @@
           maxlength="255"
           @input="typingMessage"
         >
-        <img class="chat__img" src="../assets/images/paper_plane.svg" width="40" height="40" @click="submitMessage">
+        <img class="chat__img" src="@/assets/images/paper_plane.svg" width="40" height="40" @click="submitMessage">
       </form>
     </div>
   </div>
 </template>
 
 <script>
+  import { socket } from '@/socket'
   import DashSvg from '@/components/DashSvg.vue'
 
   export default {
@@ -72,10 +73,24 @@
       }
     },
 
+    created() {
+      socket.on('getNewMessages', data => {
+        this.opponentTyping = false
+        this.typingTimeout = null
+        this.chatMessages.unshift(data)
+
+        this.unreadMessages = this.chatHidden
+      })
+
+      socket.on('opponentTyping', data => {
+        this.opponentTyping = data
+      })
+    },
+
     methods: {
       submitMessage() {
         if (this.messageText.length > 0) {
-          this.$socket.emit('sendMessage', { user: this.nickname, text: this.messageText })
+          socket.emit('sendMessage', { user: this.nickname, text: this.messageText })
           this.messageText = ''
         }
       },
@@ -87,28 +102,14 @@
 
       typingMessage() {
         if (!this.typingTimeout) {
-          this.$socket.emit('typingMessage', true)
+          socket.emit('typingMessage', true)
         }
 
         clearTimeout(this.typingTimeout)
         this.typingTimeout = setTimeout(() => {
           this.typingTimeout = null
-          this.$socket.emit('typingMessage', false)
+          socket.emit('typingMessage', false)
         }, 3000)
-      }
-    },
-
-    sockets: {
-      getNewMessages(data) {
-        this.opponentTyping = false
-        this.typingTimeout = null
-        this.chatMessages.unshift(data)
-
-        this.unreadMessages = this.chatHidden
-      },
-
-      opponentTyping(data) {
-        this.opponentTyping = data
       }
     },
 

@@ -5,7 +5,7 @@
       <div class="modal-content">
         <div v-if="mode === 'learn'">
           <div class="status learn">
-            <img src="../assets/images/correct-symbol.svg" height="24" width="24" />
+            <img src="@/assets/images/correct-symbol.svg" height="24" width="24" />
             Congratulations!
           </div>
           <div class="description">
@@ -14,12 +14,12 @@
         </div>
         <div v-else>
           <div class="status win">
-            <img src="../assets/images/correct-symbol.svg" height="24" width="24" />
+            <img src="@/assets/images/correct-symbol.svg" height="24" width="24" />
             Congratulations {{ nickname }}!
             <br>
             You win!
           </div>
-          <div v-if="!this.$route.params.sort">
+          <div v-if="!this.$route.query.sort">
             <div class="score">
               Your score: 
               <span class="score__number">{{ score }}</span>
@@ -71,11 +71,11 @@ export default {
     },
 
     withSavingResult() {
-      return this.mode === 'game' && !this.$route.params.sort
+      return this.mode === 'game' && !this.$route.query.sort
     },
 
     name() {
-      return this.$route.params.name
+      return this.$route.query.name
     },
 
     fullName() {

@@ -75,11 +75,11 @@ export default {
 
   computed: {
     botMode() {
-      return this.$route.params.mode
+      return this.$route.query.mode
     },
 
     chance() {
-      switch(this.$route.params.mode) {
+      switch(this.$route.query.mode) {
         case 'hard':
           return 0.8
         case 'extreme':
@@ -93,12 +93,12 @@ export default {
     },
 
     gameType() {
-      return this.$route.params.by
+      return this.$route.query.by
     }
   },
 
   async created() {
-    if (this.$route.params.sort && this.botMode !== 'impossible') {
+    if (this.$route.query.sort && this.botMode !== 'impossible') {
         await this.getWorld()
       } else {
         await this.getCountries()
@@ -117,8 +117,8 @@ export default {
     },
 
     onSuccessfulLoad() {
-      if (this.$route.params.sort) {
-        this.geojson = this.geojson.filter(feature => feature.properties.pop_est > this.$route.params.sort)
+      if (this.$route.query.sort) {
+        this.geojson = this.geojson.filter(feature => feature.properties.pop_est > this.$route.query.sort)
       }
 
       this.getSubjects()

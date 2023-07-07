@@ -22,7 +22,7 @@
         <div v-if="!isMobile" class="count">Amount - {{ foundCountries.length || sortedGeojson.length }}</div>
       </div>
       <div class="opener" @click="openNotification = !openNotification">
-        <img src="../assets/images/down.svg" width="16" height="16" :class="openNotification ? 'rotate' : ''">
+        <img src="@/assets/images/down.svg" width="16" height="16" :class="openNotification ? 'rotate' : ''">
       </div>
     </div>
     <div id="map" v-if="loaded">

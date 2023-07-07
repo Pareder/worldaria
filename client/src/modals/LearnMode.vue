@@ -4,9 +4,9 @@
     <transition name="fade" appear>
       <div class="modal">
         <div class="modal-content">
-          <img class="cancel" src="../assets/images/cancel.svg" @click.prevent="$emit('close')" />
+          <img class="cancel" src="@/assets/images/cancel.svg" @click.prevent="$emit('close')" />
           <div class="status">
-            <img class="status__img" src="../assets/images/mode.svg" width="32" height="32" />
+            <img class="status__img" src="@/assets/images/mode.svg" width="32" height="32" />
             Learn countries by
           </div>
           <div class="buttons">
@@ -89,7 +89,8 @@
     flex-wrap: wrap;
     justify-content: space-around;
   }
-  .buttons > button {
+  .buttons > button,
+  .buttons > a {
     margin-bottom: 10px;
     text-overflow: ellipsis;
   }

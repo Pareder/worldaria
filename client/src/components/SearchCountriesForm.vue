@@ -46,10 +46,6 @@
       }
     },
 
-    created() {
-      this.$parent.$on('clearSearch', this.clearSearch)
-    },
-
     methods: {
       onInput(value) {
         this.$emit('search', value)

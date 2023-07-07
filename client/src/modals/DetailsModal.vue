@@ -3,7 +3,7 @@
     <div class="modal-backdrop" @click="closeModal"></div>
     <div class="modal" :class="end ? 'end' : 'start'">
       <div class="modal-content">
-        <img class="cancel" src="../assets/images/cancel.svg" @click.prevent="closeModal" />
+        <img class="cancel" src="@/assets/images/cancel.svg" @click.prevent="closeModal" />
         <h3>{{ country.name }}</h3>
         <img class="flag" :src="`../img/flags/${shortName}.svg`">
         <table>

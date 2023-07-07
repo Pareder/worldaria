@@ -4,7 +4,7 @@
     <div class="modal">
       <div class="modal-content">
         <div class="status">
-          <img class="status__img" src="../assets/images/global.svg" width="32" height="32" />
+          <img class="status__img" src="@/assets/images/global.svg" width="32" height="32" />
           You have been invited to game in mode
           <span class="mode__name">{{ capitalizedType }}</span>
           <span class="population">population: {{ modeName }}</span>

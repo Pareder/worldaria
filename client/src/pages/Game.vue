@@ -26,12 +26,12 @@ export default {
   },
 
   async created() {
-    if (localStorage.getItem('guessed') && !this.$route.params.sort) {
+    if (localStorage.getItem('guessed') && !this.$route.query.sort) {
       this.saved = true
       return
     }
 
-    if (this.$route.params.sort) {
+    if (this.$route.query.sort) {
       await this.getWorld()
     }
 
@@ -49,8 +49,8 @@ export default {
     },
 
     onSuccessfulLoad() {
-      if (this.$route.params.sort) {
-        this.geojson = this.geojson.filter(item => item.properties.pop_est > this.$route.params.sort)
+      if (this.$route.query.sort) {
+        this.geojson = this.geojson.filter(item => item.properties.pop_est > this.$route.query.sort)
       }
 
       this.loaded = true

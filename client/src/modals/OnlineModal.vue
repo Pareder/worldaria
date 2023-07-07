@@ -8,7 +8,7 @@
         </div>
         <div v-else>
           <div v-if="score.my > score.enemy">
-            <img src="../assets/images/correct-symbol.svg" width="24" height="24" />
+            <img src="@/assets/images/correct-symbol.svg" width="24" height="24" />
             Congratulations<span v-if="$route.path === '/online'" :class="`${colors.my}_nick`">, {{ nickname }}</span>!
             <br>
             You win!
@@ -24,7 +24,7 @@
             </ul>
           </div>
           <div v-else-if="score.my < score.enemy">
-            <img src="../assets/images/cross.svg" width="24" height="24" />
+            <img src="@/assets/images/cross.svg" width="24" height="24" />
             Sad, but true, <span v-if="$route.path === '/online'" :class="`${colors.my}_nick`">{{nickname }}</span>
             <br>
             You lose
@@ -40,7 +40,7 @@
             </ul>
           </div>
           <div v-else>
-            <img src="../assets/images/draw.svg" width="32" height="32" />
+            <img src="@/assets/images/draw.svg" width="32" height="32" />
             Very close game!
             <br>
             It is a draw
@@ -71,6 +71,8 @@
 </template>
 
 <script>
+import { socket } from '@/socket'
+
 export default {
   data() {
     return {
@@ -97,32 +99,27 @@ export default {
     }
   },
 
+  mounted() {
+    socket.on('opponentsRevenge', () => this.revenge = true)
+    socket.on('revengeDecline', () => this.revengeDeclined = true)
+  },
+
   methods: {
     getRevenge() {
       if (this.$route.path === '/bot') {
         this.$emit('makeRevenge')
       } else {
         this.revengeDeclined = false
-        this.$socket.emit('revenge', this.enemy)
+        socket.emit('revenge', this.enemy)
       }
     },
 
     revengeDecision(status) {
-      this.$socket.emit('revengeDecision', status)
+      socket.emit('revengeDecision', status)
 
       if (!status) {
         this.revenge = false
       }
-    }
-  },
-
-  sockets: {
-    opponentsRevenge() {
-      this.revenge = true
-    },
-
-    revengeDecline() {
-      this.revengeDeclined = true
     }
   }
 }

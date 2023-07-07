@@ -4,7 +4,7 @@
     <transition name="fade" appear>
       <div class="modal">
         <div class="modal-content">
-          <img class="cancel" src="../assets/images/cancel.svg" @click.prevent="$emit('close')" />
+          <img class="cancel" src="@/assets/images/cancel.svg" @click.prevent="$emit('close')" />
           <div class="status">
             <img
               class="status__img"
@@ -94,19 +94,19 @@
           </ul>
           <div v-if="bot" class="buttons">
             <router-link
-              :to="{ name: 'Bot', params: { mode, sort, by: 'name' }}"
+              :to="{ name: 'Bot', query: { mode, sort, by: 'name' }}"
               class="btn btn--small"
             >
               Name
             </router-link>
             <router-link
-              :to="{ name: 'Bot', params: { mode, sort, by: 'flag' }}"
+              :to="{ name: 'Bot', query: { mode, sort, by: 'flag' }}"
               class="btn btn--small"
             >
               Flag
             </router-link>
             <router-link
-              :to="{ name: 'Bot', params: { mode, sort, by: 'capital' }}"
+              :to="{ name: 'Bot', query: { mode, sort, by: 'capital' }}"
               class="btn btn--small"
             >
               Capital
@@ -114,25 +114,25 @@
           </div>
           <div v-else class="buttons">
             <router-link
-              :to="{ name: mode === 'hard' ? 'Hard' : 'Game', params: { sort } }"
+              :to="{ name: mode === 'hard' ? 'Hard' : 'Game', query: { sort } }"
               class="btn"
             >
               Name
             </router-link>
             <router-link
-              :to="{ name: 'Flag', params: { mode, sort } }"
+              :to="{ name: 'Flag', query: { mode, sort } }"
               class="btn"
             >
               Flag
             </router-link>
             <router-link
-              :to="{ name: 'Capital', params: { mode, sort } }"
+              :to="{ name: 'Capital', query: { mode, sort } }"
               class="btn"
             >
               Capital
             </router-link>
             <router-link
-              :to="{ name: 'Area', params: { mode, sort } }"
+              :to="{ name: 'Area', query: { mode, sort } }"
               class="btn"
             >
               Area
@@ -276,7 +276,8 @@ export default {
     flex-wrap: wrap;
     justify-content: space-around;
   }
-  .buttons > button {
+  .buttons > button,
+  .buttons > a {
     margin-bottom: 10px;
     text-overflow: ellipsis;
   }

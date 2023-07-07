@@ -5,7 +5,7 @@
       <div class="modal-content start">
         <div class="status">
           <span>
-            <img src="../assets/images/saved.svg" width="32" height="32">
+            <img src="@/assets/images/saved.svg" width="32" height="32">
             You have saved game.
           </span>
           <span>Do you want to continue?</span>
@@ -92,7 +92,8 @@
     justify-content: space-around;
   }
 
-  .buttons > button {
+  .buttons > button,
+  .buttons > a {
     margin-bottom: 10px;
     text-overflow: ellipsis;
   }

@@ -2,7 +2,7 @@
   <div id="app">
     <router-view></router-view>
     <Invite v-if="isInvited" :opponent="opponent" @makeDecision="makeDecision" :mode="sort" :type="type" />
-    <notifications group="error" position="top left" />
+    <notifications group="error" position="top right" />
   </div>
 </template>
 
@@ -57,7 +57,7 @@ function makeDecision(status: boolean) {
   if (status) {
     router.push({
       name: 'Online',
-      params: {
+      query: {
         // chooseOpponent: false,
         sort: sort.value,
         type: type.value,

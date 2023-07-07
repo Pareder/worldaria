@@ -8,11 +8,11 @@
             Waiting for opponent's decision<span>.</span><span>.</span><span>.</span>
           </span>
           <span v-else-if="opponentDecline">
-            <img class="status__img" src="../assets/images/cross.svg" width="32" height="32" />
+            <img class="status__img" src="@/assets/images/cross.svg" width="32" height="32" />
             The opponent has declined your invite
           </span>
           <span v-else>
-            <img class="status__img" src="../assets/images/global.svg" width="32" height="32" />
+            <img class="status__img" src="@/assets/images/global.svg" width="32" height="32" />
             You can find an opponent or play with random person
           </span>
         </div>

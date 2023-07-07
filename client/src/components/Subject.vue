@@ -47,15 +47,15 @@ export default {
 
   computed: {
     name() {
-      return this.$route.params.name || 'full'
+      return this.$route.query.name || 'full'
     },
 
     latlng() {
-      return this.$route.params.latlng
+      return this.$route.query.latlng
     },
 
     country() {
-      return this.$route.params.country || false
+      return this.$route.query.country || false
     }
   },
 

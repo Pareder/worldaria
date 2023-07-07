@@ -59,7 +59,7 @@ export default {
   created() {
     const guessedResult = JSON.parse(localStorage.getItem('guessed'))
 
-    if (!this.$route.params.sort && guessedResult) {
+    if (!this.$route.query.sort && guessedResult) {
       this.guessedCountries = guessedResult.guessedCountries
       this.game = {
         ...this.game,
@@ -80,7 +80,7 @@ export default {
 
   methods: {
     onEachFeature(feature, layer) {
-      if (!this.$route.params.sort && this.guessedCountries.includes(layer.feature.properties.name)) {
+      if (!this.$route.query.sort && this.guessedCountries.includes(layer.feature.properties.name)) {
         layer.setStyle({ fillColor: randomColor() })
       } else {
         layer.bindPopup(layer.feature.properties.name)
@@ -147,7 +147,7 @@ export default {
 
       this.game.attempts = 5
 
-      if (!this.$route.params.sort) {
+      if (!this.$route.query.sort) {
         localStorage.setItem('guessed', JSON.stringify({
           guessedCountries: this.guessedCountries,
           score: this.game.score

@@ -92,7 +92,7 @@
 
     computed: {
       hasTimeLimit() {
-        return this.$route.params?.mode === 'hard' || this.$route.path === '/hard'
+        return this.$route.query?.mode === 'hard' || this.$route.path === '/hard'
       },
 
       guessedField() {
@@ -110,7 +110,7 @@
     },
 
     async created() {
-      if (this.$route.params.sort) {
+      if (this.$route.query.sort) {
         await this.getWorld()
       } else {
         await this.getCountries()
@@ -133,8 +133,8 @@
       },
 
       onSuccessfulLoad() {
-        if (this.$route.params.sort) {
-          this.geojson = this.geojson.filter(item => item.properties.pop_est > this.$route.params.sort)
+        if (this.$route.query.sort) {
+          this.geojson = this.geojson.filter(item => item.properties.pop_est > this.$route.query.sort)
         }
 
         this.game.length = this.geojson.length

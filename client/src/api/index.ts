@@ -10,7 +10,7 @@ class API {
   ) {}
 
   static create() {
-    return new API(fetch, notify, localStorage)
+    return new API((...args) => window.fetch(...args), notify, localStorage)
   }
 
   getGeoJSON(name: string) {

@@ -34,7 +34,7 @@ export default {
 
   computed: {
     getChildren() {
-      return this.$route.params.name
+      return this.$route.query.name
     }
   },
 
@@ -59,14 +59,14 @@ export default {
       if (this.subject === 'continents') {
         this.$router.push({
           name: 'SubjectContinent',
-          params: { 
+          query: {
             name: layer.feature.properties.continent.replace(/ /g, '').toLowerCase(), 
           }
         })
       } else if (this.subject === 'regions') {
         this.$router.push({
           name: 'SubjectCountry',
-          params: { 
+          query: {
             name: layer.feature.properties.name.replace(/ /g, '').toLowerCase(),
             country: true,
             latlng: {
