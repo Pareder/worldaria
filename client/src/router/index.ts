@@ -1,8 +1,7 @@
-import { createRouter, createWebHistory  } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import Start from '@/pages/Start.vue'
 import Game from '@/pages/Game.vue'
-import Learn from '@/pages/Learn.vue'
 import Online from '@/pages/Online.vue'
 import Bot from '@/pages/Bot.vue'
 import Subject from '@/components/Subject.vue'
@@ -10,6 +9,25 @@ import ChooseSubject from '@/components/ChooseSubject.vue'
 import CountryDetails from '@/components/CountryDetails.vue'
 import CountryHistory from '@/components/CountryHistory.vue'
 import GuessMode from '@/components/GuessMode.vue'
+
+type MetaTagName = {
+  name: string,
+  content: string,
+}
+
+type MetaTagProperty = {
+  property: string,
+  content: string,
+}
+
+type MetaTag = MetaTagName | MetaTagProperty
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    title: string
+    metaTags: MetaTag[],
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(),
@@ -53,7 +71,6 @@ const router = createRouter({
     {
       name: 'Learn',
       path: '/learn',
-      component: Learn,
       redirect: '/learn/full',
       meta: {
         title: 'Worldaria learn mode',
@@ -68,144 +85,134 @@ const router = createRouter({
           }
         ]
       },
-      children: [
-        {
-          path: '/learn/full',
-          component: Subject,
-          name: 'Subject',
-          props: { mode: 'learn' },
-          meta: {
-            title: 'Worldaria learn mode',
-            metaTags: [
-              {
-                name: 'description',
-                content: 'You can learn countries if you don\'t know them.'
-              },
-              {
-                property: 'og:description',
-                content: 'You can learn countries if you don\'t know them.'
-              }
-            ]
-          }
-        },
-        {
-          path: '/learn/continent',
-          component: ChooseSubject,
-          name: 'LearnContinent',
-          props: { subject: 'continents' },
-          meta: {
-            title: 'Worldaria learn mode',
-            metaTags: [
-              {
-                name: 'description',
-                content: 'You can learn countries by continents if you don\'t know them.'
-              },
-              {
-                property: 'og:description',
-                content: 'You can learn countries by continents if you don\'t know them.'
-              }
-            ]
+    },
+    {
+      path: '/learn/full',
+      component: Subject,
+      name: 'Subject',
+      meta: {
+        title: 'Worldaria learn mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'You can learn countries if you don\'t know them.'
           },
-          children: [
-            {
-              path: '/learn/continent/:name',
-              component: Subject,
-              name: 'SubjectContinent',
-              props: { mode: 'learn' },
-              meta: {
-                title: 'Worldaria learn mode',
-                metaTags: [
-                  {
-                    name: 'description',
-                    content: 'You can learn countries by continents if you don\'t know them.'
-                  },
-                  {
-                    property: 'og:description',
-                    content: 'You can learn countries by continents if you don\'t know them.'
-                  }
-                ]
-              },
-            }
-          ]
-        },
-        {
-          path: '/learn/countries',
-          component: ChooseSubject,
-          name: 'LearnCountry',
-          props: { subject: 'regions' },
-          meta: {
-            title: 'Worldaria learn mode',
-            metaTags: [
-              {
-                name: 'description',
-                content: 'You can learn regions of the countries if you don\'t know them.'
-              },
-              {
-                property: 'og:description',
-                content: 'You can learn regions of the countries if you don\'t know them.'
-              }
-            ]
+          {
+            property: 'og:description',
+            content: 'You can learn countries if you don\'t know them.'
+          }
+        ]
+      }
+    },
+    {
+      path: '/learn/continent',
+      component: ChooseSubject,
+      name: 'LearnContinent',
+      props: { subject: 'continents' },
+      meta: {
+        title: 'Worldaria learn mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'You can learn countries by continents if you don\'t know them.'
           },
-          children: [
-            {
-              path: '/learn/countries/:name',
-              component: Subject,
-              name: 'SubjectCountry',
-              props: { mode: 'learn' },
-              meta: {
-                title: 'Worldaria learn mode',
-                metaTags: [
-                  {
-                    name: 'description',
-                    content: 'You can learn regions of the countries if you don\'t know them.'
-                  },
-                  {
-                    property: 'og:description',
-                    content: 'You can learn regions of the countries if you don\'t know them.'
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          path: '/learn/details',
-          component: CountryDetails,
-          name: 'CountryDetails',
-          props: { mode: 'details' },
-          meta: {
-            title: 'Worldaria details mode',
-            metaTags: [
-              {
-                name: 'description',
-                content: 'You can learn population, area, gdp, temperature of all countries and even more.'
-              },
-              {
-                property: 'og:description',
-                content: 'You can learn population, area, gdp, temperature of all countries and even more.'
-              }
-            ]
+          {
+            property: 'og:description',
+            content: 'You can learn countries by continents if you don\'t know them.'
           }
-        },
-        {
-          path: '/learn/history',
-          component: CountryHistory,
-          name: 'CountryHistory',
-          meta: {
-            title: 'Worldaria history mode',
-            metaTags: [
-              {
-                name: 'description',
-                content: 'You can learn the history of countries\' creation.'
-              },
-              {
-                property: 'og:description',
-                content: 'You can learn the history of countries\' creation.'
-              }
-            ]
+        ]
+      },
+    },
+    {
+      path: '/learn/continent/:name',
+      component: Subject,
+      name: 'SubjectContinent',
+      meta: {
+        title: 'Worldaria learn mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'You can learn countries by continents if you don\'t know them.'
+          },
+          {
+            property: 'og:description',
+            content: 'You can learn countries by continents if you don\'t know them.'
           }
-        }
-      ]
+        ]
+      },
+    },
+    {
+      path: '/learn/countries',
+      component: ChooseSubject,
+      name: 'LearnCountry',
+      props: { subject: 'regions' },
+      meta: {
+        title: 'Worldaria learn mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'You can learn regions of the countries if you don\'t know them.'
+          },
+          {
+            property: 'og:description',
+            content: 'You can learn regions of the countries if you don\'t know them.'
+          }
+        ]
+      },
+    },
+    {
+      path: '/learn/countries/:name',
+      component: Subject,
+      name: 'SubjectCountry',
+      meta: {
+        title: 'Worldaria learn mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'You can learn regions of the countries if you don\'t know them.'
+          },
+          {
+            property: 'og:description',
+            content: 'You can learn regions of the countries if you don\'t know them.'
+          }
+        ]
+      }
+    },
+    {
+      path: '/learn/details',
+      component: CountryDetails,
+      name: 'CountryDetails',
+      meta: {
+        title: 'Worldaria details mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'You can learn population, area, gdp, temperature of all countries and even more.'
+          },
+          {
+            property: 'og:description',
+            content: 'You can learn population, area, gdp, temperature of all countries and even more.'
+          }
+        ]
+      }
+    },
+    {
+      path: '/learn/history',
+      component: CountryHistory,
+      name: 'CountryHistory',
+      meta: {
+        title: 'Worldaria history mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'You can learn the history of countries\' creation.'
+          },
+          {
+            property: 'og:description',
+            content: 'You can learn the history of countries\' creation.'
+          }
+        ]
+      }
     },
     {
       name: 'Online',
@@ -327,13 +334,11 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   if (to.matched.some(r => r.meta?.auth)) {
     onAuthStateChanged(getAuth(), user => {
       if (!user) {
-        next({
-          path: '/'
-        })
+        return '/'
       }
     })
   }
@@ -347,20 +352,15 @@ router.beforeEach((to, from, next) => {
 
   Array.from(document.querySelectorAll('[data-vue-router-controlled]')).map(el => el.parentNode?.removeChild(el))
 
-  if (!Array.isArray(nearestWithMeta?.meta?.metaTags)) {
-    return next()
-  }
-
-  nearestWithMeta?.meta.metaTags.map(tagDef => {
+  nearestWithMeta?.meta.metaTags.map?.(tagDef => {
     const tag = document.createElement('meta')
     Object.keys(tagDef).forEach(key => {
-      tag.setAttribute(key, tagDef[key])
+      tag.setAttribute(key, tagDef[key as keyof MetaTag])
     })
     tag.setAttribute('data-vue-router-controlled', '')
 
     return tag
   }).forEach(tag => document.head.appendChild(tag))
-  next()
 })
 
 export default router

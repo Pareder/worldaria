@@ -19,39 +19,29 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
 import { populationOptions } from '@/config'
 
-export default {
-  props: {
-    opponent: {
-      type: String
-    },
-    mode: {
-      type: [Number, undefined, String]
-    },
-    type: {
-      type: String
-    }
-  },
+const props = defineProps<{
+  opponent: string
+  mode?: string | number
+  type?: string
+}>()
 
-  computed: {
-    capitalizedType() {
-      if (!this.type) {
-        return ''
-      }
+const capitalizedType = computed(() => {
+  if (!props.type) {
+    return ''
+  }
 
-      const value = this.type.toString()
-      return value.charAt(0).toUpperCase() + value.slice(1)
-    },
+  const value = props.type.toString()
+  return value.charAt(0).toUpperCase() + value.slice(1)
+})
 
-    modeName() {
-      const option = populationOptions.find(option => option.value === this.mode)
-
-      return option?.description || 'all'
-    }
-  },
-}
+const modeName = computed(() => {
+  const option = populationOptions.find(option => option.value === props.mode)
+  return option?.name || 'all'
+})
 </script>
 
 <style scoped>

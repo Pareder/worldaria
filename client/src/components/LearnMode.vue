@@ -1,6 +1,6 @@
 <template>
   <div id="map">
-    <Modal v-if="game.count === states.length" :mode="mode" :score="game.score" />
+    <Modal v-if="game.count === states.length" mode="learn" :score="game.score" />
     <Drawer v-else :game="game">
       <span class="text">{{ states[game.count] }}</span>
       <SearchCountriesForm
@@ -10,7 +10,7 @@
         :foundCountries="foundCountries"
       />
     </Drawer>
-    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :mapOptions="mapOptions" />
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :flyBounds="flyBounds" :center="center" />
   </div>
 </template>
 
@@ -34,28 +34,16 @@ export default {
       },
       layers: [],
       searchCountry: '',
-      foundCountries: []
+      foundCountries: [],
+      flyBounds: null,
+      center: null
     }
   },
 
   props: {
-    mode: {
-      type: String,
-      required: true
-    },
     geojson: {
       required: true
     },
-    mapOptions: {
-      type: Object,
-      required: true
-    },
-    latlng: {
-      type: Number
-    },
-    country: {
-      type: Boolean
-    }
   },
 
   created() {
@@ -125,11 +113,7 @@ export default {
             this.layers[i].getElement().classList.add('guess_me')
           }
 
-          this.$emit('zoomCountry', {
-            lat: ((this.layers[i]._bounds._northEast.lat + this.layers[i]._bounds._southWest.lat) / 2),
-            lng: ((this.layers[i]._bounds._northEast.lng + this.layers[i]._bounds._southWest.lng) / 2)
-          })
-
+          this.flyBounds = this.layers[i]._bounds
           break
         }
       }

@@ -1,21 +1,25 @@
 <template>
-  <div>
-    <div class="mode details-mode">
-      <span class="mode_name">
-        {{ capitalizedName }} mode
-        <img src="@/assets/images/information.svg" width="24" height="24" />
-      </span>
-      <div class="hidden">
-        <p class="px5">{{ description }}</p>
-      </div>
-    </div>
-    <router-link v-if="isRoute" :to="link" class="btn btn--start">{{ capitalizedName }}</router-link>
-    <div v-else-if="name.toLowerCase().includes('online')" class="btn--online">
-      <div class="error error--sign" v-if="signInError">* sign in to play online</div>
-      <button class="btn btn--start" @click="$emit('buttonClick')">{{ capitalizedName }}</button>
-    </div>
-    <button v-else class="btn btn--start" @click="$emit('buttonClick')">{{ capitalizedName }}</button>
+  <div class="text-h5 my-5">
+    {{ capitalizedName }} mode
+    <img src="@/assets/images/information.svg" width="24" height="24" />
+    <v-tooltip max-width="300" activator="parent">
+      {{ description }}
+    </v-tooltip>
   </div>
+  <router-link v-if="isRoute" :to="link">
+    <v-btn variant="elevated" color="primary">
+      {{ capitalizedName }}
+    </v-btn>
+  </router-link>
+  <div v-else-if="name.toLowerCase().includes('online')" class="position-relative">
+    <div class="error error--sign" v-if="signInError">* sign in to play online</div>
+    <v-btn variant="elevated" color="primary" @click="$emit('buttonClick')">
+      {{ capitalizedName }}
+    </v-btn>
+  </div>
+  <v-btn v-else variant="elevated" color="primary" @click="$emit('buttonClick')">
+    {{ capitalizedName }}
+  </v-btn>
 </template>
 
 <script>
@@ -47,16 +51,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .mode {
-    position: relative;
-    margin: 20px 0;
-    font-size: 24px;
-  }
-  .mode img {
-    position: relative;
-    top: 3px;
-    cursor: pointer;
-  }
-</style>

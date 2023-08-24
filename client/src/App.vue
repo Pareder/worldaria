@@ -1,9 +1,7 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-    <Invite v-if="isInvited" :opponent="opponent" @makeDecision="makeDecision" :mode="sort" :type="type" />
-    <notifications group="error" position="top right" />
-  </div>
+  <router-view></router-view>
+  <Invite v-if="isInvited" :opponent="opponent" @makeDecision="makeDecision" :mode="sort" :type="type" />
+  <notifications group="error" position="top right" />
 </template>
 
 <script setup lang="ts">
@@ -19,8 +17,8 @@ const router = useRouter()
 const appData = ref<{ user: User | null }>({ user: null })
 const isInvited = ref(false)
 const opponent = ref('')
-const type = ref(null)
-const sort = ref(null)
+const type = ref()
+const sort = ref()
 
 provide('appData', appData)
 

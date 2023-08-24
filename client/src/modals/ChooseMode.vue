@@ -31,13 +31,11 @@
               >
               <label class="option__label" :for="option.id">
                 <div class="check"></div>
-                <span class="mode_name">
-                  {{ option.name }}
-                  <InformationSvg />
-                </span>
-                <div class="hidden">
-                  <p class="px5">{{ option.description }}</p>
-                </div>
+                {{ option.name }}
+                <InformationSvg />
+                <v-tooltip activator="parent" max-width="300" location="top">
+                  {{ option.description }}
+                </v-tooltip>
               </label>
             </li>
           </ul>
@@ -58,13 +56,11 @@
               >
               <label class="option__label" :for="option.id">
                 <div class="check"></div>
-                <span class="mode_name">
-                  {{ option.name }}
-                  <InformationSvg />
-                </span>
-                <div class="hidden">
-                  <p class="px5">{{ option.description }}</p>
-                </div>
+                {{ option.name }}
+                <InformationSvg />
+                <v-tooltip activator="parent" max-width="300" location="top">
+                  {{ option.description }}
+                </v-tooltip>
               </label>
             </li>
           </ul>

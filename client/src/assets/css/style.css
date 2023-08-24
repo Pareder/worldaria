@@ -1,11 +1,13 @@
 * {
   box-sizing: border-box;
 }
+html {
+  overflow: hidden;
+}
 body {
   min-width: 320px;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
   overscroll-behavior: none;
 }
 #app {
@@ -70,9 +72,6 @@ body {
   border-width: 2px;
   font-size: 13px;
 }
-.btn--online {
-  position: relative;
-}
 .btn--invite {
   margin-bottom: 20px;
 }
@@ -127,7 +126,7 @@ body {
   transition: all 0.3s;
 }
 .search_icon {
-  background-image: url("~@/assets/images/search.svg");
+  background-image: url("@/assets/images/search.svg");
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: 5px center;
@@ -284,44 +283,6 @@ body {
 }
 .error--sign {
   top: -22px;
-}
-.hidden {
-  position: absolute;
-  top: 35px;
-  left: 0;
-  z-index: 1;
-  width: 300px;
-  text-align: left;
-  font-size: 16px;
-  background-color: #fff;
-  color: #2c3e50;
-  border: 1px solid #2c3e50;
-  border-radius: 5px;
-  box-shadow: 0 0 5px #fff;
-  visibility: hidden;
-  opacity: 0;
-  overflow: hidden;
-  transition: visibility 0s, opacity 0.5s linear;
-}
-@media screen and (max-width: 500px) {
-  .hidden {
-    width: 200px;
-  }
-}
-.mode__name {
-  margin: 0;
-  padding: 5px 10px;
-  background-color: rgba(163, 204, 255, 0.3);
-  border-bottom: 1px solid rgb(163, 204, 255);
-}
-.px5 {
-  margin: 10px 0;
-  padding: 0 10px;
-}
-.mode_name:hover ~ .hidden, .mode_name:active ~ .hidden {
-  display: block;
-  visibility: visible;
-  opacity: 1;
 }
 @keyframes opacityChanger {
   0% {

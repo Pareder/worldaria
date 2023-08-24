@@ -70,13 +70,9 @@ export default {
   inject: ['appData'],
 
   beforeRouteEnter(to, from, next) {
-    if (from.name) {
-      next(vm => {
-        vm.start = true
-      })
-    }
-
-    next()
+    next(vm => {
+      vm.start = Boolean(from.name)
+    })
   },
 
   methods: {

@@ -56,7 +56,7 @@
     left: 5px;
     width: 20px;
     height: 20px;
-    background-image: url("~@/assets/images/search.svg");
+    background-image: url("@/assets/images/search.svg");
   }
   input[type="text"] {
     padding: 5px 10px 5px 30px;

@@ -1,14 +1,11 @@
 <template>
-  <div v-if="!getChildren">
-    <Loader v-show="!loaded" />
-    <Drawer>
-      <span class="text">Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}</span>
-    </Drawer>
-    <div id="map" v-if="loaded">
-      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" />
-    </div>
+  <Loader v-show="!loaded" />
+  <Drawer>
+    <span class="text">Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}</span>
+  </Drawer>
+  <div id="map" v-if="loaded">
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" />
   </div>
-  <router-view v-else></router-view>
 </template>
 
 <script>
@@ -32,12 +29,6 @@ export default {
     }
   },
 
-  computed: {
-    getChildren() {
-      return this.$route.query.name
-    }
-  },
-
   async created() {
     await this.createGeo()
   },
@@ -56,30 +47,14 @@ export default {
     },
 
     changeRoute(layer) {
-      if (this.subject === 'continents') {
-        this.$router.push({
-          name: 'SubjectContinent',
-          query: {
-            name: layer.feature.properties.continent.replace(/ /g, '').toLowerCase(), 
-          }
-        })
-      } else if (this.subject === 'regions') {
-        this.$router.push({
-          name: 'SubjectCountry',
-          query: {
-            name: layer.feature.properties.name.replace(/ /g, '').toLowerCase(),
-            country: true,
-            latlng: {
-              center: layer.getCenter(),
-              maxBounds: [
-                layer._bounds.getNorthEast(),
-                layer._bounds.getSouthWest()
-              ],
-              zoom: 4
-            }
-          }
-        })
-      }
+      this.$router.push({
+        name: this.subject === 'continents' ? 'SubjectContinent' : 'SubjectCountry',
+        params: {
+          name: this.subject === 'continents'
+            ? layer.feature.properties.continent.replace(/ /g, '').toLowerCase()
+            : layer.feature.properties.name.replace(/ /g, '').toLowerCase(),
+        },
+      })
     }
   },
 

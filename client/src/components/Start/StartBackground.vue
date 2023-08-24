@@ -1,5 +1,5 @@
 <template>
-  <img v-if="isMobile" class="start-bg" src="../../../public/img/body_bg.jpg" />
+  <img v-if="isMobile" class="start-bg" src="/img/body_bg.jpg" />
   <video v-else class="start-bg" preload="auto" muted autoplay loop>
     <source src="@/assets/video/earth3.mp4" type="video/mp4">
   </video>

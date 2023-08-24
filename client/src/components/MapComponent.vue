@@ -3,10 +3,11 @@
     <v-map
       ref="map"
       :minZoom="2"
-      :center="mapOptions ? mapOptions.center : options.map.center"
-      :zoom="mapOptions ? mapOptions.zoom : options.map.zoom"
-      :maxBounds="mapOptions ? mapOptions.maxBounds : options.map.maxBounds"
+      :center="options.map.center"
+      :zoom="options.map.zoom"
+      :maxBounds="options.map.maxBounds"
       class="fullHeight"
+      @ready="autoFitBounds()"
     >
       <HomeButton />
       <v-geojson v-if="world && world.length > 0" :geojson="world" :options="options.world"></v-geojson>
@@ -17,6 +18,7 @@
 </template>
 
 <script>
+import { featureGroup } from 'leaflet'
 import { LMap, LGeoJson } from '@vue-leaflet/vue-leaflet'
 
 import randomColor from '@/utils/randomColor';
@@ -59,43 +61,67 @@ export default {
 
   props: {
     geojson: {
-      type: Array
+      type: Array,
     },
     onEachFeature: {
-      type: Function
-    },
-    mapOptions: {
-      type: Object
+      type: Function,
     },
     world: {
-      type: Array
+      type: Array,
     },
     timezones: {
-      type: Array
+      type: Array,
     },
     toggleTimezone: {
-      type: Boolean
+      type: Boolean,
     },
     botMode: {
-      type: String
-    }
+      type: String,
+    },
+    flyBounds: {
+      type: Object,
+    },
+    center: {
+      type: Array,
+    },
+  },
+
+  watch: {
+    flyBounds(bounds) {
+      if (!bounds) {
+        return
+      }
+
+      this.$refs.map.leafletObject.fitBounds(bounds, { padding: [20, 20] })
+    },
+
+    center(center) {
+      if (!center) {
+        return
+      }
+
+      this.$refs.map.leafletObject.flyTo({
+        lat: center[0],
+        lng: center[1],
+      }, 3)
+    },
   },
 
   methods: {
-    zoom(value) {
-      this.$refs.map.mapObject.flyTo({ ...value }, 6)
-    },
-
-    setStartZoom() {
-      this.$refs.map.mapObject.flyTo({
-        lat: this.options.map.center[0],
-        lng: this.options.map.center[1]
-      }, 3)
-    },
-
     bindTimezone(feature, layer) {
       layer.bindPopup(layer.feature.properties.time_zone)
       layer.setStyle({ fillColor: randomColor() })
+    },
+
+    autoFitBounds() {
+      const map = this.$refs.map.leafletObject
+      const group = new featureGroup()
+      map.eachLayer(layer => {
+        if (layer.feature) {
+          group.addLayer(layer)
+        }
+      })
+      map.fitBounds(group.getBounds(), { padding: [20, 20] })
     }
   },
 

@@ -12,7 +12,7 @@
     "install:client": "cd client && npm install",
     "install:server": "cd server && npm install",
     "postinstall": "npm run install:client && npm run install:server",
-    "start": "cd server && node --experimental-specifier-resolution=node index.js",
+    "start": "cd server && npm run start",
     "dev": "cd client && npm run dev",
     "build": "cd client && npm run build",
     "test:client": "cd client && npm run test:unit",

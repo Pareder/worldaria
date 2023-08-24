@@ -13,9 +13,9 @@ class API {
     return new API((...args) => window.fetch(...args), notify, localStorage)
   }
 
-  getGeoJSON(name: string) {
+  getGeoJSON(name: string): Promise<FeatureCollection['features']> {
     return new Promise(resolve => {
-      this.http(`../json/${name}.json`)
+      this.http(`${window.location.origin}/json/${name}.json`)
         .then<FeatureCollection>(response => response.json())
         .then(data => {
           resolve(data.features)

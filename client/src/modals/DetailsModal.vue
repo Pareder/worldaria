@@ -96,18 +96,14 @@
             <td>{{ currentTemperature.desc }}, {{ currentTemperature.c }} °C</td>
           </tr>
           <tr v-if="country.hdi">
-            <td class="relative">
-              <span class="mode_name">
-                HDI
-                <InformationSvg />
-              </span>
-              <div class="hidden">
-                <p class="px5 text--normal">
-                  The <strong>Human Development Index</strong> (<strong>HDI</strong>) is a statistic composite index
-                  of life expectancy, education, and per capita income indicators. A country scores a higher HDI when
-                  all indexes are higher.
-                </p>
-              </div>
+            <td>
+              HDI
+              <InformationSvg />
+              <v-tooltip activator="parent" max-width="300">
+                The <strong>Human Development Index</strong> (<strong>HDI</strong>) is a statistic composite index
+                of life expectancy, education, and per capita income indicators. A country scores a higher HDI when
+                all indexes are higher.
+              </v-tooltip>
             </td>
             <td>{{ country.hdi }}</td>
           </tr>
@@ -322,12 +318,6 @@ export default {
     100% {
       opacity: 0;
     }
-  }
-  .relative {
-    position: relative;
-  }
-  .text--normal {
-    font-weight: normal;
   }
   tr {
     visibility: hidden;

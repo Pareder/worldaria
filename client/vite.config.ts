@@ -17,6 +17,15 @@ export default defineConfig({
     commonjsOptions: {
       requireReturnsDefault: true,
     },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          leaflet: ['@vue-leaflet/vue-leaflet', 'leaflet'],
+          socket: ['socket.io-client'],
+          vue: ['vue', 'vue-gtag', 'vue-router', 'vuetify'],
+        },
+      },
+    },
   },
   test: {
     globals: true,

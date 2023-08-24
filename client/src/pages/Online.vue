@@ -41,7 +41,7 @@
         </div>
       </Drawer>
       <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" :sideColors="sideColors" />
-      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
+      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" :center="center" />
     </div>
   </div>
 </template>
@@ -91,7 +91,8 @@ export default {
       inviteSent: false,
       sort: null,
       gameType: null,
-      opponentName: ''
+      opponentName: '',
+      center: null,
     }
   },
 
@@ -258,7 +259,7 @@ export default {
         this.game.scores.my++
         this.enemyTurn = true
         socket.emit('countryClick', true)
-        this.$emit('setStartZoom')
+        this.center = [0, 0]
         this.resetData()
       } else {
         this.game.attempts--
@@ -266,7 +267,7 @@ export default {
         if (this.game.attempts === 0) {
           this.enemyTurn = true
           socket.emit('countryClick', false)
-          this.$emit('setStartZoom')
+          this.center = [0, 0]
           this.resetData()
         }
       }

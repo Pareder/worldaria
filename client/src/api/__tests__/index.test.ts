@@ -59,11 +59,12 @@ describe('API', () => {
 
   describe('getGeoJSON method', () => {
     it('Should call http get with correct parameter', async () => {
+      const name = 'name'
       const http = getHTTP()
       const model = getModel({ http })
-      await model.getGeoJSON('name')
+      await model.getGeoJSON(name)
 
-      expect(http).toBeCalledWith('../json/name.json')
+      expect(http).toBeCalledWith(`${window.location.origin}/json/${name}.json`)
     })
 
     it('Should call notify with correct parameters in case of error', async () => {
@@ -116,7 +117,7 @@ describe('API', () => {
       const model = getModel({ http })
       await model.getFullJSON()
 
-      expect(http).toBeCalledWith('../json/full.json')
+      expect(http).toBeCalledWith(`${window.location.origin}/json/full.json`)
     })
 
     it('Should call localStorage setItem with correct parameter if not stored in localStorage', async () => {
@@ -162,7 +163,7 @@ describe('API', () => {
       const model = getModel({ http })
       await model.getMapJSON()
 
-      expect(http).toBeCalledWith('../json/map.json')
+      expect(http).toBeCalledWith(`${window.location.origin}/json/map.json`)
     })
 
     it('Should call localStorage setItem with correct parameter if not stored in localStorage', async () => {
@@ -208,7 +209,7 @@ describe('API', () => {
       const model = getModel({ http })
       await model.getTimezoneJSON()
 
-      expect(http).toBeCalledWith('../json/timezones.json')
+      expect(http).toBeCalledWith(`${window.location.origin}/json/timezones.json`)
     })
 
     it('Should call localStorage setItem with correct parameter if not stored in localStorage', async () => {
