@@ -30,12 +30,12 @@
       </template>
       <div v-if="!enemyTurn" class="fullWidth">
         <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
-        <div v-else class="text--big">
+        <div v-else>
           {{ subjects[game.count] }}
         </div>
         <UsersList :users="users" :nickname="nickname" :score="game.scores" />
       </div>
-      <div v-else class="text--big enemyTurn dot_animation">
+      <div v-else class="dot_animation">
         Opponent's Turn<span>.</span><span>.</span><span>.</span>
       </div>
     </Drawer>
@@ -362,10 +362,5 @@ export default {
 
 .fullWidth {
   width: 100%;
-}
-
-.text--big {
-  user-select: none;
-  font-size: 22px;
 }
 </style>

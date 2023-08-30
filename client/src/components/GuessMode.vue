@@ -8,7 +8,7 @@
           v-if="guessBy === 'flag' && game.count !== subjects.length"
           :country="currentSubjectValue"
         />
-        <div v-else-if="game.count !== subjects.length" class="subject">
+        <div v-else-if="game.count !== subjects.length">
           {{ currentSubjectValue }}
         </div>
         <v-map v-if="isAreaMode" :options="options" class="map" ref="map">
@@ -258,11 +258,6 @@ export default {
 </script>
 
 <style scoped>
-.subject {
-  margin: 10px 0;
-  font-size: 22px;
-}
-
 .map {
   height: 200px;
   background-color: transparent;

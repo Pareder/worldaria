@@ -1,11 +1,9 @@
 <template>
   <Loader v-show="!loaded" />
   <Drawer>
-    <span class="text">Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}</span>
+    Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}
   </Drawer>
-  <div id="map" v-if="loaded">
-    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" />
-  </div>
+  <MapComponent v-if="loaded" :geojson="geojson" :onEachFeature="onEachFeature" />
 </template>
 
 <script>
@@ -65,15 +63,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .text {
-    font-size: 22px;
-  }
-
-  @media screen and (max-width: 400px) {
-    .text {
-      font-size: 20px;
-    }
-  }
-</style>

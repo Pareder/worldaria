@@ -9,9 +9,7 @@
     />
     <FinishGame v-if="game.count === countries.length" :score="game.score"></FinishGame>
     <Drawer v-else :game="game">
-      <div class="text-h6" v-if="game.count !== countries.length">
-        {{ countries[game.count].name }}
-      </div>
+      {{ countries[game.count].name }}
     </Drawer>
     <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
   </div>

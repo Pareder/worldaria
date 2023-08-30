@@ -1,7 +1,7 @@
 <template>
   <FinishLearn v-if="game.count === states.length" />
   <Drawer v-else :game="game">
-    <span class="text-h6">{{ states[game.count] }}</span>
+    {{ states[game.count] }}
     <SearchCountriesForm
       :items="states"
       @search="search"

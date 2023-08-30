@@ -19,9 +19,9 @@
       <template v-if="!enemyTurn" v-slot:header>
         Attempts: {{ game.attempts }}
       </template>
-      <div v-if="!enemyTurn" class="w-100">
+      <div v-if="!enemyTurn">
         <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
-        <div v-else class="text-h6">
+        <div v-else class="mb-2">
           {{ subjects[game.count] }}
         </div>
         <UsersList :users="users" nickname="You" :score="game.scores" />
