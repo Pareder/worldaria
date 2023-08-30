@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters align="center" class="text-h5 text-white my-5">
     <span class="mr-1">{{ capitalizedName }} mode</span>
-    <InformationSvg color="#fff"></InformationSvg>
+    <v-icon icon="mdi-information-outline" color="white" size="small"></v-icon>
     <v-tooltip max-width="300" activator="parent">
       {{ description }}
     </v-tooltip>
@@ -24,7 +24,6 @@
 
 <script setup lang="ts">
 import capitalize from '@/utils/capitalize'
-import InformationSvg from '@/components/InformationSvg.vue'
 
 defineEmits(['buttonClick'])
 

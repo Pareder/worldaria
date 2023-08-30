@@ -14,7 +14,7 @@
         >
           <template #label>
             <span class="mr-1">{{ option.name }}</span>
-            <InformationSvg />
+            <v-icon icon="mdi-information-outline" color="black" size="small"></v-icon>
             <v-tooltip activator="parent" max-width="300" location="top">
               {{ option.description }}
             </v-tooltip>
@@ -56,7 +56,6 @@
 import { ref } from 'vue'
 import { populationOptions } from '@/config'
 import ModalTrigger from '@/components/ModalTrigger.vue'
-import InformationSvg from '@/components/InformationSvg.vue'
 
 const mode = ref('easy')
 const sort = ref('')

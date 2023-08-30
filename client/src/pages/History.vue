@@ -1,170 +1,133 @@
 <template>
   <div>
     <Loader v-show="!loaded" />
-    <div v-if="isMobile" class="select">
-      <select @change="createGeo" v-model="history">
-        <option v-for="(date, id) in sliderOptions.data" :key="id" :value="date">{{ date }}</option>
-      </select>
-      <PlayerImg :playPressed="playPressed" @onClick="playHistory" />
-    </div>
-    <div v-else class="slider">
-      <PlayerImg :playPressed="playPressed" @onClick="playHistory" />
-    </div>
+    <v-row
+      no-gutters
+      class="slider"
+      :class="{ mobile }"
+    >
+      <v-btn
+        :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
+        @click="play"
+      ></v-btn>
+      <v-slider
+        v-model="value"
+        :direction="direction"
+        :max="options.length - 1"
+        step="1"
+        hide-details
+        show-ticks="always"
+        :ticks="ticks"
+        tick-size="4"
+        color="primary"
+        @update:model-value="createGeo"
+      ></v-slider>
+    </v-row>
     <div id="map" v-if="loaded">
       <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
     </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
+import type { Feature, FeatureCollection } from 'geojson'
+import type { Path } from 'leaflet'
 import api from '@/api'
-import randomColor from '@/utils/randomColor';
+import randomColor from '@/utils/randomColor'
 import Loader from '@/components/Loader.vue'
 import MapComponent from '@/components/MapComponent.vue'
-import PlayerImg from '@/components/PlayerImg.vue'
 
-export default {
-  data() {
-    return {
-      world: [],
-      geojson: [],
-      sliderOptions: {
-        width: '80%',
-        tooltip: 'always',
-        lazy: true,
-        marks: true,
-        useKeyboard: true,
-        style: {
-          marginLeft: '10%'
-        },
-        data: [
-          '2000 BC',
-          '1000 BC',
-          '500 BC',
-          '200 BC',
-          '1 BC',
-          '400',
-          '600',
-          '800',
-          '1000',
-          '1279',
-          '1492',
-          '1530',
-          '1650',
-          '1715',
-          '1783',
-          '1815',
-          '1880',
-          '1914',
-          '1920',
-          '1938',
-          '1945',
-          '1994'
-        ]
-      },
-      loaded: false,
-      history: '2000 BC',
-      playPressed: false,
-      interval: null,
-      count: 0
-    }
-  },
+const { mobile } = useDisplay()
+const world = ref<FeatureCollection['features']>([])
+const geojson = ref<FeatureCollection['features']>([])
+const loaded = ref(false)
+const value = ref(0)
+const isPlaying = ref(false)
+const interval = ref<ReturnType<typeof setInterval>>()
+const options = [
+  '2000 BC',
+  '1000 BC',
+  '500 BC',
+  '200 BC',
+  '1 BC',
+  '400',
+  '600',
+  '800',
+  '1000',
+  '1279',
+  '1492',
+  '1530',
+  '1650',
+  '1715',
+  '1783',
+  '1815',
+  '1880',
+  '1914',
+  '1920',
+  '1938',
+  '1945',
+  '1994',
+]
+const ticks = options.reduce<Record<string, string>>((obj, value, index) => {
+  obj[index] = value
+  return obj
+}, {})
+const direction = computed(() => mobile.value ? 'vertical' : 'horizontal')
 
-  created() {
-    this.createMap()
-  },
+onMounted(async () => {
+  world.value = await api.getMapJSON()
+  await createGeo()
+  loaded.value = true
+})
 
-  methods: {
-    async createMap() {
-      this.world = await api.getMapJSON()
-      await this.createGeo()
-    },
+async function createGeo() {
+  const period = options[value.value].replace(' ', '').toLowerCase()
+  geojson.value = await api.getGeoJSON(`history/${period}`)
+}
 
-    async createGeo() {
-      const period = this.history.replace(' ', '').toLowerCase()
-      this.count = this.sliderOptions.data.indexOf(this.history)
-      this.geojson = await api.getGeoJSON(`history/${period}`)
-      this.loaded = true
-    },
+function onEachFeature(feature: Feature, layer: Path) {
+  layer.setStyle({ fillColor: randomColor() })
+  layer.bindPopup(feature.properties?.name || '')
+}
 
-    onEachFeature(feature, layer) {
-      layer.setStyle({ fillColor: randomColor() })
-      layer.bindPopup(layer.feature.properties.name)
-    },
-
-    playHistory() {
-      if (this.isMobile && !this.playPressed) {
-        this.playPressed = true
-
-        this.interval = setInterval(() => {
-          this.count++
-
-          if (this.count > this.sliderOptions.data.length - 1) {
-            clearInterval(this.interval)
-            return
-          }
-
-          this.history = this.sliderOptions.data[this.count]
-          this.createGeo()
-        }, 2000)
-      } else if (!this.playPressed) {
-        this.playPressed = true
-        this.$refs.slider.setIndex(this.$refs.slider.getIndex() + 1)
-
-        this.interval = setInterval(() => {
-          if (this.$refs.slider.getIndex() === 21) {
-            clearInterval(this.interval)
-            this.playPressed = false
-            return
-          }
-
-          this.$refs.slider.setIndex(this.$refs.slider.getIndex() + 1)
-        }, 2000)
-      } else if (this.interval) {
-        this.playPressed = false
-        clearInterval(this.interval)
-      }
-    }
-  },
-
-  components: {
-    Loader,
-    MapComponent,
-    PlayerImg
+function play() {
+  isPlaying.value = !isPlaying.value
+  clearInterval(interval.value)
+  if (!isPlaying.value) {
+    return
   }
+
+  interval.value = setInterval(() => {
+    value.value = value.value + 1
+    createGeo()
+    if (value.value >= options.length - 1) {
+      isPlaying.value = false
+      clearInterval(interval.value)
+    }
+  }, 2000)
 }
 </script>
 
 <style scoped>
-  .leaflet-pane {
-    z-index: 1;
-  }
-  .select {
-    position: absolute;
-    z-index: 800;
-    top: 15px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  select {
-    width: 150px;
-    padding: 5px 10px;
-    border: 1px solid #2c3e50;
-    outline: 0;
-    border-radius: 5px;
-    font: 15px 'Montserrat';
-    transition: all 0.3s;
-  }
-  select:focus {
-    box-shadow: 0 0 5px #2c3e50;
-  }
-  .slider {
-    position: fixed;
-    z-index: 800;
-    bottom: 20px;
-    width: 100%;
-    display: flex;
-  }
+.slider {
+  position: fixed;
+  z-index: 800;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  padding: 0 16px;
+  gap: 16px;
+  align-items: center;
+}
+
+.mobile {
+  top: 10px;
+  bottom: 10px;
+  right: 32px;
+  left: unset;
+  flex-direction: column;
+  align-items: flex-start;
+}
 </style>
