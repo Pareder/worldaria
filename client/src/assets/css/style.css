@@ -40,28 +40,6 @@ body {
   animation: guess 2s infinite;
 }
 
-.search__input {
-  width: 200px;
-  margin: 10px 0;
-  padding: 5px 10px 5px 30px;
-  border: 1px solid #2c3e50;
-  outline: 0;
-  border-radius: 5px;
-  font: 15px 'Montserrat';
-  transition: all 0.3s;
-}
-
-.search_icon {
-  background-image: url("@/assets/images/search.svg");
-  background-repeat: no-repeat;
-  background-size: 20px;
-  background-position: 5px center;
-}
-
-.search__input:focus {
-  box-shadow: 0 0 10px #2c3e50;
-}
-
 @keyframes guess {
   0% {
     fill-opacity: 1;
@@ -77,33 +55,6 @@ body {
   }
   100% {
     fill-opacity: 1;
-  }
-}
-
-@keyframes tiltup {
-  0% {
-    bottom: -400px;
-    opacity: 0;
-    transform: rotateX(-90deg);
-    border-top: solid 40px;
-  }
-  30% {
-    opacity: 0;
-  }
-  100% {
-    bottom: 0;
-  }
-}
-
-@keyframes tiltbottom {
-  0% {
-    bottom: 0;
-  }
-  100% {
-    bottom: -400px;
-    opacity: 0;
-    transform: rotateX(-90deg);
-    border-top: solid 40px;
   }
 }
 
@@ -131,117 +82,5 @@ body {
   }
   100% {
     opacity: .2;
-  }
-}
-
-.game_options {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  overflow: visible;
-}
-
-.option {
-  color: #AAAAAA;
-  display: block;
-  position: relative;
-  text-align: left;
-}
-
-.option__input {
-  position: absolute;
-  visibility: hidden;
-}
-
-.option__label {
-  padding: 0;
-  display: flex;
-  font-weight: 300;
-  margin: 10px;
-  cursor: pointer;
-  -webkit-transition: all 0.25s linear;
-}
-
-.option:hover .option__label {
-  color: #51667f;
-}
-
-.check {
-  margin-right: 10px;
-  display: block;
-  position: relative;
-  border: 3px solid #AAAAAA;
-  border-radius: 100%;
-  height: 25px;
-  width: 25px;
-  transition: border .25s linear;
-  -webkit-transition: border .25s linear;
-}
-
-.option:hover .check {
-  border-color: #51667f;
-}
-
-.check::before {
-  display: block;
-  position: absolute;
-  content: '';
-  border-radius: 100%;
-  height: 11px;
-  width: 11px;
-  top: 4px;
-  left: 4px;
-  margin: auto;
-  transition: background 0.25s linear;
-  -webkit-transition: background 0.25s linear;
-}
-
-.option__input:checked ~ .option__label .check {
-  border-color: #51667f;
-}
-
-.option__input:checked ~ .option__label .check::before {
-  background: #51667f;
-}
-
-.option__input:checked ~ .option__label {
-  color: #51667f;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
-}
-
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
-
-.error {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0 5px;
-  font-size: 14px;
-  background-color: tomato;
-  color: #fff;
-  opacity: 0;
-  animation: opacityChanger 0.5s forwards;
-}
-
-.error--sign {
-  top: -22px;
-  left: 50%;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-
-@keyframes opacityChanger {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
   }
 }

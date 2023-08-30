@@ -12,7 +12,7 @@
       <HomeButton />
       <v-geojson v-if="world && world.length > 0" :geojson="world" :options="options.world"></v-geojson>
       <v-geojson v-if="geojson && geojson.length > 0" :geojson="geojson" :options="options.geojson"></v-geojson>
-      <v-geojson v-if="timezones && toggleTimezone" :geojson="timezones" :options="options.timezone"></v-geojson>
+      <v-geojson v-if="timezones.length > 0" :geojson="timezones" :options="options.timezone"></v-geojson>
     </v-map>
   </div>
 </template>
@@ -71,9 +71,6 @@ export default {
     },
     timezones: {
       type: Array,
-    },
-    toggleTimezone: {
-      type: Boolean,
     },
     botMode: {
       type: String,

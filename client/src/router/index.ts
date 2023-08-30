@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import Start from '@/pages/Start.vue'
-import Game from '@/pages/Game.vue'
-import Online from '@/pages/Online.vue'
 import Bot from '@/pages/Bot.vue'
+import Details from '@/pages/Details.vue'
+import Game from '@/pages/Game.vue'
+import History from '@/pages/History.vue'
+import Online from '@/pages/Online.vue'
+import Start from '@/pages/Start.vue'
 import Subject from '@/components/Subject.vue'
 import ChooseSubject from '@/components/ChooseSubject.vue'
-import CountryDetails from '@/components/CountryDetails.vue'
-import CountryHistory from '@/components/CountryHistory.vue'
 import GuessMode from '@/components/GuessMode.vue'
 
 type MetaTagName = {
@@ -180,7 +180,7 @@ const router = createRouter({
     },
     {
       path: '/learn/details',
-      component: CountryDetails,
+      component: Details,
       name: 'CountryDetails',
       meta: {
         title: 'Worldaria details mode',
@@ -198,7 +198,7 @@ const router = createRouter({
     },
     {
       path: '/learn/history',
-      component: CountryHistory,
+      component: History,
       name: 'CountryHistory',
       meta: {
         title: 'Worldaria history mode',

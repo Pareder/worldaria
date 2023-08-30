@@ -153,9 +153,10 @@ import { socket } from '@/socket'
 import InformationSvg from '@/components/InformationSvg.vue'
 
 const emit = defineEmits(['close'])
-const props = defineProps<{ country?: CountryType, open: boolean }>()
+const props = defineProps<{ country?: CountryType }>()
 const currentTemperature = ref<TemperatureType>()
 const shortName = computed(() => (props.country?.name || '').replace(/ /g, '').toLowerCase())
+const open = computed(() => Boolean(props.country))
 
 watch(() => props.country, val => {
   if (!val) {

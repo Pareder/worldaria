@@ -63,8 +63,6 @@ const router = useRouter()
 const appData = inject<Ref<AppDataType>>('appData')
 const signInError = ref(false)
 
-console.log(appData)
-
 function checkOnlineRoute() {
   if (!appData?.value.user) {
     signInError.value = true
@@ -95,8 +93,6 @@ function checkOnlineRoute() {
   align-items: center;
   line-height: 1.6;
   font-size: 20px;
-  opacity: 0;
-  animation: opacityChanger 1s forwards;
 }
 
 @media screen and (max-width: 650px) {

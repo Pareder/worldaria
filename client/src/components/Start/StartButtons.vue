@@ -12,7 +12,7 @@
     </v-btn>
   </router-link>
   <div v-else-if="name.toLowerCase().includes('online')" class="position-relative">
-    <div class="error error--sign" v-if="signInError">* sign in to play online</div>
+    <div class="error" v-if="signInError">* sign in to play online</div>
     <v-btn variant="elevated" color="primary" @click="$emit('buttonClick')">
       {{ capitalizedName }}
     </v-btn>
@@ -38,3 +38,28 @@ const props = defineProps<{
 
 const capitalizedName = capitalize(props.name)
 </script>
+
+<style scoped>
+.error {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  padding: 0 5px;
+  font-size: 14px;
+  background-color: tomato;
+  color: #fff;
+  opacity: 0;
+  animation: opacityChanger 0.5s forwards;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+@keyframes opacityChanger {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+</style>

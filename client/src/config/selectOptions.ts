@@ -1,273 +1,279 @@
+export const ALL = 'all'
+export const MIN = 'min'
+export const MAX = 'max'
+
+export type SelectValue = typeof ALL | typeof MIN | typeof MAX | number
+
 export default {
   area: {
-    text: 'Area',
+    label: 'Area',
     data: [
       {
-        name: 'All',
-        value: 'all'
+        title: 'All',
+        value: 'all',
       },
       {
-        name: 'Less 10 k',
-        value: '-10000'
+        title: 'Less 10 k',
+        value: -10000,
       },
       {
-        name: 'Less 100 k',
-        value: '-100000'
+        title: 'Less 100 k',
+        value: -100000,
       },
       {
-        name: 'Less 500 k',
-        value: '-500000'
+        title: 'Less 500 k',
+        value: -500000,
       },
       {
-        name: 'More 500 k',
-        value: '500000'
+        title: 'More 500 k',
+        value: 500000,
       },
       {
-        name: 'More 1 m',
-        value: '1000000'
+        title: 'More 1 m',
+        value: 1000000,
       },
       {
-        name: 'More 5 m',
-        value: '5000000'
+        title: 'More 5 m',
+        value: 5000000,
       },
       {
-        name: 'Min',
-        value: 'min'
+        title: 'Min',
+        value: 'min',
       },
       {
-        name: 'Max',
-        value: 'max'
-      }
-    ]
+        title: 'Max',
+        value: 'max',
+      },
+    ],
   },
   pop_est: {
-    text: 'Population',
+    label: 'Population',
     data: [
       {
-        name: 'All',
-        value: 'all'
+        title: 'All',
+        value: 'all',
       },
       {
-        name: 'Less 1 m',
-        value: '-1000000'
+        title: 'Less 1 m',
+        value: -1000000,
       },
       {
-        name: 'Less 2 m',
-        value: '-2000000'
+        title: 'Less 2 m',
+        value: -2000000,
       },
       {
-        name: 'Less 5 m',
-        value: '-5000000'
+        title: 'Less 5 m',
+        value: -5000000,
       },
       {
-        name: 'More 5 m',
-        value: '5000000'
+        title: 'More 5 m',
+        value: 5000000,
       },
       {
-        name: 'More 10 m',
-        value: '10000000'
+        title: 'More 10 m',
+        value: 10000000,
       },
       {
-        name: 'More 50 m',
-        value: '50000000'
+        title: 'More 50 m',
+        value: 50000000,
       },
       {
-        name: 'More 100 m',
-        value: '100000000'
+        title: 'More 100 m',
+        value: 100000000,
       },
       {
-        name: 'Min',
-        value: 'min'
+        title: 'Min',
+        value: 'min',
       },
       {
-        name: 'Max',
-        value: 'max'
-      }
-    ]
+        title: 'Max',
+        value: 'max',
+      },
+    ],
   },
   growthRate: {
-    text: 'Population growth',
+    label: 'Population growth',
     data: [
       {
-        name: 'All',
-        value: 'all'
+        title: 'All',
+        value: 'all',
       },
       {
-        name: 'Less 0 %',
-        value: '-0'
+        title: 'Less 0 %',
+        value: -0,
       },
       {
-        name: 'More 0 %',
-        value: '0'
+        title: 'More 0 %',
+        value: 0,
       },
       {
-        name: 'More 1 %',
-        value: '1'
+        title: 'More 1 %',
+        value: 1,
       },
       {
-        name: 'More 2 %',
-        value: '2'
+        title: 'More 2 %',
+        value: 2,
       },
       {
-        name: 'More 3 %',
-        value: '3'
+        title: 'More 3 %',
+        value: 3,
       },
       {
-        name: 'Min',
-        value: 'min'
+        title: 'Min',
+        value: 'min',
       },
       {
-        name: 'Max',
-        value: 'max'
-      }
-    ]
+        title: 'Max',
+        value: 'max',
+      },
+    ],
   },
   gdp: {
-    text: 'GDP',
+    label: 'GDP',
     data: [
       {
-        name: 'All',
-        value: 'all'
+        title: 'All',
+        value: 'all',
       },
       {
-        name: 'Less 1 k',
-        value: '-1000'
+        title: 'Less 1 k',
+        value: -1000,
       },
       {
-        name: 'Less 2 k',
-        value: '-2000'
+        title: 'Less 2 k',
+        value: -2000,
       },
       {
-        name: 'Less 5 k',
-        value: '-5000'
+        title: 'Less 5 k',
+        value: -5000,
       },
       {
-        name: 'More 5 k',
-        value: '5000'
+        title: 'More 5 k',
+        value: 5000,
       },
       {
-        name: 'More 10 k',
-        value: '10000'
+        title: 'More 10 k',
+        value: 10000,
       },
       {
-        name: 'More 20 k',
-        value: '20000'
+        title: 'More 20 k',
+        value: 20000,
       },
       {
-        name: 'Min',
-        value: 'min'
+        title: 'Min',
+        value: 'min',
       },
       {
-        name: 'Max',
-        value: 'max'
-      }
-    ]
+        title: 'Max',
+        value: 'max',
+      },
+    ],
   },
   expectancy: {
-    text: 'Life',
+    label: 'Life',
     data: [
       {
-        name: 'All',
-        value: 'all'
+        title: 'All',
+        value: 'all',
       },
       {
-        name: 'Less 60 years',
-        value: '-60'
+        title: 'Less 60 years',
+        value: -60,
       },
       {
-        name: 'Less 70 years',
-        value: '-70'
+        title: 'Less 70 years',
+        value: -70,
       },
       {
-        name: 'More 70 years',
-        value: '70'
+        title: 'More 70 years',
+        value: 70,
       },
       {
-        name: 'More 80 years',
-        value: '80'
+        title: 'More 80 years',
+        value: 80,
       },
       {
-        name: 'Min',
-        value: 'min'
+        title: 'Min',
+        value: 'min',
       },
       {
-        name: 'Max',
-        value: 'max'
-      }
-    ]
+        title: 'Max',
+        value: 'max',
+      },
+    ],
   },
   density: {
-    text: 'Density',
+    label: 'Density',
     data: [
       {
-        name: 'All',
-        value: 'all'
+        title: 'All',
+        value: 'all',
       },
       {
-        name: 'Less 10',
-        value: '-10'
+        title: 'Less 10',
+        value: -10,
       },
       {
-        name: 'Less 50',
-        value: '-50'
+        title: 'Less 50',
+        value: -50,
       },
       {
-        name: 'Less 100',
-        value: '-100'
+        title: 'Less 100',
+        value: -100,
       },
       {
-        name: 'More 100',
-        value: '100'
+        title: 'More 100',
+        value: 100,
       },
       {
-        name: 'More 200',
-        value: '200'
+        title: 'More 200',
+        value: 200,
       },
       {
-        name: 'Min',
-        value: 'min'
+        title: 'Min',
+        value: 'min',
       },
       {
-        name: 'Max',
-        value: 'max'
-      }
-    ]
+        title: 'Max',
+        value: 'max',
+      },
+    ],
   },
   temperature: {
-    text: 'Temperature',
+    label: 'Temperature',
     data: [
       {
-        name: 'All',
-        value: 'all'
+        title: 'All',
+        value: 'all',
       },
       {
-        name: 'Less 0 °C',
-        value: '-0'
+        title: 'Less 0 °C',
+        value: -0,
       },
       {
-        name: 'Less 10 °C',
-        value: '-10'
+        title: 'Less 10 °C',
+        value: -10,
       },
       {
-        name: 'More 10 °C',
-        value: '10'
+        title: 'More 10 °C',
+        value: 10,
       },
       {
-        name: 'More 20 °C',
-        value: '20'
+        title: 'More 20 °C',
+        value: 20,
       },
       {
-        name: 'More 25 °C',
-        value: '25'
+        title: 'More 25 °C',
+        value: 25,
       },
       {
-        name: 'Min',
-        value: 'min'
+        title: 'Min',
+        value: 'min',
       },
       {
-        name: 'Max',
-        value: 'max'
-      }
-    ]
-  }
+        title: 'Max',
+        value: 'max',
+      },
+    ],
+  },
 }
