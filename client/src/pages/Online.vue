@@ -1,48 +1,46 @@
 <template>
-  <div>
-    <ChooseOpponent
-      v-if="chooseOpponent"
-      :users="onlineUsers"
-      :nickname="nickname"
-      @randomOpponent="randomOpponent"
-      @sendInvite="sendInvite"
-      :inviteSent="inviteSent"
-      :opponentDecline="opponentDecline"
-    />
-    <Loader v-show="!loaded" />
-    <OnlineModal
-      v-if="enemyLeft || (loaded && game.count === subjects.length)"
-      :reason="reason"
-      :nickname="nickname"
-      :enemy="enemy"
-      :score="game.scores"
-      :colors="sideColors"
-    />
-    <div class="modal-backdrop" v-if="loaded && enemyTurn"></div>
-    <div v-if="loaded" id="map">
-      <Drawer
-        v-if="!enemyLeft && game.count !== geojson.length"
-        :hasTimeLimit="!enemyTurn"
-        :game="enemyTurn ? undefined : game"
-        :seconds="seconds"
-      >
-        <template v-if="!enemyTurn" v-slot:header>
-          Attempts: {{ game.attempts }}
-        </template>
-        <div v-if="!enemyTurn" class="fullWidth">
-          <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
-          <div v-else class="text--big">
-            {{ subjects[game.count] }}
-          </div>
-          <UsersList :users="users" :nickname="nickname" :score="game.scores" />
+  <ChooseOpponent
+    v-if="chooseOpponent"
+    :users="onlineUsers"
+    :nickname="nickname"
+    :inviteSent="inviteSent"
+    :opponentDecline="opponentDecline"
+    @randomOpponent="randomOpponent"
+    @sendInvite="sendInvite"
+  />
+  <Loader v-show="!loaded" />
+  <OnlineModal
+    v-if="enemyLeft || (loaded && game.count === subjects.length)"
+    :reason="reason"
+    :nickname="nickname"
+    :enemy="enemy"
+    :score="game.scores"
+    :colors="sideColors"
+  />
+  <div class="modal-backdrop" v-if="loaded && enemyTurn"></div>
+  <div v-if="loaded" id="map">
+    <Drawer
+      v-if="!enemyLeft && game.count !== geojson.length"
+      :hasTimeLimit="!enemyTurn"
+      :game="enemyTurn ? undefined : game"
+      :seconds="seconds"
+    >
+      <template v-if="!enemyTurn" v-slot:header>
+        Attempts: {{ game.attempts }}
+      </template>
+      <div v-if="!enemyTurn" class="fullWidth">
+        <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
+        <div v-else class="text--big">
+          {{ subjects[game.count] }}
         </div>
-        <div v-else class="text--big enemyTurn dot_animation">
-          Opponent's Turn<span>.</span><span>.</span><span>.</span>
-        </div>
-      </Drawer>
-      <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" :sideColors="sideColors" />
-      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" :center="center" />
-    </div>
+        <UsersList :users="users" :nickname="nickname" :score="game.scores" />
+      </div>
+      <div v-else class="text--big enemyTurn dot_animation">
+        Opponent's Turn<span>.</span><span>.</span><span>.</span>
+      </div>
+    </Drawer>
+    <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" :sideColors="sideColors" />
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" :center="center" />
   </div>
 </template>
 
@@ -71,7 +69,7 @@ export default {
         attempts: 5,
         scores: {
           my: 0,
-          enemy: 0
+          enemy: 0,
         },
       },
       loaded: false,
@@ -81,7 +79,7 @@ export default {
       users: [],
       sideColors: {
         my: '',
-        enemy: ''
+        enemy: '',
       },
       enemyTurn: true,
       enemyLeft: false,
@@ -100,7 +98,7 @@ export default {
 
   computed: {
     nickname() {
-      return this.appData.user.displayName
+      return this.appData.user?.displayName
     },
 
     enemy() {
@@ -113,7 +111,7 @@ export default {
 
     sortNumber() {
       return this.$route.query.sort
-    }
+    },
   },
 
   created() {
@@ -188,8 +186,8 @@ export default {
         attempts: 5,
         scores: {
           my: 0,
-          enemy: 0
-        }
+          enemy: 0,
+        },
       }
       this.seconds = 15
       this.subjects = [...data]
@@ -313,7 +311,7 @@ export default {
         this.inviteSent = false
         socket.emit('cancelInvite', {
           myName: this.nickname,
-          opponentName: this.opponentName
+          opponentName: this.opponentName,
         })
       } else {
         this.inviteSent = true
@@ -332,10 +330,10 @@ export default {
           myName: this.nickname,
           opponentName: this.opponentName,
           sort,
-          type
+          type,
         })
       }
-    }
+    },
   },
 
   components: {
@@ -346,28 +344,28 @@ export default {
     Drawer,
     SvgIcon,
     UsersList,
-    Chat
-  }
+    Chat,
+  },
 }
 </script>
 
 <style scoped>
-  .modal-backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+}
 
-  .fullWidth {
-    width: 100%;
-  }
+.fullWidth {
+  width: 100%;
+}
 
-  .text--big {
-    user-select: none;
-    font-size: 22px;
-  }
+.text--big {
+  user-select: none;
+  font-size: 22px;
+}
 </style>

@@ -1,38 +1,36 @@
 <template>
-  <div>
-    <Loader v-show="!loaded" />
-    <OnlineModal
-      v-if="loaded && game.count === geojson.length"
-      :score="game.scores"
-      :nickname="'You'"
-      :enemy="'Bot'"
-      :colors="sideColors"
-      @makeRevenge="revenge"
-    />
-    <div class="modal-backdrop" v-if="loaded && enemyTurn"></div>
-    <div v-if="loaded" id="map">
-      <Drawer
-        v-if="game.count !== geojson.length"
-        :game="enemyTurn ? undefined : game"
-        :seconds="seconds"
-        :hasTimeLimit="!enemyTurn"
-      >
-        <template v-if="!enemyTurn" v-slot:header>
-          Attempts: {{ game.attempts }}
-        </template>
-        <div v-if="!enemyTurn" class="fullWidth">
-          <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
-          <div v-else class="text--big">
-            {{ subjects[game.count] }}
-          </div>
-          <UsersList :users="users" nickname="You" :score="game.scores" />
+  <Loader v-show="!loaded" />
+  <OnlineModal
+    v-if="loaded && game.count === geojson.length"
+    :score="game.scores"
+    nickname="You"
+    enemy="Bot"
+    :colors="sideColors"
+    @makeRevenge="revenge"
+  />
+  <div class="modal-backdrop" v-if="loaded && enemyTurn"></div>
+  <div v-if="loaded" id="map">
+    <Drawer
+      v-if="game.count !== geojson.length"
+      :game="enemyTurn ? undefined : game"
+      :seconds="seconds"
+      :hasTimeLimit="!enemyTurn"
+    >
+      <template v-if="!enemyTurn" v-slot:header>
+        Attempts: {{ game.attempts }}
+      </template>
+      <div v-if="!enemyTurn" class="w-100">
+        <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
+        <div v-else class="text-h6">
+          {{ subjects[game.count] }}
         </div>
-        <div v-else class="text--big enemyTurn dot_animation">
-          Opponent's Turn<span>.</span><span>.</span><span>.</span>
-        </div>
-      </Drawer>
-      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :botMode="botMode" :world="world" />
-    </div>
+        <UsersList :users="users" nickname="You" :score="game.scores" />
+      </div>
+      <div v-else class="text-h6 dot_animation">
+        Opponent's Turn<span>.</span><span>.</span><span>.</span>
+      </div>
+    </Drawer>
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :botMode="botMode" :world="world" />
   </div>
 </template>
 
@@ -57,7 +55,7 @@ export default {
         attempts: 5,
         scores: {
           my: 0,
-          enemy: 0
+          enemy: 0,
         },
       },
       loaded: false,
@@ -67,9 +65,9 @@ export default {
       users: ['You', 'Bot'],
       sideColors: {
         my: 'blue',
-        enemy: 'tomato'
+        enemy: 'tomato',
       },
-      enemyTurn: false
+      enemyTurn: false,
     }
   },
 
@@ -79,7 +77,7 @@ export default {
     },
 
     chance() {
-      switch(this.$route.query.mode) {
+      switch (this.$route.query.mode) {
         case 'hard':
           return 0.8
         case 'extreme':
@@ -94,15 +92,15 @@ export default {
 
     gameType() {
       return this.$route.query.by
-    }
+    },
   },
 
   async created() {
     if (this.$route.query.sort && this.botMode !== 'impossible') {
-        await this.getWorld()
-      } else {
-        await this.getCountries()
-      }
+      await this.getWorld()
+    } else {
+      await this.getCountries()
+    }
   },
 
   methods: {
@@ -222,8 +220,8 @@ export default {
         attempts: 5,
         scores: {
           my: 0,
-          enemy: 0
-        }
+          enemy: 0,
+        },
       }
       this.seconds = 15
 
@@ -240,7 +238,7 @@ export default {
       this.subjects.sort(this.compareRandom)
       this.enemyTurn = false
       this.makeInterval()
-    }
+    },
   },
 
   components: {
@@ -249,28 +247,19 @@ export default {
     MapComponent,
     OnlineModal,
     SvgIcon,
-    UsersList
-  }
+    UsersList,
+  },
 }
 </script>
 
 <style scoped>
-  .modal-backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .fullWidth {
-    width: 100%;
-  }
-
-  .text--big {
-    user-select: none;
-    font-size: 22px;
-  }
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+}
 </style>

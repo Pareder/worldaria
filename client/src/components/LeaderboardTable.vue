@@ -1,6 +1,6 @@
 <template>
   <div v-if="leaders.length" class="leaderboard">
-    <h1>Leaderboard</h1>
+    <h1 class="text-center">Leaderboard</h1>
     <ol>
       <li
         v-for="(user, id) in leaders"

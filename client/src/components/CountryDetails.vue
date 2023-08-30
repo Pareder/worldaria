@@ -1,45 +1,40 @@
 <template>
-  <div>
-    <Loader v-show="!loaded" />
-    <DetailsModal v-if="isClicked" :country="selectedCountry" @close="closeModal" />
-    <div class="learn_notification">
-      <div class="selectors" :class="openNotification ? 'opened' : ''">
-        <SelectComponent sortBy="area" v-model="sort.area" @sortBy="sortBy" />
-        <SelectComponent sortBy="pop_est" v-model="sort.pop_est" @sortBy="sortBy" />
-        <SelectComponent sortBy="growthRate" v-model="sort.growthRate" @sortBy="sortBy" />
-        <SelectComponent sortBy="gdp" v-model="sort.gdp" @sortBy="sortBy" />
-        <SelectComponent sortBy="expectancy" v-model="sort.expectancy" @sortBy="sortBy" />
-        <SelectComponent sortBy="density" v-model="sort.density" @sortBy="sortBy" />
-        <SelectComponent sortBy="temperature" v-model="sort.temperature" @sortBy="sortBy" />
-        <Checkbox v-model="showTimezone" @toggleTimezone="toggleTimezone" :showTimezone="showTimezone" />
-        <SearchCountriesForm
-          v-model="searchCountry"
-          @search="search"
-          @onClick="onClick"
-          :foundCountries="foundCountries"
-          :showAmount="false"
-        />
-        <div v-if="!isMobile" class="count">Amount - {{ foundCountries.length || sortedGeojson.length }}</div>
-      </div>
-      <div class="opener" @click="openNotification = !openNotification">
-        <img src="@/assets/images/down.svg" width="16" height="16" :class="openNotification ? 'rotate' : ''">
-      </div>
-    </div>
-    <div id="map" v-if="loaded">
-      <MapComponent
-        :geojson="sortedGeojson"
-        :onEachFeature="onEachFeature"
-        :world="world"
-        :timezones="timezones"
-        :toggleTimezone="showTimezone"
+  <Loader v-show="!loaded" />
+  <DetailsModal :open="isClicked" :country="selectedCountry" @close="closeModal" />
+  <div class="learn_notification">
+    <div class="selectors" :class="openNotification ? 'opened' : ''">
+      <SelectComponent sortBy="area" v-model="sort.area" @sortBy="sortBy" />
+      <SelectComponent sortBy="pop_est" v-model="sort.pop_est" @sortBy="sortBy" />
+      <SelectComponent sortBy="growthRate" v-model="sort.growthRate" @sortBy="sortBy" />
+      <SelectComponent sortBy="gdp" v-model="sort.gdp" @sortBy="sortBy" />
+      <SelectComponent sortBy="expectancy" v-model="sort.expectancy" @sortBy="sortBy" />
+      <SelectComponent sortBy="density" v-model="sort.density" @sortBy="sortBy" />
+      <SelectComponent sortBy="temperature" v-model="sort.temperature" @sortBy="sortBy" />
+      <Checkbox v-model="showTimezone" @toggleTimezone="toggleTimezone" :showTimezone="showTimezone" />
+      <SearchCountriesForm
+        :items="countries"
+        :showAmount="false"
+        @onClick="onClick"
       />
     </div>
+    <div class="opener" @click="openNotification = !openNotification">
+      <img src="@/assets/images/down.svg" width="16" height="16" :class="openNotification ? 'rotate' : ''">
+    </div>
+  </div>
+  <div id="map" v-if="loaded">
+    <MapComponent
+      :geojson="sortedGeojson"
+      :onEachFeature="onEachFeature"
+      :world="world"
+      :timezones="timezones"
+      :toggleTimezone="showTimezone"
+    />
   </div>
 </template>
 
 <script>
 import api from '@/api'
-import randomColor from '@/utils/randomColor';
+import randomColor from '@/utils/randomColor'
 import Loader from '@/components/Loader.vue'
 import DetailsModal from '@/modals/DetailsModal.vue'
 import MapComponent from '@/components/MapComponent.vue'
@@ -71,8 +66,12 @@ export default {
       openNotification: false,
       timezones: null,
       showTimezone: false,
-      searchCountry: '',
-      foundCountries: []
+    }
+  },
+
+  computed: {
+    countries() {
+      return this.sortedGeojson.map(item => item.properties.name)
     }
   },
 
@@ -156,22 +155,11 @@ export default {
       }
     },
 
-    search(value) {
-      this.foundCountries = []
-      if (!value) {
+    onClick(country) {
+      if (!country) {
         return
       }
 
-      for (let i = 0; i < this.layers.length; i++) {
-        if (value?.length > 0 && this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
-          this.foundCountries.push(this.layers[i].feature.properties.name)
-        }
-      }
-
-      this.foundCountries.sort()
-    },
-
-    onClick(country) {
       const searchingCountry = this.layers.find(item => {
         return item.feature.properties.name.toLowerCase() === country.toLowerCase()
       })
@@ -190,7 +178,7 @@ export default {
 
     async toggleTimezone() {
       this.timezones = await api.getTimezoneJSON()
-    }
+    },
   },
 
   components: {
@@ -199,91 +187,97 @@ export default {
     MapComponent,
     SelectComponent,
     Checkbox,
-    SearchCountriesForm
-  }
+    SearchCountriesForm,
+  },
 }
 </script>
 
 <style scoped lang="scss">
-  .learn_notification {
-    position: absolute;
-    width: 100%;
-    font-size: 20px;
-    z-index: 900;
-  }
-  .selectors {
-    overflow: hidden;
-    transition: all 0.5s;
-    height:0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    background-color: #9bffe6;
-  }
-  .opened {
-    height: auto;
-    padding: 20px;
-    overflow: visible;
-  }
-  .opener {
-    position: absolute;
-    bottom: -30px;
-    width: 100%;
-    height: 30px;
-    line-height: 30px;
-    background-color: #51667f;
-    cursor: pointer;
-  }
-  img {
-    transform: rotateX(0);
-    transition: all 0.5s;
-  }
-  .rotate {
-    transform: rotateX(180deg);
-  }
+.learn_notification {
+  position: absolute;
+  width: 100%;
+  font-size: 20px;
+  z-index: 900;
+}
 
-  .squaredThree {
-    position: relative;
-    padding: 0 10px;
-    label {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
+.selectors {
+  overflow: hidden;
+  transition: all 0.5s;
+  height: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: #9bffe6;
+}
+
+.opened {
+  height: auto;
+  padding: 20px;
+  overflow: visible;
+}
+
+.opener {
+  position: absolute;
+  bottom: -30px;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  background-color: #51667f;
+  cursor: pointer;
+}
+
+img {
+  transform: rotateX(0);
+  transition: all 0.5s;
+}
+
+.rotate {
+  transform: rotateX(180deg);
+}
+
+.squaredThree {
+  position: relative;
+  padding: 0 10px;
+  label {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - 10px);
+    background: linear-gradient(to top, #222 0%, #45484d 100%);
+    border-radius: 4px;
+    box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, .4);
+    &:after {
+      content: '';
+      width: 9px;
+      height: 5px;
       position: absolute;
-      bottom: 0;
-      left: calc(50% - 10px);
-      background: linear-gradient(to top, #222 0%, #45484d 100%);
-      border-radius: 4px;
-      box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4);
-      &:after {
-        content: '';
-        width: 9px;
-        height: 5px;
-        position: absolute;
-        top: 4px;
-        left: 4px;
-        border: 3px solid #fcfff4;
-        border-top: none;
-        border-right: none;
-        background: transparent;
-        opacity: 0;
-        transform: rotate(-45deg);
-      }
-      &:hover::after {
-        opacity: 0.3;
-      }
+      top: 4px;
+      left: 4px;
+      border: 3px solid #fcfff4;
+      border-top: none;
+      border-right: none;
+      background: transparent;
+      opacity: 0;
+      transform: rotate(-45deg);
     }
-    input[type=checkbox] {
-      visibility: hidden;
-      &:checked + label:after {
-        opacity: 1;
-      }
+    &:hover::after {
+      opacity: 0.3;
     }
   }
-  .count {
-    width: 140px;
-    text-align: left;
+  input[type=checkbox] {
+    visibility: hidden;
+    &:checked + label:after {
+      opacity: 1;
+    }
   }
+}
+
+.count {
+  width: 140px;
+  text-align: left;
+}
 </style>

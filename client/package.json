@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^2.9.1",
+    "@mdi/font": "^7.2.96",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "firebase": "^10.3.0",
     "firebaseui": "^6.1.0",

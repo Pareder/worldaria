@@ -12,7 +12,7 @@
     </p>
     <p v-if="game" class="right-answers">
       <slot name="header">
-        <span class="bold">{{ game.rightAnswers || game.count }}</span> of {{ game.length }}
+        <span class="font-weight-bold">{{ game.rightAnswers || game.count }}</span> of {{ game.length }}
       </slot>
     </p>
     <slot></slot>

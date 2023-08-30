@@ -1,25 +1,22 @@
 <template>
-  <div id="map">
-    <Modal v-if="game.count === states.length" mode="learn" :score="game.score" />
-    <Drawer v-else :game="game">
-      <span class="text">{{ states[game.count] }}</span>
-      <SearchCountriesForm
-        v-model="searchCountry"
-        @search="search"
-        @onClick="zoomCountry"
-        :foundCountries="foundCountries"
-      />
-    </Drawer>
-    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :flyBounds="flyBounds" :center="center" />
-  </div>
+  <FinishLearn v-if="game.count === states.length" />
+  <Drawer v-else :game="game">
+    <span class="text-h6">{{ states[game.count] }}</span>
+    <SearchCountriesForm
+      :items="states"
+      @search="search"
+      @onClick="zoomCountry"
+    />
+  </Drawer>
+  <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :flyBounds="flyBounds" :center="center" />
 </template>
 
 <script>
-import randomColor from '@/utils/randomColor';
-import Modal from '@/modals/Modal.vue'
+import randomColor from '@/utils/randomColor'
 import Drawer from '@/components/Drawer.vue'
-import SearchCountriesForm from '@/components/SearchCountriesForm.vue'
+import FinishLearn from '@/modals/FinishLearn.vue'
 import MapComponent from '@/components/MapComponent.vue'
+import SearchCountriesForm from '@/components/SearchCountriesForm.vue'
 
 export default {
   data() {
@@ -30,21 +27,21 @@ export default {
         count: 0,
         attempts: 5,
         rightAnswers: 0,
-        length: this.geojson.length
+        length: this.geojson.length,
       },
       layers: [],
-      searchCountry: '',
-      foundCountries: [],
       flyBounds: null,
-      center: null
+      center: null,
     }
   },
 
   props: {
     geojson: {
-      required: true
+      required: true,
     },
   },
+
+  emits: ['stopLoader'],
 
   created() {
     this.states = this.geojson.map(item => item.properties.name)
@@ -75,7 +72,6 @@ export default {
         layer.setStyle({ fillColor: randomColor() })
         layer.getElement().classList.remove('guess_me')
         layer.off('click')
-        this.searchCountry = ''
         this.$emit('clearSearch')
         this.search()
       } else {
@@ -88,24 +84,22 @@ export default {
     },
 
     search(value) {
-      this.foundCountries = []
-
       for (let i = 0; i < this.layers.length; i++) {
         if (value?.length > 0 && this.layers[i].feature.properties.name.toLowerCase().startsWith(value.toLowerCase())) {
           if (!this.guessed.includes(this.layers[i].feature.properties.name)) {
             this.layers[i].setStyle({ fillColor: randomColor() })
           }
-
-          this.foundCountries.push(this.layers[i].feature.properties.name)
         } else if (!this.guessed.includes(this.layers[i].feature.properties.name)) {
           this.layers[i].setStyle({ fillColor: '#fff' })
         }
       }
-
-      this.foundCountries.sort()
     },
 
     zoomCountry(country, mode) {
+      if (!country) {
+        return
+      }
+
       for (let i = 0; i < this.layers.length; i++) {
         if (this.layers[i].feature.properties.name === country) {
           if (mode) {
@@ -119,24 +113,16 @@ export default {
       }
 
       if (this.isMobile) {
-        this.searchCountry = ''
         this.$emit('clearSearch')
-        this.foundCountries = []
       }
-    }
+    },
   },
 
   components: {
-    MapComponent,
-    Modal,
     Drawer,
+    FinishLearn,
+    MapComponent,
     SearchCountriesForm,
-  }
+  },
 }
 </script>
-
-<style scoped>
-  .text {
-    font-size: 22px;
-  }
-</style>

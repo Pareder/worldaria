@@ -6,11 +6,10 @@
       :capitals="capitals"
       :rightCapital="countries[game.count].capital"
       @check="checkCapital"
-      @answer="onAnswer"
     />
-    <Modal v-if="game.count === countries.length" :mode="mode" :score="game.score" />
+    <FinishGame v-if="game.count === countries.length" :score="game.score"></FinishGame>
     <Drawer v-else :game="game">
-      <div class="country" v-if="game.count !== countries.length">
+      <div class="text-h6" v-if="game.count !== countries.length">
         {{ countries[game.count].name }}
       </div>
     </Drawer>
@@ -19,11 +18,11 @@
 </template>
 
 <script>
-import randomColor from '@/utils/randomColor';
-import Modal from '@/modals/Modal.vue'
-import MapComponent from '@/components/MapComponent.vue'
+import randomColor from '@/utils/randomColor'
 import Capital from '@/modals/Capital.vue'
 import Drawer from '@/components/Drawer.vue'
+import FinishGame from '@/modals/FinishGame.vue'
+import MapComponent from '@/components/MapComponent.vue'
 
 export default {
   data() {
@@ -34,26 +33,26 @@ export default {
         attempts: 5,
         score: 0,
         rightAnswers: 0,
-        length: this.geojson.length
+        length: this.geojson.length,
       },
       right: false,
       capitals: [],
-      guessedCountries: []
+      guessedCountries: [],
     }
   },
 
   props: {
     mode: {
       type: String,
-      required: true
+      required: true,
     },
     geojson: {
       type: Array,
-      required: true
+      required: true,
     },
     world: {
-      type: Array
-    }
+      type: Array,
+    },
   },
 
   created() {
@@ -64,14 +63,16 @@ export default {
       this.game = {
         ...this.game,
         score: guessedResult.score,
-        rightAnswers: this.guessedCountries.length
+        rightAnswers: this.guessedCountries.length,
       }
     }
 
-    this.countries = this.geojson.filter(item => !this.guessedCountries.includes(item.properties.name)).map(item => { 
-      return { name: item.properties.name, capital: item.properties.capital }
-    })
-    this.countries.sort(this.compareRandom)
+    this.countries = this.geojson
+      .filter(item => !this.guessedCountries.includes(item.properties.name)).map(item => ({
+        name: item.properties.name,
+        capital: item.properties.capital,
+      }))
+      .sort(this.compareRandom)
   },
 
   mounted() {
@@ -99,7 +100,7 @@ export default {
         this.game.score++
         this.game.rightAnswers++
         layer.setStyle({ fillColor: randomColor() })
-        layer.off('click')        
+        layer.off('click')
       } else {
         this.game.attempts--
 
@@ -113,19 +114,16 @@ export default {
     },
 
     makeCapitals() {
-      this.capitals.push({
-        name: this.countries[this.game.count].capital,
-        isAnswered: false
-      })
+      this.capitals.push(this.countries[this.game.count].capital)
 
-      while (this.capitals.length < 4) {
+      while(this.capitals.length < 4) {
         const randomNumber = Math.floor(Math.random() * this.countries.length)
 
-        if (this.capitals.map(item => item.name).includes(this.countries[randomNumber].capital)) {
+        if (this.capitals.includes(this.countries[randomNumber].capital)) {
           continue
         }
 
-        this.capitals.push({ name: this.countries[randomNumber].capital, isAnswered: false })
+        this.capitals.push(this.countries[randomNumber].capital)
       }
 
       this.capitals.sort(this.compareRandom)
@@ -150,27 +148,17 @@ export default {
       if (!this.$route.query.sort) {
         localStorage.setItem('guessed', JSON.stringify({
           guessedCountries: this.guessedCountries,
-          score: this.game.score
+          score: this.game.score,
         }))
       }
     },
-
-    onAnswer(id, isAnswered) {
-      this.capitals[id].isAnswered = isAnswered
-    }
   },
 
   components: {
-    MapComponent,
-    Modal,
     Capital,
-    Drawer
-  }
+    Drawer,
+    FinishGame,
+    MapComponent,
+  },
 }
 </script>
-
-<style scoped>
-  .country {
-    font-size: 22px;
-  }
-</style>

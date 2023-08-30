@@ -8,13 +8,13 @@
 import { onMounted, provide, ref } from 'vue'
 import { RouterView, useRouter } from 'vue-router'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import type { User } from 'firebase/auth'
 
+import type { AppDataType } from '@/types'
 import { socket } from '@/socket'
 import Invite from '@/modals/Invite.vue'
 
 const router = useRouter()
-const appData = ref<{ user: User | null }>({ user: null })
+const appData = ref<AppDataType>({ user: null })
 const isInvited = ref(false)
 const opponent = ref('')
 const type = ref()

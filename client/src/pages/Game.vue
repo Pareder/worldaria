@@ -1,75 +1,59 @@
 <template>
-  <div>
-    <SavedGame v-if="saved" @getSaved="getSaved" />
-    <div v-else>
-      <Loader v-show="showLoader" />
-      <GameMode v-if="loaded" mode="game" :geojson="geojson" @stopLoader="stopLoader" :world="world" />
-    </div>
+  <SavedGame v-if="saved" @getSaved="getSaved" />
+  <div v-else>
+    <Loader v-show="showLoader" />
+    <GameMode v-if="loaded" mode="game" :geojson="geojson" @stopLoader="stopLoader" :world="world" />
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import type { FeatureCollection } from 'geojson'
 import api from '@/api'
 import SavedGame from '@/modals/SavedGame.vue'
 import GameMode from '@/components/GameMode.vue'
 import Loader from '@/components/Loader.vue'
 
-export default {
-  data() {
-    return {
-      geojson: [],
-      world: [],
-      saved: false,
-      loaded: false,
-      showLoader: true
-    }
-  },
+const route = useRoute()
+const geojson = ref<FeatureCollection['features']>([])
+const world = ref<FeatureCollection['features']>([])
+const saved = ref(false)
+const loaded = ref(false)
+const showLoader = ref(true)
 
-  async created() {
-    if (localStorage.getItem('guessed') && !this.$route.query.sort) {
-      this.saved = true
-      return
-    }
-
-    if (this.$route.query.sort) {
-      await this.getWorld()
-    }
-
-    await this.getContinent()
-  },
-
-  methods: {
-    async getWorld() {
-      this.world = await api.getMapJSON()
-    },
-
-    async getContinent() {
-      this.geojson = await api.getFullJSON()
-      this.onSuccessfulLoad()
-    },
-
-    onSuccessfulLoad() {
-      if (this.$route.query.sort) {
-        this.geojson = this.geojson.filter(item => item.properties.pop_est > this.$route.query.sort)
-      }
-
-      this.loaded = true
-    },
-
-    stopLoader() {
-      this.showLoader = false
-    },
-
-    async getSaved() {
-      this.saved = false
-      await this.getContinent()
-    }
-  },
-
-  components: {
-    SavedGame,
-    GameMode,
-    Loader
+onMounted(() => {
+  if (localStorage.getItem('guessed') && !route.query.sort) {
+    saved.value = true
+    return
   }
+
+  if (route.query.sort) {
+    getWorld()
+  }
+
+  getContinent()
+})
+
+async function getWorld() {
+  world.value = await api.getMapJSON()
+}
+
+async function getContinent() {
+  geojson.value = (await api.getFullJSON()).filter(item => (
+    item.properties &&
+    'pop_est' in item.properties  &&
+    item.properties.pop_est > (route.query.sort || 0)
+  ))
+  loaded.value = true
+}
+
+function stopLoader() {
+  showLoader.value = false
+}
+
+function getSaved() {
+  saved.value = false
+  getContinent()
 }
 </script>

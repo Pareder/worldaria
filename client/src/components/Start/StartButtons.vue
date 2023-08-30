@@ -1,12 +1,12 @@
 <template>
-  <div class="text-h5 my-5">
-    {{ capitalizedName }} mode
-    <img src="@/assets/images/information.svg" width="24" height="24" />
+  <v-row no-gutters align="center" class="text-h5 text-white my-5">
+    <span class="mr-1">{{ capitalizedName }} mode</span>
+    <InformationSvg color="#fff"></InformationSvg>
     <v-tooltip max-width="300" activator="parent">
       {{ description }}
     </v-tooltip>
-  </div>
-  <router-link v-if="isRoute" :to="link">
+  </v-row>
+  <router-link v-if="link" :to="link">
     <v-btn variant="elevated" color="primary">
       {{ capitalizedName }}
     </v-btn>
@@ -17,37 +17,24 @@
       {{ capitalizedName }}
     </v-btn>
   </div>
-  <v-btn v-else variant="elevated" color="primary" @click="$emit('buttonClick')">
+  <v-btn v-else variant="elevated" color="primary" v-bind="props.props">
     {{ capitalizedName }}
   </v-btn>
 </template>
 
-<script>
-  export default {
-    props: {
-      name: {
-        type: String
-      },
-      description: {
-        type: String
-      },
-      link: {
-        type: String
-      },
-      isRoute: {
-        type: Boolean
-      },
-      signInError: {
-        type: Boolean
-      }
-    },
+<script setup lang="ts">
+import capitalize from '@/utils/capitalize'
+import InformationSvg from '@/components/InformationSvg.vue'
 
-    computed: {
-      capitalizedName() {
-        if (!this.name) return ''
-        const value = this.name.toString()
-        return value.charAt(0).toUpperCase() + value.slice(1)
-      }
-    }
-  }
+defineEmits(['buttonClick'])
+
+const props = defineProps<{
+  name: string
+  description: string
+  link?: string
+  signInError?: boolean
+  props?: object
+}>()
+
+const capitalizedName = capitalize(props.name)
 </script>

@@ -2,154 +2,112 @@
   <div class="start-page">
     <StartBackground />
     <StartHeader />
-    <StartMain :start="start" @start="startPressed">
-      <div class="left">
+    <div class="left">
+      <ChooseGameMode v-slot="props">
         <StartButtons
           :name="buttons.GAME.name"
           :description="buttons.GAME.description"
-          @buttonClick="chooseGameMode"
+          :props="props"
         />
-        <StartButtons
-          :name="buttons.ONLINE.name"
-          :description="buttons.ONLINE.description"
-          :signInError="signInError"
-          @buttonClick="checkOnlineRoute"
-        />
+      </ChooseGameMode>
+      <StartButtons
+        :name="buttons.ONLINE.name"
+        :description="buttons.ONLINE.description"
+        :signInError="signInError"
+        @buttonClick="checkOnlineRoute"
+      />
+      <ChooseBotMode v-slot="props">
         <StartButtons
           :name="buttons.BOT.name"
           :description="buttons.BOT.description"
-          @buttonClick="chooseDifficulty"
+          :props="props"
         />
-      </div>
-      <div class="right">
+      </ChooseBotMode>
+    </div>
+    <div class="right">
+      <LearnMode v-slot="props">
         <StartButtons
           :name="buttons.LEARN.name"
           :description="buttons.LEARN.description"
-          @buttonClick="chooseLearnMode"
+          :props="props"
         />
-        <StartButtons
-          :name="buttons.DETAILS.name"
-          :description="buttons.DETAILS.description"
-          :link="buttons.DETAILS.link"
-          isRoute
-        />
-        <StartButtons
-          :name="buttons.HISTORY.name"
-          :description="buttons.HISTORY.description"
-          :link="buttons.HISTORY.link"
-          isRoute
-        />
-      </div>
-    </StartMain>
-    <ChooseMode v-if="difficulty || gameMode" @close="closeModal" :bot="difficulty" />
-    <LearnMode v-if="learnMode" @close="closeModal" />
+      </LearnMode>
+      <StartButtons
+        :name="buttons.DETAILS.name"
+        :description="buttons.DETAILS.description"
+        :link="buttons.DETAILS.link"
+      />
+      <StartButtons
+        :name="buttons.HISTORY.name"
+        :description="buttons.HISTORY.description"
+        :link="buttons.HISTORY.link"
+      />
+    </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { inject, ref } from 'vue'
+import type { Ref } from 'vue'
+import { useRouter } from 'vue-router'
+import type { AppDataType } from '@/types'
 import StartBackground from '@/components/Start/StartBackground.vue'
 import StartHeader from '@/components/Start/StartHeader.vue'
-import StartMain from '@/components/Start/StartMain.vue'
 import StartButtons from '@/components/Start/StartButtons.vue'
-import ChooseMode from '@/modals/ChooseMode.vue'
+import ChooseBotMode from '@/modals/ChooseBotMode.vue'
+import ChooseGameMode from '@/modals/ChooseGameMode.vue'
 import LearnMode from '@/modals/LearnMode.vue'
 import buttons from '@/pages/config/buttons'
 
-export default {
-  data() {
-    return {
-      start: false,
-      gameMode: false,
-      learnMode: false,
-      difficulty: false,
-      signInError: false,
-      buttons
-    }
-  },
+const router = useRouter()
+const appData = inject<Ref<AppDataType>>('appData')
+const signInError = ref(false)
 
-  inject: ['appData'],
+console.log(appData)
 
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.start = Boolean(from.name)
-    })
-  },
-
-  methods: {
-    startPressed() {
-      this.start = true
-    },
-
-    chooseGameMode() {
-      this.gameMode = true
-    },
-
-    chooseLearnMode() {
-      this.learnMode = true
-    },
-
-    chooseDifficulty() {
-      this.difficulty = true
-    },
-
-    closeModal() {
-      this.difficulty = false
-      this.gameMode = false
-      this.learnMode = false
-    },
-
-    checkOnlineRoute() {
-      if (!this.appData.user) {
-        this.signInError = true
-      } else {
-        this.$router.push('/online')
-      }
-    }
-  },
-
-  components: {
-    StartBackground,
-    StartHeader,
-    StartMain,
-    StartButtons,
-    ChooseMode,
-    LearnMode
+function checkOnlineRoute() {
+  if (!appData?.value.user) {
+    signInError.value = true
+    return
   }
+
+  router.push('/online')
 }
 </script>
 
 <style scoped>
-  .start-page {
-    min-height: 100vh;
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: baseline;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+.start-page {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  background-color: rgba(0, 0, 0, 0.5);
+}
 
+.left, .right {
+  width: 50%;
+  padding: 20px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.6;
+  font-size: 20px;
+  opacity: 0;
+  animation: opacityChanger 1s forwards;
+}
+
+@media screen and (max-width: 650px) {
   .left, .right {
-      width: 50%;
-      padding: 20px 50px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      line-height: 1.6;
-      font-size: 20px;
-      opacity: 0;
-      animation: opacityChanger 1s forwards;
+    width: 100%;
+    padding: 20px;
+    font-size: 18px;
   }
 
-  @media screen and (max-width: 650px) {
-      .left, .right {
-          width: 100%;
-          padding: 20px;
-          font-size: 18px;
-      }
-      .right {
-          padding: 20px 20px 40px;
-      }
+  .right {
+    padding: 20px 20px 40px;
   }
+}
 </style>

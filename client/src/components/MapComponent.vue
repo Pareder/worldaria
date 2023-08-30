@@ -6,7 +6,7 @@
       :center="options.map.center"
       :zoom="options.map.zoom"
       :maxBounds="options.map.maxBounds"
-      class="fullHeight"
+      class="h-screen"
       @ready="autoFitBounds()"
     >
       <HomeButton />

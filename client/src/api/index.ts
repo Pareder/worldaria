@@ -44,7 +44,7 @@ class API {
     return await this.getJSONWithStorage('timezoneJSON', 'timezones')
   }
 
-  private getJSONWithStorage(itemName: string, jsonName: string) {
+  private getJSONWithStorage(itemName: string, jsonName: string): Promise<FeatureCollection['features']> {
     return new Promise(resolve => {
       const json = this.storage.getItem(itemName)
 
