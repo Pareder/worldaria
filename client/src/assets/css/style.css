@@ -1,0 +1,86 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+}
+
+#app {
+  min-height: 100vh;
+  font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.leaflet-container {
+  background-color: #A3CCFF;
+}
+
+.leaflet-popup-content {
+  text-align: center;
+  font-size: 16px;
+}
+
+.leaflet-control-container .leaflet-top.leaflet-left,
+.leaflet-control-container .leaflet-bottom.leaflet-right {
+  display: none;
+}
+
+.guess_me {
+  animation: guess 2s infinite;
+}
+
+@keyframes guess {
+  0% {
+    fill-opacity: 1;
+  }
+  25% {
+    fill-opacity: 0;
+  }
+  50% {
+    fill-opacity: 1;
+  }
+  75% {
+    fill-opacity: 0
+  }
+  100% {
+    fill-opacity: 1;
+  }
+}
+
+.dot_animation span {
+  animation-name: blink;
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.dot_animation span:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.dot_animation span:nth-child(3) {
+  animation-delay: .4s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: .2;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: .2;
+  }
+}

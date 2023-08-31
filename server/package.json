@@ -1,0 +1,33 @@
+{
+  "name": "worldaria",
+  "version": "2.0.0",
+  "engines": {
+    "node": "18.16.0"
+  },
+  "type": "module",
+  "repository": "https://github.com/Pareder/worldaria.git",
+  "author": "Pareder",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --experimental-specifier-resolution=node index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --no-watch",
+    "lint": "eslint . --ext .js,.cjs,.mjs --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "bad-words": "^3.0.4",
+    "client": "../client",
+    "compression": "^1.7.4",
+    "connect-history-api-fallback": "^2.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^3.3.1",
+    "nodemailer": "^6.9.3",
+    "socket.io": "^4.7.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.44.0",
+    "jest": "^29.6.1"
+  }
+}
