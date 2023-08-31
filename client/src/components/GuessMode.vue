@@ -262,7 +262,7 @@ export default {
   background-color: transparent;
 }
 
-.map >>> .leaflet-container {
+.map:deep(.leaflet-container) {
   background-color: transparent;
 }
 </style>

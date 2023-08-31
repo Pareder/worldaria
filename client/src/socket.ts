@@ -5,7 +5,7 @@ export const state = reactive({
   connected: false,
 })
 
-const URL = import.meta.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'
+const URL = import.meta.env.MODE === 'production' ? '' : 'http://localhost:5000'
 
 export const socket = io(URL);
 

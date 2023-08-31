@@ -173,7 +173,7 @@ function typingMessage() {
   bottom: 0;
 }
 
-.badge::v-deep div {
+.badge:deep(div) {
   margin: 0;
   display: block;
 }
