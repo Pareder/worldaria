@@ -1,14 +1,4 @@
 <template>
-  <ChooseOpponent
-    v-if="chooseOpponent"
-    :users="onlineUsers"
-    :nickname="nickname"
-    :inviteSent="inviteSent"
-    :opponentDecline="opponentDecline"
-    @randomOpponent="randomOpponent"
-    @sendInvite="sendInvite"
-  />
-  <Loader v-show="!loaded" />
   <OnlineModal
     v-if="enemyLeft || (loaded && game.count === subjects.length)"
     :reason="reason"
@@ -17,8 +7,8 @@
     :score="game.scores"
     :colors="sideColors"
   />
-  <div class="modal-backdrop" v-if="loaded && enemyTurn"></div>
-  <div v-if="loaded" id="map">
+<!--  <v-overlay :model-value="loaded && enemyTurn" persistent z-index="1000"></v-overlay>-->
+  <Loader :is-loading="!loaded">
     <Drawer
       v-if="!enemyLeft && game.count !== geojson.length"
       :hasTimeLimit="!enemyTurn"
@@ -28,7 +18,7 @@
       <template v-if="!enemyTurn" v-slot:header>
         Attempts: {{ game.attempts }}
       </template>
-      <div v-if="!enemyTurn" class="fullWidth">
+      <div v-if="!enemyTurn">
         <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
         <div v-else>
           {{ subjects[game.count] }}
@@ -41,7 +31,16 @@
     </Drawer>
     <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" :sideColors="sideColors" />
     <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" :center="center" />
-  </div>
+  </Loader>
+  <ChooseOpponent
+    v-if="chooseOpponent"
+    :users="onlineUsers"
+    :nickname="nickname"
+    :inviteSent="inviteSent"
+    :opponentDecline="opponentDecline"
+    @randomOpponent="randomOpponent"
+    @sendInvite="sendInvite"
+  />
 </template>
 
 <script>
@@ -348,19 +347,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.fullWidth {
-  width: 100%;
-}
-</style>

@@ -41,15 +41,9 @@ export default {
     },
   },
 
-  emits: ['stopLoader'],
-
   created() {
     this.states = this.geojson.map(item => item.properties.name)
     this.states.sort(this.compareRandom)
-  },
-
-  mounted() {
-    this.$emit('stopLoader')
   },
 
   methods: {

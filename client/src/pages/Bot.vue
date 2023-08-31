@@ -1,5 +1,4 @@
 <template>
-  <Loader v-show="!loaded" />
   <OnlineModal
     v-if="loaded && game.count === geojson.length"
     :score="game.scores"
@@ -8,8 +7,8 @@
     :colors="sideColors"
     @makeRevenge="revenge"
   />
-  <div class="modal-backdrop" v-if="loaded && enemyTurn"></div>
-  <div v-if="loaded" id="map">
+  <v-overlay :model-value="loaded && enemyTurn" persistent></v-overlay>
+  <Loader :is-loading="!loaded">
     <Drawer
       v-if="game.count !== geojson.length"
       :game="enemyTurn ? undefined : game"
@@ -31,7 +30,7 @@
       </div>
     </Drawer>
     <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :botMode="botMode" :world="world" />
-  </div>
+  </Loader>
 </template>
 
 <script>
@@ -251,15 +250,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-</style>

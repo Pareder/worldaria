@@ -1,9 +1,8 @@
 <template>
   <SavedGame v-if="saved" @getSaved="getSaved" />
-  <div v-else>
-    <Loader v-show="showLoader" />
-    <GameMode v-if="loaded" mode="game" :geojson="geojson" @stopLoader="stopLoader" :world="world" />
-  </div>
+  <Loader v-else :is-loading="!loaded">
+    <GameMode mode="game" :geojson="geojson" :world="world" />
+  </Loader>
 </template>
 
 <script setup lang="ts">
@@ -20,7 +19,6 @@ const geojson = ref<FeatureCollection['features']>([])
 const world = ref<FeatureCollection['features']>([])
 const saved = ref(false)
 const loaded = ref(false)
-const showLoader = ref(true)
 
 onMounted(() => {
   if (localStorage.getItem('guessed') && !route.query.sort) {
@@ -42,14 +40,10 @@ async function getWorld() {
 async function getContinent() {
   geojson.value = (await api.getFullJSON()).filter(item => (
     item.properties &&
-    'pop_est' in item.properties  &&
+    'pop_est' in item.properties &&
     item.properties.pop_est > (route.query.sort || 0)
   ))
   loaded.value = true
-}
-
-function stopLoader() {
-  showLoader.value = false
 }
 
 function getSaved() {

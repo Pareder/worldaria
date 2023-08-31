@@ -73,10 +73,6 @@ export default {
       .sort(this.compareRandom)
   },
 
-  mounted() {
-    this.$emit('stopLoader')
-  },
-
   methods: {
     onEachFeature(feature, layer) {
       if (!this.$route.query.sort && this.guessedCountries.includes(layer.feature.properties.name)) {

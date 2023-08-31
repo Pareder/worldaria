@@ -1,12 +1,7 @@
 <template>
-  <div>
-    <Loader v-show="showLoader" />
-    <LearnMode
-      v-if="loaded"
-      :geojson="geojson"
-      @stopLoader="stopLoader"
-    />
-  </div>
+  <Loader :is-loading="!loaded">
+    <LearnMode :geojson="geojson" />
+  </Loader>
 </template>
 
 <script setup lang="ts">
@@ -19,13 +14,8 @@ import Loader from '@/components/Loader.vue'
 
 const route = useRoute()
 const loaded = ref(false)
-const showLoader = ref(true)
 const geojson = ref<FeatureCollection['features']>([])
 const name = [route.params.name].flat()[0] || 'full'
-
-function stopLoader() {
-  showLoader.value = false
-}
 
 onMounted(async () => {
   geojson.value = await api.getGeoJSON(name)

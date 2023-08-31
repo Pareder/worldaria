@@ -1,9 +1,10 @@
 <template>
-  <Loader v-show="!loaded" />
-  <Drawer>
-    Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}
-  </Drawer>
-  <MapComponent v-if="loaded" :geojson="geojson" :onEachFeature="onEachFeature" />
+  <Loader :is-loading="!loaded">
+    <Drawer>
+      Choose {{ this.subject === 'continents' ? 'Continent' : 'Country' }}
+    </Drawer>
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" />
+  </Loader>
 </template>
 
 <script>

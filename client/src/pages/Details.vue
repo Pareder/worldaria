@@ -1,63 +1,64 @@
 <template>
-  <Loader v-show="!loaded" />
-  <v-layout>
-    <v-navigation-drawer
-      v-model="drawer"
-      permanent
-      location="right"
-      class="pa-3"
-      width="356"
-    >
-      <v-btn
-        :icon="drawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"
-        class="drawer-btn text-blue"
-        :class="{ drawer }"
-        @click.stop="drawer = !drawer"
-      ></v-btn>
-      <p class="text-h4 mb-5">Filters</p>
-      <v-row no-gutters align="center" justify="space-between">
-        <p class="text-subtitle-1">
-          Countries - {{ sortedGeojson.length }}
-        </p>
+  <Loader :is-loading="!loaded">
+    <v-layout>
+      <v-navigation-drawer
+        v-model="drawer"
+        permanent
+        location="right"
+        class="pa-3"
+        width="356"
+      >
         <v-btn
+          :icon="drawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+          class="drawer-btn text-blue"
+          :class="{ drawer }"
+          @click.stop="drawer = !drawer"
+        ></v-btn>
+        <p class="text-h4 mb-5">Filters</p>
+        <v-row no-gutters align="center" justify="space-between">
+          <p class="text-subtitle-1">
+            Countries - {{ sortedGeojson.length }}
+          </p>
+          <v-btn
+            variant="outlined"
+            color="primary"
+            density="compact"
+            @click="clearFilters"
+          >
+            Clear
+          </v-btn>
+        </v-row>
+        <SearchCountriesForm
+          :items="countries"
+          :showAmount="false"
+          @onClick="onClick"
+        />
+        <v-select
+          v-for="(select, key) in selectOptions"
+          :key="key"
+          :label="select.label"
+          v-model="filters[key]"
           variant="outlined"
-          color="primary"
           density="compact"
-          @click="clearFilters"
-        >
-          Clear
-        </v-btn>
-      </v-row>
-      <SearchCountriesForm
-        :items="countries"
-        :showAmount="false"
-        @onClick="onClick"
-      />
-      <v-select
-        v-for="(select, key) in selectOptions"
-        :key="key"
-        :label="select.label"
-        v-model="filters[key]"
-        variant="outlined"
-        density="compact"
-        :items="select.data"
-        @update:model-value="sortBy(key)"
-      ></v-select>
-      <v-checkbox
-        v-model="showTimezone"
-        label="Show Timezones"
-        density="compact"
-      ></v-checkbox>
-    </v-navigation-drawer>
-    <v-main v-if="loaded">
-      <MapComponent
-        :geojson="sortedGeojson"
-        :onEachFeature="onEachFeature"
-        :world="world"
-        :timezones="showTimezone ? timezones : []"
-      />
-    </v-main>
-  </v-layout>
+          :items="select.data"
+          @update:model-value="sortBy(key)"
+        ></v-select>
+        <v-checkbox
+          v-model="showTimezone"
+          label="Show Timezones"
+          density="compact"
+        ></v-checkbox>
+      </v-navigation-drawer>
+      <v-main v-if="loaded">
+        <MapComponent
+          :geojson="sortedGeojson"
+          :onEachFeature="onEachFeature"
+          :world="world"
+          :timezones="showTimezone ? timezones : []"
+        />
+      </v-main>
+    </v-layout>
+  </Loader>
   <DetailsModal :country="selectedCountry" @close="closeModal" />
 </template>
 

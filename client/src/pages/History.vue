@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <Loader v-show="!loaded" />
+  <Loader :is-loading="!loaded">
     <v-row
       no-gutters
       class="slider"
@@ -23,10 +22,8 @@
         @update:model-value="createGeo"
       ></v-slider>
     </v-row>
-    <div id="map" v-if="loaded">
-      <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
-    </div>
-  </div>
+    <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" />
+  </Loader>
 </template>
 
 <script setup lang="ts">

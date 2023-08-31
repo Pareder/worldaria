@@ -1,33 +1,30 @@
 <template>
-  <div>
-    <Loader v-show="!loaded" />
-    <FinishGuess v-if="loaded && game.count === subjects.length" />
-    <div v-if="loaded" id="map">
-      <Drawer :game="game" :hasTimeLimit="hasTimeLimit" :seconds="seconds">
-        <SvgIcon
-          v-if="guessBy === 'flag' && game.count !== subjects.length"
-          :country="currentSubjectValue"
-        />
-        <div v-else-if="game.count !== subjects.length">
-          {{ currentSubjectValue }}
-        </div>
-        <v-map v-if="isAreaMode" :options="options" class="map" ref="map">
-          <v-geojson
-            :geojson="[geojson[subjects[game.count]]]"
-            :options="countryOptions"
-            @ready="zoomCountry"
-          ></v-geojson>
-        </v-map>
-      </Drawer>
-      <MapComponent
-        ref="worldMap"
-        :botMode="isAreaMode ? 'extreme' : null"
-        :geojson="geojson"
-        :onEachFeature="onEachFeature"
-        :world="world"
+  <Loader :is-loading="!loaded">
+    <FinishGuess v-if="game.count === subjects.length" />
+    <Drawer :game="game" :hasTimeLimit="hasTimeLimit" :seconds="seconds">
+      <SvgIcon
+        v-if="guessBy === 'flag' && game.count !== subjects.length"
+        :country="currentSubjectValue"
       />
-    </div>
-  </div>
+      <div v-else-if="game.count !== subjects.length">
+        {{ currentSubjectValue }}
+      </div>
+      <v-map v-if="isAreaMode" :options="options" class="map" ref="map">
+        <v-geojson
+          :geojson="[geojson[subjects[game.count]]]"
+          :options="countryOptions"
+          @ready="zoomCountry"
+        ></v-geojson>
+      </v-map>
+    </Drawer>
+    <MapComponent
+      ref="worldMap"
+      :botMode="isAreaMode ? 'extreme' : null"
+      :geojson="geojson"
+      :onEachFeature="onEachFeature"
+      :world="world"
+    />
+  </Loader>
 </template>
 
 <script>

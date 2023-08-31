@@ -1,125 +1,130 @@
 <template>
-  <div class="chat" :class="{ fixed, bottom, left }">
-    <div class="chat__header flex">
-      <div class="flex">
-        <div class="chat__new" :class="{ visible: unreadMessages }"></div>
-        <p class="text--small">Online chat</p>
-      </div>
-      <div class="chat__activator" @click="toggleChat">
-        <DashSvg />
-      </div>
-    </div>
-    <div class="chat__main" :class="{ chatHidden }">
-      <div class="chat__messages">
-        <div v-show="opponentTyping" class="chat__typing dot_animation">
-          {{ opponentName }} is typing<span>.</span><span>.</span><span>.</span>
+  <v-expansion-panels
+    class="chat"
+    :model-value="expanded ? ['chat'] : []"
+    @update:model-value="toggleChat"
+  >
+    <v-expansion-panel value="chat">
+      <v-expansion-panel-title color="primary">
+        <template #default>
+          Chat
+          <v-fade-transition leave-absolute>
+            <v-badge
+              v-if="unreadMessages"
+              color="error"
+              :content="unreadMessages"
+              inline
+            ></v-badge>
+          </v-fade-transition>
+        </template>
+      </v-expansion-panel-title>
+      <v-expansion-panel-text class="panel">
+        <div class="messages">
+          <div v-show="opponentTyping" class="typing text-grey-darken-1 dot_animation">
+            {{ opponentName }} is typing<span>.</span><span>.</span><span>.</span>
+          </div>
+          <v-fade-transition leave-absolute>
+            <div v-if="!chatMessages.length" class="my-auto">
+              <v-icon icon="mdi-message-off-outline" size="x-large" color="grey-darken-2"></v-icon>
+              <p class="text-subtitle-1 text-grey-darken-2">No messages yet</p>
+            </div>
+          </v-fade-transition>
+          <v-sheet
+            v-for="(message, id) in chatMessages"
+            :key="id"
+            rounded
+            elevation="2"
+            class="message"
+            :class="message.user === nickname ? `my-message ${sideColors.my}` : `enemy-message ${sideColors.enemy}`"
+          >
+            {{ message.text }}
+          </v-sheet>
         </div>
-        <div
-          v-for="(message, id) in chatMessages"
-          :class="message.user === nickname ? `my__message ${sideColors.my}` : `enemy__message ${sideColors.enemy}`"
-          :key="id">{{ message.text }}
-        </div>
-      </div>
-      <form class="chat__form" @submit.prevent="submitMessage" autocomplete="off">
-        <input
-          type="text"
-          name="message"
-          class="chat__input"
-          placeholder="Type message"
-          v-model="messageText"
-          maxlength="255"
-          @input="typingMessage"
-        >
-        <v-btn icon="mdi-send" density="comfortable" class="mr-2" @click="submitMessage"></v-btn>
-      </form>
-    </div>
-  </div>
+        <v-form @submit.prevent="submitMessage">
+          <v-textarea
+            auto-grow
+            rows="1"
+            v-model="message"
+            hide-details
+            variant="outlined"
+            color="primary"
+            density="compact"
+            placeholder="Type message"
+            maxlength="255"
+            append-inner-icon="mdi-send"
+            @click:append-inner="submitMessage"
+            @input="typingMessage"
+            @keydown.enter.exact.prevent="submitMessage"
+          ></v-textarea>
+        </v-form>
+      </v-expansion-panel-text>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { socket } from '@/socket'
-import DashSvg from '@/components/DashSvg.vue'
 
-export default {
-  data() {
-    return {
-      chatMessages: [],
-      messageText: '',
-      chatHidden: true,
-      unreadMessages: false,
-      opponentTyping: false,
-      typingTimeout: null,
+const props = defineProps<{
+  nickname: string
+  opponentName: string
+  sideColors: {
+    my: string
+    enemy: string
+  }
+}>()
+const chatMessages = ref<{
+  user: string
+  text: string
+}[]>([])
+const message = ref('')
+const unreadMessages = ref(0)
+const opponentTyping = ref(false)
+const expanded = ref(true)
+const typingTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
+onMounted(() => {
+  socket.on('getNewMessages', data => {
+    opponentTyping.value = false
+    typingTimeout.value = null
+    chatMessages.value.unshift(data)
+    if (!expanded.value) {
+      unreadMessages.value += 1
     }
-  },
+  })
 
-  props: {
-    nickname: {
-      type: String,
-    },
-    opponentName: {
-      type: String,
-    },
-    sideColors: {
-      type: Object,
-    },
-    fixed: {
-      type: Boolean,
-    },
-    bottom: {
-      type: Boolean,
-    },
-    left: {
-      type: Boolean,
-    },
-  },
+  socket.on('opponentTyping', data => {
+    opponentTyping.value = data
+  })
+})
 
-  created() {
-    socket.on('getNewMessages', data => {
-      this.opponentTyping = false
-      this.typingTimeout = null
-      this.chatMessages.unshift(data)
+function submitMessage() {
+  if (message.value.length > 0) {
+    socket.emit('sendMessage', { user: props.nickname, text: message.value })
+    message.value = ''
+  }
+}
 
-      this.unreadMessages = this.chatHidden
-    })
+function toggleChat() {
+  expanded.value = !expanded.value
+  unreadMessages.value = 0
+}
 
-    socket.on('opponentTyping', data => {
-      this.opponentTyping = data
-    })
-  },
+function typingMessage() {
+  if (!typingTimeout.value) {
+    socket.emit('typingMessage', true)
+  }
 
-  methods: {
-    submitMessage() {
-      if (this.messageText.length > 0) {
-        socket.emit('sendMessage', { user: this.nickname, text: this.messageText })
-        this.messageText = ''
-      }
-    },
-
-    toggleChat() {
-      this.chatHidden = !this.chatHidden
-      this.unreadMessages = false
-    },
-
-    typingMessage() {
-      if (!this.typingTimeout) {
-        socket.emit('typingMessage', true)
-      }
-
-      clearTimeout(this.typingTimeout)
-      this.typingTimeout = setTimeout(() => {
-        this.typingTimeout = null
-        socket.emit('typingMessage', false)
-      }, 3000)
-    },
-  },
-
-  components: {
-    DashSvg,
-  },
+  clearTimeout(typingTimeout.value || 0)
+  typingTimeout.value = setTimeout(() => {
+    typingTimeout.value = null
+    socket.emit('typingMessage', false)
+  }, 3000)
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -138,152 +143,57 @@ export default {
 }
 
 .chat {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
   z-index: 1001;
   width: 400px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background-color: #fff;
-  border-radius: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-.chat.fixed {
-  position: fixed;
-}
-
-.chat.bottom {
-  bottom: 30px;
-}
-
-.chat.left {
-  left: 30px;
-}
-
-.chat__header {
-  padding: 0 15px;
-  justify-content: space-between;
-  background-color: #7190b7;
-  color: #fff;
-  font-size: 20px;
-}
-
-.flex {
-  display: flex;
-  align-items: center;
-}
-
-.chat__new {
-  width: 10px;
-  height: 10px;
-  margin-right: 10px;
-  border-radius: 50%;
-  background-color: red;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.chat__new.visible {
-  opacity: 1;
-}
-
-.text--small {
-  font-size: 14px;
-}
-
-.chat__activator {
-  margin-left: auto;
-  padding: 10px 0;
-  cursor: pointer;
-  transition: filter 0.3s;
-}
-
-.chat__activator:hover {
-  filter: drop-shadow(0 0 3px blue);
-}
-
-.chat__main {
-  max-height: 300px;
-  transition: max-height 0.5s;
-}
-
-.chatHidden {
-  max-height: 0;
-}
-
-.chat__messages {
+.messages {
   height: 250px;
   width: 100%;
-  padding: 10px 40px;
+  padding: 10px 25px;
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
-  background-color: #e5e5e5;
 }
 
-.my__message, .enemy__message {
-  max-width: 90%;
+.typing {
+  margin-left: -25px;
+  text-align: left;
+}
+
+.message {
   position: relative;
   margin-bottom: 10px;
   padding: 5px 10px;
-  border-radius: 5px;
-  /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);*/
   background-color: #fff;
   text-align: left;
   word-break: break-all;
+  white-space: pre-line;
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
 }
 
-.chat__typing {
-  padding: 5px 0;
-  color: #6f6f6f;
-  font-size: 14px;
-  text-align: left;
-}
-
-.my__message {
+.my-message {
   margin-left: auto;
-  border-bottom-right-radius: 0;
+  &::before {
+    right: -25px;
+  }
 }
 
-.enemy__message {
+.enemy-message {
   margin-right: auto;
-  border-bottom-left-radius: 0;
-}
-
-.my__message:before, .enemy__message:before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-}
-
-.my__message:before {
-  right: -25px;
-}
-
-.enemy__message:before {
-  left: -25px;
-}
-
-.my__message:after, .enemy__message:after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  border-style: solid;
-}
-
-.my__message:after {
-  right: -5px;
-  border-width: 5px 0 0 5px;
-  border-color: transparent transparent transparent #fff;
-}
-
-.enemy__message:after {
-  left: -5px;
-  border-width: 0 0 5px 5px;
-  border-color: transparent transparent #fff transparent;
+  &::before {
+    left: -25px;
+  }
 }
 
 .blue:before {
@@ -292,38 +202,5 @@ export default {
 
 .tomato:before {
   background-color: tomato;
-}
-
-.chat__form {
-  width: 100%;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  background-color: #7190b7;
-}
-
-.chat__input {
-  width: 100%;
-  height: 40px;
-  margin: 5px 15px;
-  border: none;
-  color: #fff;
-  border-bottom: 1px solid #fff;
-  outline: none;
-  background: transparent;
-  font-size: 16px;
-}
-
-.chat__input::placeholder {
-  color: #e5e5e5;
-  opacity: 1;
-}
-
-.chat__input:-ms-input-placeholder {
-  color: #e5e5e5;
-}
-
-.chat__input::-ms-input-placeholder {
-  color: #e5e5e5;
 }
 </style>
