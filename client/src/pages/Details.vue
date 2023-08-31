@@ -10,7 +10,7 @@
       >
         <v-btn
           :icon="drawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"
-          class="drawer-btn text-blue"
+          class="drawer-btn"
           :class="{ drawer }"
           @click.stop="drawer = !drawer"
         ></v-btn>

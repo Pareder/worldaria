@@ -5,10 +5,10 @@
     :nickname="nickname"
     :enemy="enemy"
     :score="game.scores"
-    :colors="sideColors"
   />
-<!--  <v-overlay :model-value="loaded && enemyTurn" persistent z-index="1000"></v-overlay>-->
+  <HomeButton v-if="!loaded"></HomeButton>
   <Loader :is-loading="!loaded">
+    <v-overlay :model-value="enemyTurn" persistent style="z-index: 1000"></v-overlay>
     <Drawer
       v-if="!enemyLeft && game.count !== geojson.length"
       :hasTimeLimit="!enemyTurn"
@@ -20,7 +20,7 @@
       </template>
       <div v-if="!enemyTurn">
         <SvgIcon v-if="gameType === 'flag'" :country="subjects[game.count]" />
-        <div v-else>
+        <div v-else class="mb-2">
           {{ subjects[game.count] }}
         </div>
         <UsersList :users="users" :nickname="nickname" :score="game.scores" />
@@ -29,7 +29,7 @@
         Opponent's Turn<span>.</span><span>.</span><span>.</span>
       </div>
     </Drawer>
-    <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" :sideColors="sideColors" />
+    <Chat fixed bottom left :nickname="nickname" :opponentName="enemy" />
     <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" :center="center" />
   </Loader>
   <ChooseOpponent
@@ -45,15 +45,17 @@
 
 <script>
 import api from '@/api'
+import COLORS from '@/config/colors'
 import { socket } from '@/socket'
+import Chat from '@/components/Chat.vue'
+import ChooseOpponent from '@/modals/ChooseOpponent.vue'
+import Drawer from '@/components/Drawer.vue'
+import HomeButton from '@/components/HomeButton.vue'
 import Loader from '@/components/Loader.vue'
 import MapComponent from '@/components/MapComponent.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
-import ChooseOpponent from '@/modals/ChooseOpponent.vue'
-import Drawer from '@/components/Drawer.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 import UsersList from '@/components/UsersList.vue'
-import Chat from '@/components/Chat.vue'
 
 export default {
   data() {
@@ -76,10 +78,6 @@ export default {
       interval: null,
       danger: false,
       users: [],
-      sideColors: {
-        my: '',
-        enemy: '',
-      },
       enemyTurn: true,
       enemyLeft: false,
       reason: '',
@@ -141,12 +139,7 @@ export default {
       this.loaded = true
 
       if (this.nickname === this.users[0]) {
-        this.sideColors.my = 'blue'
-        this.sideColors.enemy = 'tomato'
         this.enemyTurn = false
-      } else {
-        this.sideColors.enemy = 'blue'
-        this.sideColors.my = 'tomato'
       }
 
       await this.getContinent(data.sort)
@@ -158,7 +151,7 @@ export default {
 
         this.layers
           .find(layer => layer.feature.properties[propertyName] === this.subjects[this.game.count])
-          .setStyle({ fillColor: this.sideColors.enemy })
+          .setStyle({ fillColor: COLORS.enemy })
           .off('click')
         this.game.scores.enemy++
       }
@@ -251,7 +244,7 @@ export default {
       const propertyName = this.gameType === 'capital' ? 'capital' : 'name'
 
       if (layer.feature.properties[propertyName] === this.subjects[this.game.count]) {
-        layer.setStyle({ fillColor: this.sideColors.my })
+        layer.setStyle({ fillColor: COLORS.my })
         layer.off('click')
         this.game.scores.my++
         this.enemyTurn = true
@@ -344,6 +337,7 @@ export default {
     SvgIcon,
     UsersList,
     Chat,
+    HomeButton,
   },
 }
 </script>

@@ -34,9 +34,10 @@
             :key="id"
             rounded
             elevation="2"
-            class="message"
-            :class="message.user === nickname ? `my-message ${sideColors.my}` : `enemy-message ${sideColors.enemy}`"
+            class="message mb-2 py-1 px-2 bg-white"
+            :class="message.user === nickname ? 'my-message' : 'enemy-message'"
           >
+            <v-badge inline :color="message.user === nickname ? 'blue' : 'red'" class="badge"></v-badge>
             {{ message.text }}
           </v-sheet>
         </div>
@@ -69,10 +70,6 @@ import { socket } from '@/socket'
 const props = defineProps<{
   nickname: string
   opponentName: string
-  sideColors: {
-    my: string
-    enemy: string
-  }
 }>()
 const chatMessages = ref<{
   user: string
@@ -81,7 +78,7 @@ const chatMessages = ref<{
 const message = ref('')
 const unreadMessages = ref(0)
 const opponentTyping = ref(false)
-const expanded = ref(true)
+const expanded = ref(false)
 const typingTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
 onMounted(() => {
@@ -152,8 +149,8 @@ function typingMessage() {
 
 .messages {
   height: 250px;
-  width: 100%;
-  padding: 10px 25px;
+  margin-right: -24px;
+  padding: 10px 49px 10px 25px;
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
@@ -166,41 +163,32 @@ function typingMessage() {
 
 .message {
   position: relative;
-  margin-bottom: 10px;
-  padding: 5px 10px;
-  background-color: #fff;
   text-align: left;
   word-break: break-all;
   white-space: pre-line;
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-  }
+}
+
+.badge {
+  position: absolute;
+  bottom: 0;
+}
+
+.badge::v-deep div {
+  margin: 0;
+  display: block;
 }
 
 .my-message {
   margin-left: auto;
-  &::before {
+  .badge {
     right: -25px;
   }
 }
 
 .enemy-message {
   margin-right: auto;
-  &::before {
+  .badge {
     left: -25px;
   }
-}
-
-.blue:before {
-  background-color: blue;
-}
-
-.tomato:before {
-  background-color: tomato;
 }
 </style>

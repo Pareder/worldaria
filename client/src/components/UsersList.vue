@@ -1,55 +1,36 @@
 <template>
-  <ul class="users">
-    <li
+  <v-sheet elevation="1" rounded>
+    <v-row
       v-for="(user, id) in users"
       :key="id"
-      class="user__score"
-      :class="{ mySide: user === nickname }"
+      no-gutters
+      justify="space-between"
+      class="user flex-nowrap text-subtitle-1 text-white py-1 px-2"
+      :class="user === nickname ? 'bg-blue' : 'bg-red'"
     >
-      <span>{{ user }}</span>
+      <v-tooltip :text="user">
+        <template v-slot:activator="{ props }">
+          <span v-bind="props" class="text-truncate">{{ user }}</span>
+        </template>
+      </v-tooltip>
       <span>{{ user === nickname ? score.my : score.enemy }}</span>
-    </li>
-  </ul>
+    </v-row>
+  </v-sheet>
 </template>
 
-<script>
-  export default {
-    props: {
-      users: {
-        type: Array
-      },
-      nickname: {
-        type: String
-      },
-      score: {
-        type: Object
-      }
-    }
+<script setup lang="ts">
+defineProps<{
+  users: string[]
+  nickname: string
+  score: {
+    my: number
+    enemy: number
   }
+}>()
 </script>
 
 <style scoped>
-  .users {
-    width: 100%;
-    padding: 0;
-    list-style-type: none;
-  }
-  .user__score {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 10px;
-    color: #fff;
-  }
-  .user__score:nth-child(1) {
-    background-color: rgba(0, 0, 255, 0.5);
-  }
-  .user__score:nth-child(1).mySide {
-    box-shadow: 0 0 10px blue;
-  }
-  .user__score:nth-child(2) {
-    background-color: rgba(255, 99, 71, 0.5);
-  }
-  .user__score:nth-child(2).mySide {
-    box-shadow: 0 0 10px tomato;
-  }
+.user {
+  gap: 8px;
+}
 </style>

@@ -4,7 +4,6 @@
     :score="game.scores"
     nickname="You"
     enemy="Bot"
-    :colors="sideColors"
     @makeRevenge="revenge"
   />
   <v-overlay :model-value="loaded && enemyTurn" persistent></v-overlay>
@@ -35,6 +34,7 @@
 
 <script>
 import api from '@/api'
+import COLORS from '@/config/colors'
 import Loader from '@/components/Loader.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
 import MapComponent from '@/components/MapComponent.vue'
@@ -62,10 +62,6 @@ export default {
       interval: null,
       danger: false,
       users: ['You', 'Bot'],
-      sideColors: {
-        my: 'blue',
-        enemy: 'tomato',
-      },
       enemyTurn: false,
     }
   },
@@ -124,7 +120,7 @@ export default {
     },
 
     getSubjects() {
-      this.subjects = this.guessBy === 'capital' ?
+      this.subjects = this.gameType === 'capital' ?
         this.geojson.map(item => item.properties.capital) :
         this.geojson.map(item => item.properties.name)
       this.subjects.sort(this.compareRandom)
@@ -139,8 +135,11 @@ export default {
     },
 
     show(layer) {
-      if (layer.feature.properties.name === this.subjects[this.game.count]) {
-        layer.setStyle({ fillColor: this.sideColors.my })
+      if (this.gameType === 'capital'
+        ? layer.feature.properties.capital === this.subjects[this.game.count]
+        : layer.feature.properties.name === this.subjects[this.game.count]
+      ) {
+        layer.setStyle({ fillColor: COLORS.my })
         layer.off('click')
         this.game.scores.my++
         this.enemyTurn = true
@@ -196,8 +195,11 @@ export default {
 
         if (chance < this.chance) {
           this.layers
-            .find(layer => layer.feature.properties.name === this.subjects[this.game.count])
-            .setStyle({ fillColor: this.sideColors.enemy })
+            .find(layer => this.gameType === 'capital'
+              ? layer.feature.properties.capital === this.subjects[this.game.count]
+              : layer.feature.properties.name === this.subjects[this.game.count]
+            )
+            .setStyle({ fillColor: COLORS.enemy })
             .off('click')
           this.game.scores.enemy++
         }

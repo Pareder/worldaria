@@ -7,12 +7,12 @@
         :key="id"
         :class="{ leader: user['.key'] === userId }"
       >
-        <div class="mark"/>
+        <div class="mark" />
         <div class="user">
           <span class="name">{{ user.name }}</span>
           <span>{{ user.score }}</span>
           <span class="divider">|</span>
-          <span>{{ getFormattedDate(user.scoreDate) }}</span>
+          <span class="date">{{ getFormattedDate(user.scoreDate) }}</span>
         </div>
       </li>
     </ol>
@@ -26,7 +26,7 @@ import { database } from '@/config'
 export default {
   data() {
     return {
-      leaderboard: {}
+      leaderboard: {},
     }
   },
 
@@ -38,11 +38,11 @@ export default {
     },
 
     leaders() {
-      return Object.entries(this.leaderboard).sort(([,a], [,b]) => b.score - a.score).map(([key, data]) => ({
+      return Object.entries(this.leaderboard).sort(([, a], [, b]) => b.score - a.score).map(([key, data]) => ({
         ...data,
         '.key': key,
       }))
-    }
+    },
   },
 
   created() {
@@ -54,8 +54,8 @@ export default {
   methods: {
     getFormattedDate(date) {
       return date ? new Date(date).toLocaleDateString() : ''
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -112,7 +112,7 @@ li {
     content: counter(leaderboard);
     position: absolute;
     z-index: 2;
-    top: 15px;
+    top: 18px;
     left: 15px;
     width: 20px;
     height: 20px;
@@ -283,5 +283,10 @@ li.leader {
 
 .divider {
   margin: 0 10px;
+}
+
+.date {
+  width: 80px;
+  text-align: right;
 }
 </style>

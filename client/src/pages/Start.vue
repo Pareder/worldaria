@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from 'vue'
+import { inject, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { AppDataType } from '@/types'
@@ -62,6 +62,10 @@ import buttons from '@/pages/config/buttons'
 const router = useRouter()
 const appData = inject<Ref<AppDataType>>('appData')
 const signInError = ref(false)
+
+watch(() => appData?.value.user, () => {
+  signInError.value = false
+})
 
 function checkOnlineRoute() {
   if (!appData?.value.user) {

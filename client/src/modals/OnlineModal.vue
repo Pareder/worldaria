@@ -16,39 +16,14 @@
         Your opponent has left the match
       </div>
       <div v-else>
-        <div v-if="score.my > score.enemy">
-          <p class="text-h6 text-center mb-2">You win!</p>
-          <div class="user__score mySide" :class="colors.my">
-            <span>{{ nickname }}</span>
-            <span>{{ score.my }}</span>
-          </div>
-          <div class="user__score" :class="colors.enemy">
-            <span>{{ enemy }}</span>
-            <span>{{ score.enemy }}</span>
-          </div>
-        </div>
-        <div v-else-if="score.my < score.enemy">
-          <p class="text-h6 text-center mb-2">You lose...</p>
-          <div class="user__score" :class="colors.enemy">
-            <span>{{ enemy }}</span>
-            <span>{{ score.enemy }}</span>
-          </div>
-          <div class="user__score mySide" :class="colors.my">
-            <span>{{ nickname }}</span>
-            <span>{{ score.my }}</span>
-          </div>
-        </div>
-        <div v-else>
-          <p class="text-h6 text-center mb-2">It is a draw!</p>
-          <div class="user__score mySide" :class="colors.my">
-            <span>{{ nickname }}</span>
-            <span>{{ score.my }}</span>
-          </div>
-          <div class="user__score" :class="colors.enemy">
-            <span>{{ enemy }}</span>
-            <span>{{ score.enemy }}</span>
-          </div>
-        </div>
+        <p v-if="score.my > score.enemy" class="text-h6 text-center mb-2">You win!</p>
+        <p v-else-if="score.my < score.enemy" class="text-h6 text-center mb-2">You lose...</p>
+        <p v-else class="text-h6 text-center mb-2">It is a draw!</p>
+        <UsersList
+          :users="[nickname, enemy]"
+          :nickname="nickname"
+          :score="score"
+        ></UsersList>
         <div v-if="revenge" class="text-center">
           <p>{{ enemy }} wants to get revenge</p>
           <v-btn variant="elevated" color="primary" size="large" class="mr-2" @click="revengeDecision(true)">
@@ -76,6 +51,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { socket } from '@/socket'
 import ModalTrigger from '@/components/ModalTrigger.vue'
+import UsersList from '@/components/UsersList.vue'
 
 const emit = defineEmits(['makeRevenge'])
 const props = defineProps<{
@@ -85,10 +61,6 @@ const props = defineProps<{
   score: {
     my: number
     enemy: number
-  }
-  colors: {
-    my: string
-    enemy: string
   }
 }>()
 const route = useRoute()
@@ -117,40 +89,3 @@ function revengeDecision(status: boolean) {
   }
 }
 </script>
-
-<style scoped>
-.users {
-  width: 100%;
-  padding: 0;
-  list-style-type: none;
-}
-
-.user__score {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 10px;
-  color: #fff;
-}
-
-.blue {
-  background-color: rgba(0, 0, 255, 0.5);
-}
-
-.blue.mySide {
-  box-shadow: 0 0 10px blue;
-}
-
-.tomato {
-  background-color: rgba(255, 99, 71, 0.5);
-}
-
-.tomato.mySide {
-  box-shadow: 0 0 10px tomato;
-}
-
-.buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
-</style>
