@@ -9,13 +9,15 @@
       <div v-else-if="game.count !== subjects.length">
         {{ currentSubjectValue }}
       </div>
-      <v-map v-if="isAreaMode" :options="options" class="map" ref="map">
-        <v-geojson
-          :geojson="[geojson[subjects[game.count]]]"
-          :options="countryOptions"
-          @ready="zoomCountry"
-        ></v-geojson>
-      </v-map>
+      <div v-if="isAreaMode" class="map">
+        <v-map v-if="isAreaMode" :options="options" ref="map">
+          <v-geojson
+            :geojson="[geojson[subjects[game.count]]]"
+            :options="countryOptions"
+            @ready="zoomCountry"
+          ></v-geojson>
+        </v-map>
+      </div>
     </Drawer>
     <MapComponent
       ref="worldMap"
@@ -167,13 +169,13 @@ export default {
     setMiniMap() {
       this.$nextTick(() => {
         const group = new L.featureGroup()
-        this.$refs.map.mapObject.eachLayer(layer => {
-          if (layer.feature) {
+        this.$refs.map.leafletObject.eachLayer(layer => {
+          if (this.game.count === 0 || layer.feature) {
             group.addLayer(layer)
           }
         })
 
-        this.$refs.map.mapObject.fitBounds(group.getBounds())
+        this.$refs.map.leafletObject.fitBounds(group.getBounds())
       })
     },
 
@@ -201,7 +203,7 @@ export default {
 
     onDrop(event) {
       // TODO: Seems like this code smells
-      const map = this.$refs.worldMap.$refs.map.mapObject
+      const map = this.$refs.worldMap.$refs.map.leafletObject
       const coordinates = map.containerPointToLatLng(L.point([event.clientX, event.clientY]))
       const layers = pointInLayer(coordinates, map)
       for (const layer of layers) {
@@ -257,6 +259,10 @@ export default {
 <style scoped>
 .map {
   height: 200px;
+  background-color: transparent;
+}
+
+.map >>> .leaflet-container {
   background-color: transparent;
 }
 </style>
