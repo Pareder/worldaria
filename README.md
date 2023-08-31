@@ -21,7 +21,10 @@ All countries' statistics were found in open sources and updated manually.
 
 ## Used
 
+* [TypeScript](https://www.typescriptlang.org)
+* [Vite](https://vitejs.dev)
 * [Vue.js](https://vuejs.org)
+* [Vuetify](https://vuetifyjs.com)
 * [Leaflet](https://leafletjs.com)
 * [Express](https://expressjs.com/)
 * [Firebase](https://firebase.google.com)
