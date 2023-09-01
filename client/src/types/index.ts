@@ -38,3 +38,11 @@ export type TemperatureType = {
 export type AppDataType = {
   user: User | null
 }
+
+export type InviteType = {
+  myName: string
+  opponentName: string
+  color: string
+  sort: string
+  type: string
+}

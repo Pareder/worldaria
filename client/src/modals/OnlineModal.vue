@@ -20,12 +20,12 @@
         <p v-else-if="score.my < score.enemy" class="text-h6 text-center mb-2">You lose...</p>
         <p v-else class="text-h6 text-center mb-2">It is a draw!</p>
         <UsersList
-          :users="[nickname, enemy]"
+          :users="users"
           :nickname="nickname"
           :score="score"
         ></UsersList>
         <div v-if="revenge" class="text-center">
-          <p>{{ enemy }} wants to get revenge</p>
+          <p>{{ opponent?.name }} wants to get revenge</p>
           <v-btn variant="elevated" color="primary" size="large" class="mr-2" @click="revengeDecision(true)">
             Accept
           </v-btn>
@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { socket } from '@/socket'
 import ModalTrigger from '@/components/ModalTrigger.vue'
@@ -57,7 +57,10 @@ const emit = defineEmits(['makeRevenge'])
 const props = defineProps<{
   reason?: string
   nickname: string
-  enemy: string
+  users: {
+    name: string
+    color: string
+  }[]
   score: {
     my: number
     enemy: number
@@ -66,6 +69,7 @@ const props = defineProps<{
 const route = useRoute()
 const revenge = ref(false)
 const revengeDeclined = ref(false)
+const opponent = computed(() => props.users.find(user => user.name !== props.nickname))
 
 onMounted(() => {
   socket.on('opponentsRevenge', () => revenge.value = true)
@@ -77,7 +81,7 @@ function getRevenge() {
     emit('makeRevenge')
   } else {
     revengeDeclined.value = false
-    socket.emit('revenge', props.enemy)
+    socket.emit('revenge')
   }
 }
 

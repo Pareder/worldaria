@@ -6,7 +6,7 @@
       ? 'Waiting for opponent\'s decision'
       : opponentDecline
         ? 'The opponent has declined your invite'
-        : 'Find an opponent or play with random one'
+        : 'Find an opponent to play with'
     "
   >
     <template #activator="props">
@@ -14,20 +14,20 @@
     </template>
     <template #content>
       <div v-if="users.length > 1">
-        <v-btn
-          variant="elevated"
-          color="primary"
-          :disabled="inviteSent"
-          @click="$emit('randomOpponent')"
-        >
-          Random
-        </v-btn>
+        <p class="text-subtitle-2 mb-1">Choose your color</p>
+        <v-color-picker
+          v-model="color"
+          hide-inputs
+          class="mb-3 picker"
+          width="100%"
+        ></v-color-picker>
+        <p class="text-subtitle-2 mb-1">Choose an opponent</p>
         <v-text-field
           label="Opponent's name"
           variant="outlined"
           color="primary"
           density="compact"
-          class="my-3"
+          class="mb-3"
           hide-details
           v-model="searchName"
           @input="sortUsers"
@@ -97,16 +97,18 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { MY_COLOR } from '@/config/colors'
 import { populationOptions } from '@/config'
 import ModalTrigger from '@/components/ModalTrigger.vue'
 
-const emit = defineEmits(['sendInvite', 'randomOpponent'])
+const emit = defineEmits(['sendInvite'])
 const props = defineProps<{
   users: string[]
   nickname?: string
   inviteSent: boolean
   opponentDecline: boolean
 }>()
+const color = ref(MY_COLOR)
 const searchName = ref('')
 const idPressed = ref<number>()
 const foundUsers = ref<string[]>([])
@@ -123,23 +125,32 @@ function invite(name: string, id: number, type?: string) {
   idPressed.value = id
   emit('sendInvite', {
     name,
+    color: color.value,
     type,
     sort: sort.value,
   })
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.picker {
+  &:deep(.v-color-picker-preview__alpha) {
+    display: none;
+  }
+  &:deep(.v-color-picker-preview__dot) {
+    border: 1px solid black;
+  }
+}
+
 .user {
   margin-bottom: 10px;
   padding: 10px 20px;
   background-color: #f2f2f2;
   border-left: 5px solid #003842;
   transition: all 0.3s;
-}
-
-.user:hover {
-  background-color: #f9f9f9;
-  border-color: #00BDE8;
+  &:hover {
+    background-color: #f9f9f9;
+    border-color: #00BDE8;
+  }
 }
 </style>

@@ -5,22 +5,27 @@
       :key="id"
       no-gutters
       justify="space-between"
-      class="user flex-nowrap text-subtitle-1 text-white py-1 px-2"
-      :class="user === nickname ? 'bg-blue' : 'bg-red'"
+      class="user flex-nowrap text-subtitle-1 py-1 px-2"
+      :style="{ backgroundColor: user.color, color: getContrastColor(user.color) }"
     >
-      <v-tooltip :text="user">
+      <v-tooltip :text="user.name">
         <template v-slot:activator="{ props }">
-          <span v-bind="props" class="text-truncate">{{ user }}</span>
+          <span v-bind="props" class="text-truncate">{{ user.name }}</span>
         </template>
       </v-tooltip>
-      <span>{{ user === nickname ? score.my : score.enemy }}</span>
+      <span>{{ user.name === nickname ? score.my : score.enemy }}</span>
     </v-row>
   </v-sheet>
 </template>
 
 <script setup lang="ts">
+import { getContrastColor } from '@/config/colors'
+
 defineProps<{
-  users: string[]
+  users: {
+    name: string
+    color: string
+  }[]
   nickname: string
   score: {
     my: number
