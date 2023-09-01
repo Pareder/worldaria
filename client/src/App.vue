@@ -1,7 +1,7 @@
 <template>
   <router-view></router-view>
   <Invite v-if="invite" :invite="invite" @makeDecision="makeDecision" />
-  <notifications group="error" position="top right" />
+  <notifications position="top right" />
 </template>
 
 <script setup lang="ts">
