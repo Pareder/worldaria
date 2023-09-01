@@ -1,12 +1,13 @@
 <template>
+  <v-overlay :model-value="loaded && enemyTurn" persistent></v-overlay>
   <OnlineModal
     v-if="loaded && game.count === geojson.length"
+    :users="users"
     :score="game.scores"
     nickname="You"
     enemy="Bot"
     @makeRevenge="revenge"
   />
-  <v-overlay :model-value="loaded && enemyTurn" persistent></v-overlay>
   <Loader :is-loading="!loaded">
     <Drawer
       v-if="game.count !== geojson.length"
@@ -34,7 +35,7 @@
 
 <script>
 import api from '@/api'
-import COLORS from '@/config/colors'
+import { ENEMY_COLOR, MY_COLOR } from '@/config/colors'
 import Loader from '@/components/Loader.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
 import MapComponent from '@/components/MapComponent.vue'
@@ -61,7 +62,10 @@ export default {
       seconds: 15,
       interval: null,
       danger: false,
-      users: ['You', 'Bot'],
+      users: [
+        { name: 'You', color: MY_COLOR },
+        { name: 'Bot', color: ENEMY_COLOR },
+      ],
       enemyTurn: false,
     }
   },

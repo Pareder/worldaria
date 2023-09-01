@@ -65,7 +65,7 @@ class Socket {
 
           socket.room = `room${this._roomNumber}`
           this._rooms[socket.room] = this._rooms[socket.room] || []
-          this._rooms[socket.room].push(data.myName)
+          this._rooms[socket.room].push({ name: data.myName, color: data.color })
           socket.join(socket.room)
           delete this._availableUsers[socket.username]
           this._io.emit('getOnlineUsers', Object.keys(this._availableUsers))
@@ -78,7 +78,7 @@ class Socket {
       socket.on('createGame', data => {
         socket.room = `room${this._roomNumber}`
         this._rooms[socket.room] = this._rooms[socket.room] || []
-        this._rooms[socket.room].unshift(data.name)
+        this._rooms[socket.room].unshift({ name: data.name, color: data.color })
         socket.join(socket.room)
 
         if (this._rooms[socket.room].length === 2) {

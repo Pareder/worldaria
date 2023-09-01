@@ -1,6 +1,6 @@
 <template>
   <router-view></router-view>
-  <Invite v-if="isInvited" :opponent="opponent" @makeDecision="makeDecision" :mode="sort" :type="type" />
+  <Invite v-if="invite" :invite="invite" @makeDecision="makeDecision" />
   <notifications group="error" position="top right" />
 </template>
 
@@ -9,16 +9,13 @@ import { onMounted, provide, ref } from 'vue'
 import { RouterView, useRouter } from 'vue-router'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
-import type { AppDataType } from '@/types'
+import type { AppDataType, InviteType } from '@/types'
 import { socket } from '@/socket'
 import Invite from '@/modals/Invite.vue'
 
 const router = useRouter()
 const appData = ref<AppDataType>({ user: null })
-const isInvited = ref(false)
-const opponent = ref('')
-const type = ref()
-const sort = ref()
+const invite = ref<InviteType | null>(null)
 
 provide('appData', appData)
 
@@ -31,24 +28,22 @@ onMounted(() => {
     }
   })
 
-  socket.on('getInvite', invite => {
-    isInvited.value = true
-    opponent.value = invite.myName
-    sort.value = invite.sort
-    type.value = invite.type
+  socket.on('getInvite', (data: InviteType) => {
+    invite.value = data
   })
 
   socket.on('declineInvite', cancelInvite)
 })
 
 function cancelInvite() {
-  isInvited.value = false
+  invite.value = null
 }
 
-function makeDecision(status: boolean) {
+function makeDecision(status: boolean, color: string) {
   socket.emit('makeDecision', {
     myName: appData.value.user?.displayName,
-    opponentName: opponent.value,
+    opponentName: invite.value?.myName,
+    color,
     status,
   })
 
@@ -56,9 +51,8 @@ function makeDecision(status: boolean) {
     router.push({
       name: 'Online',
       query: {
-        // chooseOpponent: false,
-        sort: sort.value,
-        type: type.value,
+        sort: invite.value?.sort,
+        type: invite.value?.type,
       },
     })
   }

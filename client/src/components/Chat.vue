@@ -21,7 +21,7 @@
       <v-expansion-panel-text class="panel">
         <div class="messages">
           <div v-show="opponentTyping" class="typing text-grey-darken-1 dot_animation">
-            {{ opponentName }} is typing<span>.</span><span>.</span><span>.</span>
+            {{ opponent?.name }} is typing<span>.</span><span>.</span><span>.</span>
           </div>
           <v-fade-transition leave-absolute>
             <div v-if="!chatMessages.length" class="my-auto">
@@ -37,7 +37,11 @@
             class="message mb-2 py-1 px-2 bg-white"
             :class="message.user === nickname ? 'my-message' : 'enemy-message'"
           >
-            <v-badge inline :color="message.user === nickname ? 'blue' : 'red'" class="badge"></v-badge>
+            <v-badge
+              inline
+              :color="message.user === nickname ? myColor : opponent?.color"
+              class="badge elevation-2"
+            ></v-badge>
             {{ message.text }}
           </v-sheet>
         </div>
@@ -64,12 +68,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { socket } from '@/socket'
 
 const props = defineProps<{
   nickname: string
-  opponentName: string
+  users: {
+    name: string
+    color: string
+  }[]
 }>()
 const chatMessages = ref<{
   user: string
@@ -80,6 +87,8 @@ const unreadMessages = ref(0)
 const opponentTyping = ref(false)
 const expanded = ref(false)
 const typingTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+const myColor = computed(() => props.users.find(user => user.name === props.nickname)?.color)
+const opponent = computed(() => props.users.find(user => user.name !== props.nickname))
 
 onMounted(() => {
   socket.on('getNewMessages', data => {
@@ -171,11 +180,11 @@ function typingMessage() {
 .badge {
   position: absolute;
   bottom: 0;
-}
-
-.badge:deep(div) {
-  margin: 0;
-  display: block;
+  border-radius: 50%;
+  &:deep(div) {
+    margin: 0;
+    display: block;
+  }
 }
 
 .my-message {
