@@ -7,7 +7,7 @@
         </v-avatar>
       </template>
       <v-list>
-        <div class="px-3 pb-3">
+        <div class="pl-3 pr-5 pb-3">
           <p class="text-subtitle-1">{{ appData?.user.displayName }}</p>
           <p class="text-subtitle-2 text-grey">{{ appData?.user.email }}</p>
         </div>

@@ -7,7 +7,7 @@ import History from '@/pages/History.vue'
 import Online from '@/pages/Online.vue'
 import Profile from '@/pages/Profile.vue'
 import Records from '@/pages/Records.vue'
-import Settings from '@/pages/Settings.vue'
+import Settings from '@/pages/Settings'
 import Start from '@/pages/Start.vue'
 import Subject from '@/components/Subject.vue'
 import ChooseSubject from '@/components/ChooseSubject.vue'
@@ -371,7 +371,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(r => r.meta?.auth)) {
-    onAuthStateChanged(getAuth(), user => {
+    const unsubscribe = onAuthStateChanged(getAuth(), user => {
+      unsubscribe()
       if (user) {
         next()
       } else {

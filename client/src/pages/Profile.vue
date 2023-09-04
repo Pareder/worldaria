@@ -14,7 +14,7 @@
       </v-list>
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block variant="outlined" color="primary">
+          <v-btn block variant="outlined" color="primary" @click="logOut">
             Log Out
           </v-btn>
         </div>
@@ -40,10 +40,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
+import { getAuth, signOut } from 'firebase/auth'
 
 const route = useRoute()
+const router = useRouter()
 const { mobile } = useDisplay()
 const drawer = ref(!mobile.value)
+
+function logOut() {
+  signOut(getAuth())
+  router.replace('/')
+}
 </script>

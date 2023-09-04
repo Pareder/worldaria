@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import { EmailAuthProvider, GoogleAuthProvider, getAuth } from 'firebase/auth'
+import { EmailAuthProvider, GoogleAuthProvider, getAuth, sendEmailVerification } from 'firebase/auth'
 import * as firebaseui from 'firebaseui'
 import 'firebaseui/dist/firebaseui.css'
 
@@ -39,7 +39,11 @@ function handleOpen() {
     ui.start('#firebaseui-auth-container', {
       signInOptions: [EmailAuthProvider.PROVIDER_ID, GoogleAuthProvider.PROVIDER_ID],
       callbacks: {
-        signInSuccessWithAuthResult: () => {
+        signInSuccessWithAuthResult: (authResult) => {
+          if (authResult.additionalUserInfo?.isNewUser) {
+            sendEmailVerification(authResult.user)
+          }
+
           open.value = false
           return false
         }
