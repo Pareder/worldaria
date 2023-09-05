@@ -5,16 +5,11 @@
     title="Congratulations!"
   >
     <template #content>
-      <div v-if="!route.query.sort">
-        <div class="text-h5 text-center">
-          Your score:
-          <span class="text-blue">{{ score }}</span>
-        </div>
-        <LeaderboardTable v-if="withSavingResult"/>
+      <div class="text-h5 text-center">
+        Your score:
+        <span class="text-blue">{{ score }}</span>
       </div>
-      <div v-else class="text-h5 text-center">
-        You have guessed all the countries.
-      </div>
+      <LeaderboardTable :type="type" :mode="mode" :sort="sort" />
     </template>
   </ModalTrigger>
 </template>
@@ -23,9 +18,9 @@
 import { inject, onMounted } from 'vue'
 import type { Ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { onValue, ref, update } from 'firebase/database'
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore'
 import type { AppDataType } from '@/types'
-import { database } from '@/config'
+import { firestore } from '@/config'
 import LeaderboardTable from '@/components/LeaderboardTable.vue'
 import ModalTrigger from '@/components/ModalTrigger.vue'
 
@@ -34,26 +29,25 @@ const route = useRoute()
 const appData = inject<Ref<AppDataType>>('appData')
 const userId = appData?.value.user?.uid
 const nickname = appData?.value.user?.displayName
-const withSavingResult = !route.query.sort
+const type = route.path.split('/').pop() || 'name'
+const mode = route.query.mode === 'hard' ? 'hard' : 'normal'
+const sort = (Array.isArray(route.query.sort) ? route.query.sort[0] : route.query.sort)  || 'all'
 
-onMounted(() => {
-  if (!withSavingResult || !userId) {
+onMounted(async () => {
+  if (!userId) {
     return
   }
 
-  onValue(ref(database, `users/${userId}`), snapshot => {
-    const user = snapshot.val()
-    if (!user?.score || user.score < props.score) {
-      update(ref(database), {
-        [`users/${userId}`]: {
-          name: nickname,
-          score: props.score,
-          scoreDate: new Date().toUTCString()
-        }
-      })
-    }
-  }, {
-    onlyOnce: true
-  })
+  await addDoc(collection(firestore, 'games', mode, type), {
+    user: userId,
+    score: props.score,
+    sort,
+    date: Date.now(),
+  } as object)
+  await setDoc(
+    doc(firestore, 'users', userId),
+    { name: nickname },
+    { merge: true }
+  )
 })
 </script>

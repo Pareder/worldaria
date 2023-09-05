@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
-import { getDatabase } from 'firebase/database'
+import { getFirestore } from 'firebase/firestore'
 
-function getDatabaseInstance() {
+function getFirestoreInstance() {
   const envVariables = [
     'VITE_APP_API_KEY',
     'VITE_APP_AUTH_DOMAIN',
@@ -26,10 +26,10 @@ function getDatabaseInstance() {
     messagingSenderId: import.meta.env.VITE_APP_MESSAGING_SENDER_ID
   })
 
-  return getDatabase(app)
+  return getFirestore(app)
 }
 
-export const database = getDatabaseInstance()
+export const firestore = getFirestoreInstance()
 
 export const populationOptions = [
   {

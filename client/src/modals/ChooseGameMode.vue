@@ -32,22 +32,22 @@
         ></v-radio>
       </v-radio-group>
       <v-row no-gutters justify="space-between" class="mt-2">
-        <router-link :to="{ name: mode === 'hard' ? 'Hard' : 'Game', query: { sort } }">
+        <router-link :to="{ name: 'GameName', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Name
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Flag', query: { mode, sort } }">
+        <router-link :to="{ name: 'GameFlag', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Flag
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Capital', query: { mode, sort } }">
+        <router-link :to="{ name: 'GameCapital', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Capital
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Area', query: { mode, sort } }">
+        <router-link :to="{ name: 'GameArea', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Area
           </v-btn>

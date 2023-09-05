@@ -46,3 +46,10 @@ export type InviteType = {
   sort: string
   type: string
 }
+
+export type RecordType = {
+  user: string
+  score: number
+  date: number
+  sort: string
+}

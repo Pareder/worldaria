@@ -13,7 +13,6 @@
       v-if="!enemyLeft && game.count !== geojson.length"
       :hasTimeLimit="!enemyTurn"
       :game="enemyTurn ? undefined : game"
-      :seconds="seconds"
     >
       <template v-if="!enemyTurn" v-slot:header>
         Attempts: {{ game.attempts }}
@@ -66,15 +65,14 @@ export default {
       game: {
         count: 0,
         attempts: 5,
+        seconds: 15,
         scores: {
           my: 0,
           enemy: 0,
         },
       },
       loaded: false,
-      seconds: 15,
       interval: null,
-      danger: false,
       users: [],
       enemyTurn: true,
       enemyLeft: false,
@@ -173,7 +171,7 @@ export default {
           enemy: 0,
         },
       }
-      this.seconds = 15
+      this.game.seconds = 15
       this.subjects = [...data]
 
       for (let i = 0; i < this.layers.length; i++) {
@@ -273,19 +271,13 @@ export default {
       }
 
       this.game.attempts = 5
-      this.seconds = 15
-      this.danger = false
+      this.game.seconds = 15
     },
 
     makeInterval() {
       this.interval = setInterval(() => {
-        this.seconds--
-
-        if (this.seconds === 3) {
-          this.danger = true
-        }
-
-        if (this.seconds === 0) {
+        this.game.seconds--
+        if (this.game.seconds === 0) {
           socket.emit('countryClick', false)
           this.enemyTurn = true
           this.resetData()

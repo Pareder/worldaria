@@ -12,7 +12,6 @@
     <Drawer
       v-if="game.count !== geojson.length"
       :game="enemyTurn ? undefined : game"
-      :seconds="seconds"
       :hasTimeLimit="!enemyTurn"
     >
       <template v-if="!enemyTurn" v-slot:header>
@@ -57,9 +56,9 @@ export default {
           my: 0,
           enemy: 0,
         },
+        seconds: 15,
       },
       loaded: false,
-      seconds: 15,
       interval: null,
       danger: false,
       users: [
@@ -143,7 +142,7 @@ export default {
         ? layer.feature.properties.capital === this.subjects[this.game.count]
         : layer.feature.properties.name === this.subjects[this.game.count]
       ) {
-        layer.setStyle({ fillColor: COLORS.my })
+        layer.setStyle({ fillColor: MY_COLOR })
         layer.off('click')
         this.game.scores.my++
         this.enemyTurn = true
@@ -173,19 +172,19 @@ export default {
         return
       }
       this.game.attempts = 5
-      this.seconds = 15
+      this.game.seconds = 15
       this.danger = false
     },
 
     makeInterval() {
       this.interval = setInterval(() => {
-        this.seconds--
+        this.game.seconds--
 
-        if (this.seconds === 3) {
+        if (this.game.seconds === 3) {
           this.danger = true
         }
 
-        if (this.seconds === 0) {
+        if (this.game.seconds === 0) {
           this.enemyTurn = true
           this.makeBotTurn()
           this.resetData()
@@ -203,7 +202,7 @@ export default {
               ? layer.feature.properties.capital === this.subjects[this.game.count]
               : layer.feature.properties.name === this.subjects[this.game.count]
             )
-            .setStyle({ fillColor: COLORS.enemy })
+            .setStyle({ fillColor: ENEMY_COLOR })
             .off('click')
           this.game.scores.enemy++
         }
@@ -228,7 +227,7 @@ export default {
           enemy: 0,
         },
       }
-      this.seconds = 15
+      this.game.seconds = 15
 
       for (let i = 0; i < this.layers.length; i++) {
         this.layers[i].setStyle({ fillColor: '#fff' })

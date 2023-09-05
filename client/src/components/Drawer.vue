@@ -6,11 +6,11 @@
   >
     <v-row no-gutters justify="space-between" class="w-100">
       <p class="text-subtitle-2">
-        {{ hasTimeLimit ? `Time: ${seconds}` : ''}}
+        {{ hasTimeLimit && game ? `Time: ${game.seconds}` : ''}}
       </p>
       <p v-if="game" class="text-subtitle-2">
         <slot name="header">
-          <span class="font-weight-bold">{{ game.rightAnswers || game.count }}</span> of {{ game.length }}
+          <span class="font-weight-bold">{{ game.count + 1 }}</span> of {{ game.length }}
         </slot>
       </p>
     </v-row>
@@ -31,14 +31,13 @@
 <script setup lang="ts">
 defineProps<{
   game?: {
-    rightAnswers: number
     count: number
     attempts: number
     length: number
     score?: number
+    seconds: number
   }
   hasTimeLimit?: boolean
-  seconds?: number
 }>()
 </script>
 

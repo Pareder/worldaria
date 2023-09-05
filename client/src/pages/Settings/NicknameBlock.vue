@@ -28,8 +28,10 @@
 import { inject, ref } from 'vue'
 import type { Ref } from 'vue'
 import { updateProfile } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
 import { useNotification } from '@kyvg/vue3-notification'
 import type { AppDataType } from '@/types'
+import { firestore } from '@/config'
 
 const { notify } = useNotification()
 const appData = inject<Ref<AppDataType>>('appData')
@@ -46,6 +48,13 @@ function submitNickname() {
 
   loading.value = true
   updateProfile(user, { displayName: nickname.value })
+    .then(() => {
+      return setDoc(
+        doc(firestore, 'users', user.uid),
+        { name: nickname.value },
+        { merge: true }
+      )
+    })
     .then(() => {
       notify({
         type: 'success',

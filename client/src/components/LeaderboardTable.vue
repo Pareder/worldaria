@@ -1,74 +1,74 @@
 <template>
-  <div v-if="leaders.length" class="leaderboard">
-    <h1 class="text-center">Leaderboard</h1>
-    <ol>
+  <div v-if="records.length" class="leaderboard my-4">
+    <h4 class="title py-2 text-h4 text-center text-grey-lighten-5">Leaderboard</h4>
+    <ol class="list">
       <li
-        v-for="(user, id) in leaders"
+        v-for="(record, id) in records"
         :key="id"
-        :class="{ leader: user['.key'] === userId }"
+        class="item"
       >
         <div class="mark" />
         <div class="user">
-          <span class="name">{{ user.name }}</span>
-          <span>{{ user.score }}</span>
-          <span class="divider">|</span>
-          <span class="date">{{ getFormattedDate(user.scoreDate) }}</span>
+          <span class="text-truncate">{{ record.username }}</span>
+          <v-icon v-if="record.user === userId" icon="mdi-account" class="mx-1"></v-icon>
+          <span class="ml-auto">{{ record.score }}</span>
+          <span class="mx-2">|</span>
+          <span class="date flex-shrink-0 text-right">{{ new Date(record.date).toLocaleDateString() }}</span>
         </div>
       </li>
     </ol>
   </div>
 </template>
 
-<script>
-import { ref, query, orderByChild, limitToLast, onValue } from 'firebase/database'
-import { database } from '@/config'
+<script setup lang="ts">
+import { inject, onMounted, ref } from 'vue'
+import type { Ref } from 'vue'
+import { collection, getDoc, getDocs, query, doc, orderBy, limit, where } from 'firebase/firestore'
+import type { AppDataType, RecordType } from '@/types'
+import { firestore } from '@/config'
 
-export default {
-  data() {
-    return {
-      leaderboard: {},
-    }
-  },
+type UserRecordType = RecordType & { username: string }
 
-  inject: ['appData'],
+const props = defineProps<{
+  type: string
+  mode: string
+  sort: string
+}>()
+const appData = inject<Ref<AppDataType>>('appData')
+const records = ref<UserRecordType[]>([])
+const userId = appData?.value.user?.uid
 
-  computed: {
-    userId() {
-      return this.appData.user?.uid
-    },
-
-    leaders() {
-      return Object.entries(this.leaderboard).sort(([, a], [, b]) => b.score - a.score).map(([key, data]) => ({
-        ...data,
-        '.key': key,
-      }))
-    },
-  },
-
-  created() {
-    onValue(query(ref(database, 'users'), orderByChild('score'), limitToLast(5)), snapshot => {
-      this.leaderboard = snapshot.val()
-    })
-  },
-
-  methods: {
-    getFormattedDate(date) {
-      return date ? new Date(date).toLocaleDateString() : ''
-    },
-  },
-}
+onMounted(async () => {
+  const q = query(
+    collection(firestore, 'games', props.mode, props.type),
+    where('sort', '==', props.sort),
+    orderBy('score', 'desc'),
+    limit(5),
+  )
+  const snapshot = await getDocs(q)
+  const promises: Promise<UserRecordType | null>[] = []
+  snapshot.forEach(gameDoc => {
+    const game = gameDoc.data() as RecordType
+    promises.push(new Promise(resolve => {
+      getDoc(doc(firestore, 'users', game.user))
+        .then(userDoc => {
+          const user = userDoc.data() as { name: string }
+          resolve({
+            ...game,
+            username: user?.name,
+          })
+        })
+        .catch(() => resolve(null))
+    }))
+  })
+  records.value = (await Promise.all(promises)).filter(Boolean) as UserRecordType[]
+})
 </script>
 
 <style scoped lang="scss">
 .leaderboard {
-  margin-top: 20px;
-  padding: 0 40px;
   transform-origin: top;
   animation: show-leaderboard 0.5s;
-
-  @media screen and (max-width: 500px) {
-    padding: 0;
-  }
 }
 
 @keyframes show-leaderboard {
@@ -80,24 +80,20 @@ export default {
   }
 }
 
-h1 {
-  margin: 0;
-  font-size: 22px;
-  padding: 10px 0;
-  color: #e1e1e1;
+.title {
   background: #3a404d;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
 
-ol {
+.list {
   margin-top: 0;
   padding: 0;
   counter-reset: leaderboard;
   list-style-type: none;
 }
 
-li {
+.item {
   position: relative;
   z-index: 1;
   font-size: 14px;
@@ -131,7 +127,6 @@ li {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #fa6855;
     box-shadow: 0 3px 0 rgba(0, 0, 0, .08);
     transition: all .3s ease-in-out;
     opacity: 0;
@@ -252,24 +247,6 @@ li {
   }
 }
 
-li.leader {
-  background-color: #dff2ee;
-  color: #2e4c45;
-  &:before {
-    background-color: #2e4c45;
-    color: #fff;
-  }
-  .mark, & span {
-    color: inherit;
-    transition: color 0.2s;
-  }
-  &:hover {
-    .mark, span {
-      color: #fff;
-    }
-  }
-}
-
 .user {
   position: relative;
   z-index: 2;
@@ -277,16 +254,7 @@ li.leader {
   font-weight: bold;
 }
 
-.name {
-  flex-grow: 1;
-}
-
-.divider {
-  margin: 0 10px;
-}
-
 .date {
   width: 80px;
-  text-align: right;
 }
 </style>

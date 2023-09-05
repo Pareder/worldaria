@@ -2,7 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import Bot from '@/pages/Bot.vue'
 import Details from '@/pages/Details.vue'
-import Game from '@/pages/Game.vue'
+import GameArea from '@/pages/GameArea.vue'
+import GameCapital from '@/pages/GameCapital.vue'
+import GameFlag from '@/pages/GameFlag.vue'
+import GameName from '@/pages/GameName.vue'
 import History from '@/pages/History.vue'
 import Online from '@/pages/Online.vue'
 import Profile from '@/pages/Profile.vue'
@@ -11,7 +14,6 @@ import Settings from '@/pages/Settings'
 import Start from '@/pages/Start.vue'
 import Subject from '@/components/Subject.vue'
 import ChooseSubject from '@/components/ChooseSubject.vue'
-import GuessMode from '@/components/GuessMode.vue'
 
 type MetaTagName = {
   name: string,
@@ -54,11 +56,11 @@ const router = createRouter({
       },
     },
     {
-      name: 'Game',
-      path: '/game',
-      component: Game,
+      name: 'GameName',
+      path: '/game/name',
+      component: GameName,
       meta: {
-        title: 'Worldaria game mode',
+        title: 'Worldaria - country name mode',
         metaTags: [
           {
             name: 'description',
@@ -67,6 +69,60 @@ const router = createRouter({
           {
             property: 'og:description',
             content: 'Try to guess all the countries and get the best score.',
+          },
+        ],
+      },
+    },
+    {
+      name: 'GameFlag',
+      path: '/game/flag',
+      component: GameFlag,
+      meta: {
+        title: 'Worldaria - country flag mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Try to guess countries by their flags.',
+          },
+          {
+            property: 'og:description',
+            content: 'Try to guess countries by their flags.',
+          },
+        ],
+      },
+    },
+    {
+      name: 'GameCapital',
+      path: '/game/capital',
+      component: GameCapital,
+      meta: {
+        title: 'Worldaria - country capital mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Try to guess countries by their capitals.',
+          },
+          {
+            property: 'og:description',
+            content: 'Try to guess countries by their capitals.',
+          },
+        ],
+      },
+    },
+    {
+      name: 'GameArea',
+      path: '/game/area',
+      component: GameArea,
+      meta: {
+        title: 'Worldaria - country area mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.',
+          },
+          {
+            property: 'og:description',
+            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.',
           },
         ],
       },
@@ -250,82 +306,6 @@ const router = createRouter({
           {
             property: 'og:description',
             content: 'You can play with bot with different levels of difficulty.',
-          },
-        ],
-      },
-    },
-    {
-      name: 'Hard',
-      path: '/hard',
-      component: GuessMode,
-      props: { guessBy: 'name' },
-      meta: {
-        title: 'Worldaria bot mode',
-        metaTags: [
-          {
-            name: 'description',
-            content: 'You can play with bot with different levels of difficulty.',
-          },
-          {
-            property: 'og:description',
-            content: 'You can play with bot with different levels of difficulty.',
-          },
-        ],
-      },
-    },
-    {
-      name: 'Flag',
-      path: '/flag',
-      component: GuessMode,
-      props: { guessBy: 'flag' },
-      meta: {
-        title: 'Worldaria flag mode',
-        metaTags: [
-          {
-            name: 'description',
-            content: 'Try to guess countries by their flags.',
-          },
-          {
-            property: 'og:description',
-            content: 'Try to guess countries by their flags.',
-          },
-        ],
-      },
-    },
-    {
-      name: 'Capital',
-      path: '/capital',
-      component: GuessMode,
-      props: { guessBy: 'capital' },
-      meta: {
-        title: 'Worldaria capital mode',
-        metaTags: [
-          {
-            name: 'description',
-            content: 'Try to guess countries by their capitals.',
-          },
-          {
-            property: 'og:description',
-            content: 'Try to guess countries by their capitals.',
-          },
-        ],
-      },
-    },
-    {
-      name: 'Area',
-      path: '/area',
-      component: GuessMode,
-      props: { guessBy: 'area' },
-      meta: {
-        title: 'Worldaria area mode',
-        metaTags: [
-          {
-            name: 'description',
-            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.',
-          },
-          {
-            property: 'og:description',
-            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.',
           },
         ],
       },
