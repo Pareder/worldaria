@@ -10,7 +10,7 @@
         <div class="mark" />
         <div class="user">
           <span class="text-truncate">{{ record.username }}</span>
-          <v-icon v-if="record.user === userId" icon="mdi-account" class="mx-1"></v-icon>
+          <v-icon v-if="record.user === appData?.user?.uid" icon="mdi-account" class="mx-1"></v-icon>
           <span class="ml-auto">{{ record.score }}</span>
           <span class="mx-2">|</span>
           <span class="date flex-shrink-0 text-right">{{ new Date(record.date).toLocaleDateString() }}</span>
@@ -21,9 +21,18 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue'
+import { inject, onMounted, onUnmounted, ref } from 'vue'
 import type { Ref } from 'vue'
-import { collection, getDoc, getDocs, query, doc, orderBy, limit, where } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from 'firebase/firestore'
 import type { AppDataType, RecordType } from '@/types'
 import { firestore } from '@/config'
 
@@ -36,7 +45,7 @@ const props = defineProps<{
 }>()
 const appData = inject<Ref<AppDataType>>('appData')
 const records = ref<UserRecordType[]>([])
-const userId = appData?.value.user?.uid
+const unsubscribe = ref<() => void>()
 
 onMounted(async () => {
   const q = query(
@@ -45,24 +54,27 @@ onMounted(async () => {
     orderBy('score', 'desc'),
     limit(5),
   )
-  const snapshot = await getDocs(q)
-  const promises: Promise<UserRecordType | null>[] = []
-  snapshot.forEach(gameDoc => {
-    const game = gameDoc.data() as RecordType
-    promises.push(new Promise(resolve => {
-      getDoc(doc(firestore, 'users', game.user))
-        .then(userDoc => {
-          const user = userDoc.data() as { name: string }
-          resolve({
-            ...game,
-            username: user?.name,
+  unsubscribe.value = onSnapshot(q, async snapshot => {
+    const promises: Promise<UserRecordType | null>[] = []
+    snapshot.forEach(gameDoc => {
+      const game = gameDoc.data() as RecordType
+      promises.push(new Promise(resolve => {
+        getDoc(doc(firestore, 'users', game.user))
+          .then(userDoc => {
+            const user = userDoc.data() as { name: string }
+            resolve({
+              ...game,
+              username: user?.name,
+            })
           })
-        })
-        .catch(() => resolve(null))
-    }))
+          .catch(() => resolve(null))
+      }))
+    })
+    records.value = (await Promise.all(promises)).filter(Boolean) as UserRecordType[]
   })
-  records.value = (await Promise.all(promises)).filter(Boolean) as UserRecordType[]
 })
+
+onUnmounted(() => unsubscribe.value?.())
 </script>
 
 <style scoped lang="scss">

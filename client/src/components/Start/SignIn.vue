@@ -25,8 +25,7 @@ import { inject } from 'vue'
 import type { Ref } from 'vue'
 import { getAuth, signOut } from 'firebase/auth'
 import type { AppDataType } from '@/types'
-import SignModal from '@/components/Start/SignModal.vue'
-import 'firebaseui/dist/firebaseui.css'
+import SignModal from '@/modals/SignModal.vue'
 
 const appData = inject<Ref<AppDataType>>('appData')
 

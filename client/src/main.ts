@@ -7,6 +7,7 @@ import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import 'leaflet/dist/leaflet.css'
+import 'firebaseui/dist/firebaseui.css'
 
 import './assets/css/style.css'
 import App from './App.vue'
