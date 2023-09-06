@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { socket } from '@/socket'
 import ModalTrigger from '@/components/ModalTrigger.vue'
@@ -74,6 +74,11 @@ const opponent = computed(() => props.users.find(user => user.name !== props.nic
 onMounted(() => {
   socket.on('opponentsRevenge', () => revenge.value = true)
   socket.on('revengeDecline', () => revengeDeclined.value = true)
+})
+
+onUnmounted(() => {
+  socket.off('opponentsRevenge')
+  socket.off('revengeDecline')
 })
 
 function getRevenge() {

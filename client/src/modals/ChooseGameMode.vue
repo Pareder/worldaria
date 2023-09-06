@@ -11,6 +11,7 @@
           :key="option.id"
           :value="option.id"
           color="primary"
+          class="w-50"
         >
           <template #label>
             <span class="mr-1">{{ option.name }}</span>
@@ -29,6 +30,7 @@
           :value="option.value"
           :label="option.title"
           color="primary"
+          class="w-25"
         ></v-radio>
       </v-radio-group>
       <v-row no-gutters justify="space-between" class="mt-2">

@@ -55,3 +55,7 @@ export type RecordType = {
   mode: string
   sort: string
 }
+
+export type BotRecordType = RecordType & {
+  bot_score: number
+}

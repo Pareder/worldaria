@@ -33,7 +33,9 @@
 </template>
 
 <script>
+import { addDoc, collection } from 'firebase/firestore'
 import api from '@/api'
+import { firestore } from '@/config'
 import { ENEMY_COLOR, MY_COLOR } from '@/config/colors'
 import Loader from '@/components/Loader.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
@@ -60,7 +62,6 @@ export default {
       },
       loaded: false,
       interval: null,
-      danger: false,
       users: [
         { name: 'You', color: MY_COLOR },
         { name: 'Bot', color: ENEMY_COLOR },
@@ -68,6 +69,8 @@ export default {
       enemyTurn: false,
     }
   },
+
+  inject: ['appData'],
 
   computed: {
     botMode() {
@@ -77,19 +80,19 @@ export default {
     chance() {
       switch (this.$route.query.mode) {
         case 'hard':
-          return 0.8
+          return 0.3
         case 'extreme':
-          return 0.95
+          return 0.5
         case 'impossible':
-          return 0.95
+          return 0.7
         case 'easy':
         default:
-          return 0.3
+          return 0.1
       }
     },
 
     gameType() {
-      return this.$route.query.by
+      return this.$route.query.type
     },
   },
 
@@ -144,7 +147,7 @@ export default {
       ) {
         layer.setStyle({ fillColor: MY_COLOR })
         layer.off('click')
-        this.game.scores.my++
+        this.game.scores.my += this.game.attempts
         this.enemyTurn = true
         this.resetData()
 
@@ -167,22 +170,18 @@ export default {
     resetData() {
       clearInterval(this.interval)
       this.game.count++
-
       if (this.game.count === this.geojson.length) {
+        this.saveResult()
         return
       }
+
       this.game.attempts = 5
       this.game.seconds = 15
-      this.danger = false
     },
 
     makeInterval() {
       this.interval = setInterval(() => {
         this.game.seconds--
-
-        if (this.game.seconds === 3) {
-          this.danger = true
-        }
 
         if (this.game.seconds === 0) {
           this.enemyTurn = true
@@ -192,11 +191,24 @@ export default {
       }, 1000)
     },
 
+    calculateBotScore(attempts = 5) {
+      if (!attempts) {
+        return 0
+      }
+
+      const chance = Math.random()
+      if (chance < this.chance) {
+        return attempts
+      }
+
+      return this.calculateBotScore(attempts - 1)
+    },
+
     makeBotTurn() {
       setTimeout(() => {
-        const chance = Math.random()
+        const score = this.calculateBotScore(5)
 
-        if (chance < this.chance) {
+        if (score) {
           this.layers
             .find(layer => this.gameType === 'capital'
               ? layer.feature.properties.capital === this.subjects[this.game.count]
@@ -204,7 +216,7 @@ export default {
             )
             .setStyle({ fillColor: ENEMY_COLOR })
             .off('click')
-          this.game.scores.enemy++
+          this.game.scores.enemy += score
         }
 
         this.resetData()
@@ -243,6 +255,23 @@ export default {
       this.enemyTurn = false
       this.makeInterval()
     },
+
+    async saveResult() {
+      const user = this.appData?.user
+      if (!user) {
+        return
+      }
+
+      await addDoc(collection(firestore, 'bot'), {
+        user: user.uid,
+        score: this.game.scores.my,
+        bot_score: this.game.scores.enemy,
+        type: this.gameType,
+        mode: this.botMode,
+        sort: this.$route.query.sort || 'all',
+        date: Date.now(),
+      })
+    }
   },
 
   components: {
