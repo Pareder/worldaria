@@ -51,5 +51,7 @@ export type RecordType = {
   user: string
   score: number
   date: number
+  type: string
+  mode: string
   sort: string
 }

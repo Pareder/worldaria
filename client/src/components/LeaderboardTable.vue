@@ -49,7 +49,9 @@ const unsubscribe = ref<() => void>()
 
 onMounted(async () => {
   const q = query(
-    collection(firestore, 'games', props.mode, props.type),
+    collection(firestore, 'games'),
+    where('type', '==', props.type),
+    where('mode', '==', props.mode),
     where('sort', '==', props.sort),
     orderBy('score', 'desc'),
     limit(5),

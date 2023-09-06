@@ -48,7 +48,7 @@ const color = ref(ENEMY_COLOR)
 const type = capitalize(props.invite.type)
 const sort = computed(() => {
   const option = populationOptions.find(option => option.value === props.invite.sort)
-  return option?.name || 'all'
+  return option?.title || 'all'
 })
 
 function makeDecision(status: boolean) {

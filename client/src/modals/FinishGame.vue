@@ -56,9 +56,11 @@ async function saveRecord() {
     return
   }
 
-  await addDoc(collection(firestore, 'games', mode, type), {
+  await addDoc(collection(firestore, 'games'), {
     user: user.uid,
     score: props.score,
+    type,
+    mode,
     sort,
     date: Date.now(),
   } as object)

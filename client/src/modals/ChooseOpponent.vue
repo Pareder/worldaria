@@ -41,9 +41,9 @@
           <v-radio-group v-model="sort" inline hide-details>
             <v-radio
               v-for="option in populationOptions"
-              :key="option.id"
+              :key="option.value"
               :value="option.value"
-              :label="option.name"
+              :label="option.title"
               color="primary"
             ></v-radio>
           </v-radio-group>

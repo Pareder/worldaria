@@ -4,6 +4,7 @@ import Notifications from '@kyvg/vue3-notification'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import 'leaflet/dist/leaflet.css'
@@ -26,7 +27,10 @@ app.use(VueGtag, {
 app.use(Notifications)
 
 const vuetify = createVuetify({
-  components,
+  components: {
+    ...components,
+    VDataTable,
+  },
   directives,
 })
 app.use(vuetify)
