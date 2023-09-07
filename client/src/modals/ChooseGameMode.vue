@@ -15,7 +15,7 @@
         >
           <template #label>
             <span class="mr-1">{{ option.name }}</span>
-            <v-icon icon="mdi-information-outline" color="black" size="small"></v-icon>
+            <v-icon icon="mdi-information-outline" color="white" size="small"></v-icon>
             <v-tooltip activator="parent" max-width="300" location="top">
               {{ option.description }}
             </v-tooltip>

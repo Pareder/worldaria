@@ -109,7 +109,7 @@
               <td>
                 <v-row no-gutters align="center">
                   <span class="mr-1">HDI</span>
-                  <v-icon icon="mdi-information-outline" color="black" size="small"></v-icon>
+                  <v-icon icon="mdi-information-outline" color="white" size="small"></v-icon>
                   <v-tooltip activator="parent" max-width="300">
                     The <strong>Human Development Index</strong> (<strong>HDI</strong>) is a statistic composite index
                     of life expectancy, education, and per capita income indicators. A country scores a higher HDI when

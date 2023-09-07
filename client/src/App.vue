@@ -24,7 +24,7 @@ onMounted(() => {
   onAuthStateChanged(auth, user => {
     appData.value.user = user
     if (user) {
-      socket.emit('sendName', user.displayName)
+      socket.emit('sendName', { uid: user.uid, name: user.displayName })
     }
   })
 
@@ -41,20 +41,14 @@ function cancelInvite() {
 
 function makeDecision(status: boolean, color: string) {
   socket.emit('makeDecision', {
-    myName: appData.value.user?.displayName,
-    opponentName: invite.value?.myName,
+    to: invite.value?.from.uid,
     color,
     status,
+    room: invite.value?.room,
   })
 
   if (status) {
-    router.push({
-      name: 'Online',
-      query: {
-        sort: invite.value?.sort,
-        type: invite.value?.type,
-      },
-    })
+    router.push('/online')
   }
 
   cancelInvite()

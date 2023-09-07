@@ -4,9 +4,9 @@
     persistent
     :title="reason === 'leave'
       ? 'Something bad happened'
-      : score.my > score.enemy
+      : me.score > opponent.score
         ? 'Congratulations'
-        : score.my < score.enemy
+        : me.score < opponent.score
           ? 'Sad, but true'
           : 'Very close game'
     "
@@ -16,14 +16,10 @@
         Your opponent has left the match
       </div>
       <div v-else>
-        <p v-if="score.my > score.enemy" class="text-h6 text-center mb-2">You win!</p>
-        <p v-else-if="score.my < score.enemy" class="text-h6 text-center mb-2">You lose...</p>
+        <p v-if="me.score > opponent.score" class="text-h6 text-center mb-2">You win!</p>
+        <p v-else-if="me.score < opponent.score" class="text-h6 text-center mb-2">You lose...</p>
         <p v-else class="text-h6 text-center mb-2">It is a draw!</p>
-        <UsersList
-          :users="users"
-          :nickname="nickname"
-          :score="score"
-        ></UsersList>
+        <UsersList :users="users"></UsersList>
         <div v-if="revenge" class="text-center">
           <p>{{ opponent?.name }} wants to get revenge</p>
           <v-btn variant="elevated" color="primary" size="large" class="mr-2" @click="revengeDecision(true)">
@@ -47,8 +43,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
+import type { Ref } from 'vue'
 import { useRoute } from 'vue-router'
+import type { AppDataType, OnlineUserType } from '@/types'
 import { socket } from '@/socket'
 import ModalTrigger from '@/components/ModalTrigger.vue'
 import UsersList from '@/components/UsersList.vue'
@@ -56,20 +54,14 @@ import UsersList from '@/components/UsersList.vue'
 const emit = defineEmits(['makeRevenge'])
 const props = defineProps<{
   reason?: string
-  nickname: string
-  users: {
-    name: string
-    color: string
-  }[]
-  score: {
-    my: number
-    enemy: number
-  }
+  users: OnlineUserType[]
 }>()
+const appData = inject<Ref<AppDataType>>('appData')
 const route = useRoute()
 const revenge = ref(false)
 const revengeDeclined = ref(false)
-const opponent = computed(() => props.users.find(user => user.name !== props.nickname))
+const me = computed(() => props.users.find(user => user.uid === appData?.value?.user?.uid)!)
+const opponent = computed(() => props.users.find(user => user.uid !== appData?.value?.user?.uid)!)
 
 onMounted(() => {
   socket.on('opponentsRevenge', () => revenge.value = true)

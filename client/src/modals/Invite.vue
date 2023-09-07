@@ -8,7 +8,7 @@
       You have been invited to game in mode
       <span class="mode">{{ type }}</span>
       <span class="sort">population: {{ sort }}</span>
-      by <span :style="{ color: invite.color }">{{ invite.myName }}</span>
+      by <span :style="{ color: invite.color }">{{ invite.from.name }}</span>
       <p class="text-subtitle-2 mt-3 mb-1">Choose your color</p>
       <v-color-picker
         v-model="color"

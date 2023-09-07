@@ -2,7 +2,7 @@
   <ModalTrigger
     default-opened
     persistent
-    :title="inviteSent
+    :title="inviteTo
       ? 'Waiting for opponent\'s decision'
       : opponentDecline
         ? 'The opponent has declined your invite'
@@ -13,7 +13,7 @@
       <slot v-bind="props"></slot>
     </template>
     <template #content>
-      <div v-if="users.length > 1">
+      <div v-if="users.length">
         <p class="text-subtitle-2 mb-1">Choose your color</p>
         <v-color-picker
           v-model="color"
@@ -33,11 +33,11 @@
           @input="sortUsers"
         ></v-text-field>
         <div
-          :key="id"
+          v-for="user in usersList"
+          :key="user.uid"
           class="user"
-          v-for="(user, id) in usersList"
         >
-          {{ user }}
+          {{ user.name }}
           <v-radio-group v-model="sort" inline hide-details>
             <v-radio
               v-for="option in populationOptions"
@@ -45,25 +45,27 @@
               :value="option.value"
               :label="option.title"
               color="primary"
+              class="w-25"
             ></v-radio>
           </v-radio-group>
           <v-btn
-            v-if="idPressed === id && inviteSent"
+            v-if="user.uid === inviteTo"
             variant="outlined"
             size="small"
             color="error"
-            @click="invite(user, id)"
+            class="mt-2"
+            @click="invite(user)"
           >
             cancel
           </v-btn>
-          <div v-else>
+          <v-row v-else no-gutters justify="space-between" class="mt-2">
             <v-btn
               variant="outlined"
               color="primary"
               size="small"
               class="mr-2"
-              :disabled="(idPressed !== id && inviteSent)"
-              @click="invite(user, id, 'name')"
+              :disabled="Boolean(inviteTo)"
+              @click="invite(user, 'name')"
             >
               Name
             </v-btn>
@@ -72,8 +74,8 @@
               color="primary"
               size="small"
               class="mr-2"
-              :disabled="(idPressed !== id && inviteSent)"
-              @click="invite(user, id, 'flag')"
+              :disabled="Boolean(inviteTo)"
+              @click="invite(user, 'flag')"
             >
               Flag
             </v-btn>
@@ -81,12 +83,12 @@
               variant="outlined"
               color="primary"
               size="small"
-              :disabled="(idPressed !== id && inviteSent)"
-              @click="invite(user, id, 'capital')"
+              :disabled="Boolean(inviteTo)"
+              @click="invite(user, 'capital')"
             >
               Capital
             </v-btn>
-          </div>
+          </v-row>
         </div>
         <p v-if="searchName && foundUsers.length === 0">There are no such users</p>
       </div>
@@ -101,30 +103,33 @@ import { MY_COLOR } from '@/config/colors'
 import { populationOptions } from '@/config'
 import ModalTrigger from '@/components/ModalTrigger.vue'
 
+type User = {
+  uid: string
+  name: string
+  socket_id: string
+}
+
 const emit = defineEmits(['sendInvite'])
 const props = defineProps<{
-  users: string[]
-  nickname?: string
-  inviteSent: boolean
+  users: User[]
+  inviteTo: string
   opponentDecline: boolean
 }>()
 const color = ref(MY_COLOR)
 const searchName = ref('')
-const idPressed = ref<number>()
-const foundUsers = ref<string[]>([])
-const sort = ref('')
+const foundUsers = ref<User[]>([])
+const sort = ref('all')
 const usersList = computed(() => {
-  return (searchName.value ? foundUsers.value : props.users).filter(user => user !== props.nickname)
+  return searchName.value ? foundUsers.value : props.users
 })
 
 function sortUsers() {
-  foundUsers.value = props.users.filter(user => user.startsWith(searchName.value))
+  foundUsers.value = props.users.filter(user => user.name.toLowerCase().startsWith(searchName.value.toLowerCase()))
 }
 
-function invite(name: string, id: number, type?: string) {
-  idPressed.value = id
+function invite(user: User, type?: string) {
   emit('sendInvite', {
-    name,
+    to: user.uid,
     color: color.value,
     type,
     sort: sort.value,
@@ -145,12 +150,10 @@ function invite(name: string, id: number, type?: string) {
 .user {
   margin-bottom: 10px;
   padding: 10px 20px;
-  background-color: #f2f2f2;
-  border-left: 5px solid #003842;
+  border-left: 5px solid rgb(var(--v-theme-secondary));
   transition: all 0.3s;
   &:hover {
-    background-color: #f9f9f9;
-    border-color: #00BDE8;
+    border-color: rgb(var(--v-theme-primary));
   }
 }
 </style>

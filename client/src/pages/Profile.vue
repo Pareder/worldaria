@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-navigation-drawer v-model="drawer" theme="dark">
+    <v-navigation-drawer v-model="drawer">
       <router-link
         to="/"
         class="py-4 d-block text-h5 text-blue text-decoration-none"

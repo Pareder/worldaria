@@ -2,9 +2,7 @@
   <OnlineModal
     v-if="enemyLeft || (loaded && game.count === subjects.length)"
     :reason="reason"
-    :nickname="nickname"
     :users="users"
-    :score="game.scores"
   />
   <HomeButton v-if="!loaded"></HomeButton>
   <Loader :is-loading="!loaded">
@@ -22,20 +20,19 @@
         <div v-else class="mb-2">
           {{ subjects[game.count] }}
         </div>
-        <UsersList :users="users" :nickname="nickname" :score="game.scores" />
+        <UsersList :users="users" />
       </div>
       <div v-else class="dot_animation">
         Opponent's Turn<span>.</span><span>.</span><span>.</span>
       </div>
     </Drawer>
-    <Chat :nickname="nickname" :users="users" />
+    <Chat :uid="uid" :users="users" />
     <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :world="world" :center="center" />
   </Loader>
   <ChooseOpponent
     v-if="chooseOpponent"
     :users="onlineUsers"
-    :nickname="nickname"
-    :inviteSent="inviteSent"
+    :inviteTo="inviteTo"
     :opponentDecline="opponentDecline"
     @sendInvite="sendInvite"
   />
@@ -66,10 +63,6 @@ export default {
         count: 0,
         attempts: 5,
         seconds: 15,
-        scores: {
-          my: 0,
-          enemy: 0,
-        },
       },
       loaded: false,
       interval: null,
@@ -79,71 +72,55 @@ export default {
       reason: '',
       chooseOpponent: true,
       opponentDecline: false,
-      inviteSent: false,
       sort: null,
       gameType: null,
-      opponentName: '',
+      inviteTo: '',
       center: null,
-      color: '',
     }
   },
 
   inject: ['appData'],
 
   computed: {
-    nickname() {
-      return this.appData.user?.displayName || ''
+    uid() {
+      return this.appData.user?.uid || ''
     },
 
-    sortNumber() {
-      return this.$route.query.sort
+    nickname() {
+      return this.appData.user?.displayName || ''
     },
   },
 
   created() {
     socket.emit('enterOnlineMode')
-    this.gameType = this.$route.query.type
 
-    socket.on('getOnlineUsers', data => this.onlineUsers = data)
+    socket.on('getOnlineUsers', data => this.onlineUsers = data.filter(user => user.uid !== this.uid))
 
-    socket.on('opponentsDecision', data => {
-      if (data) {
-        socket.emit(  'createGame', {
-          name: this.nickname,
-          color: this.color,
-          sort: this.sort,
-          type: this.gameType,
-        })
-        this.chooseOpponent = false
-      } else {
-        this.opponentDecline = true
-        this.inviteSent = false
-      }
+    socket.on('opponentDeclined', () => {
+      this.opponentDecline = true
+      this.inviteTo = ''
     })
 
     socket.on('startGame', async data => {
-      this.gameType = data.type
+      this.inviteTo = ''
       this.chooseOpponent = false
-      this.users = [...data.users]
-      this.subjects = [...data.subjects]
-      this.loaded = true
-
-      if (this.nickname === this.users[0].name) {
-        this.enemyTurn = false
-      }
-
+      this.gameType = data.type
+      this.users = data.users
+      this.subjects = data.subjects
+      this.enemyTurn = this.uid !== this.users[0].uid
       await this.getContinent(data.sort)
+      this.loaded = true
     })
 
-    socket.on('checkAnswer', data => {
-      if (data) {
-        const propertyName = this.gameType === 'capital' ? 'capital' : 'name'
+    socket.on('updateScore', users => this.users = users)
 
+    socket.on('checkAnswer', score => {
+      if (score) {
+        const propertyName = this.gameType === 'capital' ? 'capital' : 'name'
         this.layers
           .find(layer => layer.feature.properties[propertyName] === this.subjects[this.game.count])
-          .setStyle({ fillColor: this.users.find(user => user.name !== this.nickname).color })
+          .setStyle({ fillColor: this.users.find(user => user.uid !== this.uid).color })
           .off('click')
-        this.game.scores.enemy++
       }
 
       this.resetData()
@@ -166,12 +143,8 @@ export default {
       this.game = {
         count: 0,
         attempts: 5,
-        scores: {
-          my: 0,
-          enemy: 0,
-        },
+        seconds: 15,
       }
-      this.game.seconds = 15
       this.subjects = [...data]
 
       for (let i = 0; i < this.layers.length; i++) {
@@ -184,7 +157,7 @@ export default {
         }
       }
 
-      if (this.nickname === this.users[0].name) {
+      if (this.uid === this.users[0].uid) {
         this.enemyTurn = false
         this.makeInterval()
       }
@@ -202,16 +175,17 @@ export default {
 
   beforeRouteLeave(to, from, next) {
     if (this.game.count === this.geojson.length) {
+      socket.emit('sendName', { uid: this.uid, name: this.nickname })
       next()
       return
     }
 
-    if (this.inviteSent) {
-      socket.emit('cancelInvite', { myName: this.nickname, opponentName: this.opponentName })
+    if (this.inviteTo) {
+      socket.emit('cancelInvite', this.inviteTo)
     }
 
     clearInterval(this.interval)
-    socket.emit('userLeft')
+    socket.emit('userLeft', { uid: this.uid, name: this.nickname } )
     next()
   },
 
@@ -220,13 +194,13 @@ export default {
       this.world = await api.getMapJSON()
       const geojson = await api.getFullJSON()
 
-      if (sort) {
+      if (sort !== 'all') {
         this.geojson = geojson.filter(feature => feature.properties.pop_est > sort)
       } else {
         this.geojson = geojson
       }
 
-      if (this.nickname === this.users[0].name) {
+      if (this.uid === this.users[0].uid) {
         this.makeInterval()
       }
     },
@@ -243,11 +217,10 @@ export default {
       const propertyName = this.gameType === 'capital' ? 'capital' : 'name'
 
       if (layer.feature.properties[propertyName] === this.subjects[this.game.count]) {
-        layer.setStyle({ fillColor: this.users.find(user => user.name === this.nickname).color })
+        layer.setStyle({ fillColor: this.users.find(user => user.uid === this.uid).color })
         layer.off('click')
-        this.game.scores.my++
         this.enemyTurn = true
-        socket.emit('countryClick', true)
+        socket.emit('countryClick', this.game.attempts)
         this.center = [0, 0]
         this.resetData()
       } else {
@@ -255,7 +228,7 @@ export default {
 
         if (this.game.attempts === 0) {
           this.enemyTurn = true
-          socket.emit('countryClick', false)
+          socket.emit('countryClick', this.game.attempts)
           this.center = [0, 0]
           this.resetData()
         }
@@ -285,21 +258,15 @@ export default {
       }, 1000)
     },
 
-    sendInvite({ name, color, sort, type }) {
-      if (this.inviteSent) {
-        this.inviteSent = false
-        socket.emit('cancelInvite', {
-          myName: this.nickname,
-          opponentName: this.opponentName,
-        })
+    sendInvite({ to, color, sort, type }) {
+      if (this.inviteTo) {
+        this.inviteTo = ''
+        socket.emit('cancelInvite', this.inviteTo)
         return
       }
 
-      this.inviteSent = true
-      this.opponentName = name
+      this.inviteTo = to
       this.opponentDecline = false
-      this.color = color
-
       if (sort) {
         this.sort = sort
       }
@@ -309,8 +276,7 @@ export default {
       }
 
       socket.emit('sendInvite', {
-        myName: this.nickname,
-        opponentName: this.opponentName,
+        to,
         color,
         sort,
         type,

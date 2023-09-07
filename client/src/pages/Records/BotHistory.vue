@@ -61,12 +61,12 @@
   >
     <template #item="{ item }">
       <tr
-        :class="item.columns.score > item.raw.bot_score
-          ? 'bg-green-lighten-5'
-          : item.columns.score < item.raw.bot_score
-            ? 'bg-red-lighten-5'
-            : 'bg-grey-lighten-5'
-        ">
+        :class="{
+          win: item.columns.score > item.raw.bot_score,
+          lose: item.columns.score < item.raw.bot_score,
+          draw: item.columns.score === item.raw.bot_score,
+        }"
+      >
         <td class="bg-shades-transparent">
           <v-row no-gutters align="center" class="flex-nowrap">
             <v-icon :icon="getTypeIcon(item.columns.type)" color="grey" class="mr-1"></v-icon>
@@ -133,7 +133,7 @@ const stats = computed(() => {
   return filteredHistory.value.reduce((obj, record) => ({
     win: obj.win + (record.score > record.bot_score ? 1 : 0),
     lose: obj.lose + (record.score < record.bot_score ? 1 : 0),
-    draw: obj.draw + (record.score < record.bot_score ? 1 : 0),
+    draw: obj.draw + (record.score === record.bot_score ? 1 : 0),
   }), { win: 0, lose: 0, draw: 0 })
 })
 const headers = [
@@ -192,6 +192,18 @@ function clearFilters() {
 <style scoped>
 .select:deep(.v-select__selection-text) {
   text-transform: capitalize;
+}
+
+.win {
+  background-color: rgba(var(--v-theme-success), 0.12);
+}
+
+.lose {
+  background-color: rgba(var(--v-theme-error), 0.12);
+}
+
+.draw {
+  background-color: rgba(var(--v-theme-on-surface-variant), 0.12);
 }
 </style>
 

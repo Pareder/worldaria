@@ -40,11 +40,15 @@ export type AppDataType = {
 }
 
 export type InviteType = {
-  myName: string
-  opponentName: string
+  from: {
+    uid: string
+    name: string
+  }
+  to: string
   color: string
   sort: string
   type: string
+  room: string
 }
 
 export type RecordType = {
@@ -58,4 +62,16 @@ export type RecordType = {
 
 export type BotRecordType = RecordType & {
   bot_score: number
+}
+
+export type OnlineRecordType = Omit<RecordType, 'user' | 'mode' | 'score'> & {
+  users: string[]
+  scores: number[]
+}
+
+export type OnlineUserType = {
+  uid: string
+  name: string
+  color: string
+  score: number
 }
