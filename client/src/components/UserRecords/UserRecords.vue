@@ -11,13 +11,13 @@
     <v-card-text>
       <v-window v-model="tab">
         <v-window-item value="game">
-          <GameHistory />
+          <GameHistory :user="user"/>
         </v-window-item>
         <v-window-item value="bot">
-          <BotHistory/>
+          <BotHistory :user="user"/>
         </v-window-item>
         <v-window-item value="online">
-          <OnlineHistory/>
+          <OnlineHistory :user="user"/>
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -30,5 +30,6 @@ import BotHistory from './BotHistory.vue'
 import GameHistory from './GameHistory.vue'
 import OnlineHistory from './OnlineHistory.vue'
 
+defineProps<{ user: string }>()
 const tab = ref('one')
 </script>

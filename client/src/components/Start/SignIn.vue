@@ -2,7 +2,11 @@
   <div class="sign">
     <v-menu v-if="appData?.user">
       <template v-slot:activator="{ props }">
-        <v-avatar color="primary" v-bind="props" role="button">
+        <v-avatar
+          :color="appData?.user?.uid ? stringToColor(appData.user.uid) : 'primary'"
+          v-bind="props"
+          role="button"
+        >
           <span class="text-h5">{{ appData?.user.displayName?.[0] }}</span>
         </v-avatar>
       </template>
@@ -25,6 +29,7 @@ import { inject } from 'vue'
 import type { Ref } from 'vue'
 import { getAuth, signOut } from 'firebase/auth'
 import type { AppDataType } from '@/types'
+import stringToColor from '@/utils/stringToColor'
 import SignModal from '@/modals/SignModal.vue'
 
 const appData = inject<Ref<AppDataType>>('appData')

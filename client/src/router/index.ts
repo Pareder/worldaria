@@ -8,9 +8,10 @@ import GameFlag from '@/pages/GameFlag.vue'
 import GameName from '@/pages/GameName.vue'
 import History from '@/pages/History.vue'
 import Leaderboard from '@/pages/Leaderboard.vue'
+import LeaderboardUser from '@/pages/LeaderboardUser.vue'
 import Online from '@/pages/Online.vue'
 import Profile from '@/pages/Profile.vue'
-import Records from '@/pages/Records'
+import Records from '@/pages/Records.vue'
 import Settings from '@/pages/Settings'
 import Start from '@/pages/Start.vue'
 import Subject from '@/components/Subject.vue'
@@ -333,7 +334,7 @@ const router = createRouter({
       children: [
         {
           name: 'Records',
-          path: '/profile/records',
+          path: 'records',
           component: Records,
           meta: {
             auth: true,
@@ -351,23 +352,47 @@ const router = createRouter({
           },
         },
         {
-          name: 'Leaderboard',
-          path: '/profile/leaderboard',
-          component: Leaderboard,
-          meta: {
-            auth: true,
-            title: 'Leaderboard',
-            metaTags: [
-              {
-                name: 'description',
-                content: 'Users leaderboard',
+          path: 'leaderboard',
+          children: [
+            {
+              name: 'Leaderboard',
+              path: '',
+              component: Leaderboard,
+              meta: {
+                auth: true,
+                title: 'Leaderboard',
+                metaTags: [
+                  {
+                    name: 'description',
+                    content: 'Users leaderboard',
+                  },
+                  {
+                    property: 'og:description',
+                    content: 'Users leaderboard',
+                  },
+                ],
               },
-              {
-                property: 'og:description',
-                content: 'Users leaderboard',
+            },
+            {
+              name: 'User Details',
+              path: ':uid',
+              component: LeaderboardUser,
+              meta: {
+                auth: true,
+                title: 'User details',
+                metaTags: [
+                  {
+                    name: 'description',
+                    content: 'User details',
+                  },
+                  {
+                    property: 'og:description',
+                    content: 'User details',
+                  },
+                ],
               },
-            ],
-          },
+            },
+          ]
         },
         {
           name: 'Settings',

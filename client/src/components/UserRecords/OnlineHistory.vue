@@ -61,7 +61,15 @@
           </v-row>
         </td>
         <td class="bg-shades-transparent">{{ getSort(item.columns.sort) }}</td>
-        <td class="bg-shades-transparent">{{ item.columns.enemy }}</td>
+        <td class="bg-shades-transparent">
+          <v-row no-gutters align="center" class="flex-nowrap">
+            <v-avatar :color="stringToColor(item.raw.enemy_id)" size="small" class="mr-2">
+              {{ item.columns.enemy[0] }}
+            </v-avatar>
+            {{ item.columns.enemy }}
+            <v-icon v-if="item.raw.enemy_id === appData?.user?.uid" icon="mdi-account" class="ml-1"></v-icon>
+          </v-row>
+        </td>
         <td class="bg-shades-transparent">
           <CompetitiveScore :first="item.raw.my_score" :last="item.raw.enemy_score"/>
         </td>
@@ -80,10 +88,12 @@ import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebas
 import type { AppDataType, OnlineRecordType } from '@/types'
 import { firestore, populationOptions } from '@/config'
 import capitalize from '@/utils/capitalize'
+import stringToColor from '@/utils/stringToColor'
 import { getSort, getTypeIcon } from './utils'
 import CompetitiveScore from './CompetitiveScore.vue'
 
 type UserOnlineRecordType = OnlineRecordType & {
+  enemy_id: string
   enemy: string
   my_score: number
   enemy_score: number
@@ -104,6 +114,7 @@ const defaultFilters: Filters = {
   sort: [],
 }
 
+const props = defineProps<{ user: string }>()
 const appData = inject<Ref<AppDataType>>('appData')
 const history = ref<UserOnlineRecordType[]>([])
 const filteredHistory = ref<UserOnlineRecordType[]>([])
@@ -146,21 +157,20 @@ watch(filters, (newFilters) => {
 }, { deep: true })
 
 onMounted(async () => {
-  const user = appData?.value?.user
-  if (!user) {
+  if (!props.user) {
     return
   }
 
   const q = query(
     collection(firestore, 'online'),
-    where('users', 'array-contains', user.uid),
+    where('users', 'array-contains', props.user),
     orderBy(sortBy.value[0].key, sortBy.value[0].order),
   )
   const snapshot = await getDocs(q)
   const promises: Promise<UserOnlineRecordType | null>[] = []
   snapshot.forEach(recordDoc => {
     const record = recordDoc.data() as OnlineRecordType
-    const enemyIndex = record.users.findIndex(item => item !== user.uid)
+    const enemyIndex = record.users.findIndex(item => item !== props.user)
     promises.push(new Promise(resolve => {
       getDoc(doc(firestore, 'users', record.users[enemyIndex]))
         .then(userDoc => {
@@ -168,6 +178,7 @@ onMounted(async () => {
           resolve({
             ...record,
             my_score: record.scores[enemyIndex ? 0 : 1],
+            enemy_id: userDoc.id,
             enemy: enemyUser.name,
             enemy_score: record.scores[enemyIndex],
           })

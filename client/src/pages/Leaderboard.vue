@@ -28,9 +28,12 @@
         class="elevation-1 text-left"
       >
         <template #item="{ item }">
-          <tr>
+          <tr role="button" @click="onClick(item.raw.uid)">
             <td>
               <v-row no-gutters align="center" class="flex-nowrap">
+                <v-avatar :color="stringToColor(item.raw.uid)" size="small" class="mr-2">
+                  {{ item.columns.name[0] }}
+                </v-avatar>
                 {{ item.columns.name }}
                 <v-icon v-if="item.raw.uid === appData?.user?.uid" icon="mdi-account" class="ml-1"></v-icon>
               </v-row>
@@ -49,15 +52,18 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue'
 import type { Ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import type { AppDataType, LeaderboardUserType } from '@/types'
 import { firestore } from '@/config'
+import stringToColor from '@/utils/stringToColor'
 
 type SortItem = {
   key: string
   order: 'asc' | 'desc'
 }
 
+const router = useRouter()
 const appData = inject<Ref<AppDataType>>('appData')
 const leaderboard = ref<LeaderboardUserType[]>([])
 const filteredLeaderboard = ref<LeaderboardUserType[]>([])
@@ -87,4 +93,8 @@ onMounted(async () => {
   filteredLeaderboard.value = data
   loading.value = false
 })
+
+function onClick(uid: string) {
+  router.push(uid === appData?.value.user?.uid ? '/profile/records' : `/profile/leaderboard/${uid}`)
+}
 </script>
