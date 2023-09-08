@@ -1,5 +1,5 @@
 import { cert, initializeApp } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
+import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 
 function getFirestoreInstance(serviceAccount) {
   const app = initializeApp({
@@ -26,6 +26,14 @@ class DB {
       sort,
       date: Date.now(),
     })
+    await this.firestore.collection('users').doc(users[0]).set({
+      online_games: FieldValue.increment(1),
+      total_games: FieldValue.increment(1),
+    }, { merge: true })
+    await this.firestore.collection('users').doc(users[1]).set({
+      online_games: FieldValue.increment(1),
+      total_games: FieldValue.increment(1),
+    }, { merge: true })
   }
 }
 

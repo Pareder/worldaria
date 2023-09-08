@@ -10,6 +10,7 @@
       <v-divider></v-divider>
       <v-list density="compact" class="text-left" nav>
         <v-list-item to="/profile/records" prepend-icon="mdi-seal" title="Records"></v-list-item>
+        <v-list-item to="/profile/leaderboard" prepend-icon="mdi-podium" title="Leaderboard"></v-list-item>
         <v-list-item to="/profile/settings" prepend-icon="mdi-cog" title="Settings"></v-list-item>
       </v-list>
       <template v-slot:append>

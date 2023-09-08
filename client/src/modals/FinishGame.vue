@@ -22,7 +22,7 @@ import { inject, onMounted } from 'vue'
 import type { Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, increment, setDoc } from 'firebase/firestore'
 import type { AppDataType } from '@/types'
 import { firestore } from '@/config'
 import LeaderboardTable from '@/components/LeaderboardTable.vue'
@@ -66,7 +66,10 @@ async function saveRecord() {
   } as object)
   await setDoc(
     doc(firestore, 'users', user.uid),
-    { name: user.displayName },
+    {
+      games: increment(1),
+      total_games: increment(1),
+    },
     { merge: true }
   )
 }

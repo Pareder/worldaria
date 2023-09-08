@@ -12,7 +12,7 @@
           <p class="text-subtitle-2 text-grey">{{ appData?.user.email }}</p>
         </div>
         <v-divider></v-divider>
-        <v-list-item to="profile" prepend-icon="mdi-account-cog-outline" title="Profile"></v-list-item>
+        <v-list-item to="/profile" prepend-icon="mdi-account-cog-outline" title="Profile"></v-list-item>
         <v-list-item prepend-icon="mdi-logout" title="Log Out" @click="logOut"></v-list-item>
       </v-list>
     </v-menu>

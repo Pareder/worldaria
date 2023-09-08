@@ -27,7 +27,9 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
 import { EmailAuthProvider, GoogleAuthProvider, getAuth, sendEmailVerification } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
 import * as firebaseui from 'firebaseui'
+import { firestore } from '@/config'
 import '@/assets/css/firebaseui.css'
 
 const open = ref(false)
@@ -42,6 +44,11 @@ function handleOpen() {
         signInSuccessWithAuthResult: (authResult) => {
           if (authResult.additionalUserInfo?.isNewUser) {
             sendEmailVerification(authResult.user)
+            setDoc(
+              doc(firestore, 'users', authResult.user.uid),
+              { name: authResult.user.displayName, total_games: 0 },
+              { merge: true }
+            )
           }
 
           open.value = false

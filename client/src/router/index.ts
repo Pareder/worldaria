@@ -7,6 +7,7 @@ import GameCapital from '@/pages/GameCapital.vue'
 import GameFlag from '@/pages/GameFlag.vue'
 import GameName from '@/pages/GameName.vue'
 import History from '@/pages/History.vue'
+import Leaderboard from '@/pages/Leaderboard.vue'
 import Online from '@/pages/Online.vue'
 import Profile from '@/pages/Profile.vue'
 import Records from '@/pages/Records'
@@ -334,11 +335,58 @@ const router = createRouter({
           name: 'Records',
           path: '/profile/records',
           component: Records,
+          meta: {
+            auth: true,
+            title: 'Records',
+            metaTags: [
+              {
+                name: 'description',
+                content: 'Personal records',
+              },
+              {
+                property: 'og:description',
+                content: 'Personal records',
+              },
+            ],
+          },
+        },
+        {
+          name: 'Leaderboard',
+          path: '/profile/leaderboard',
+          component: Leaderboard,
+          meta: {
+            auth: true,
+            title: 'Leaderboard',
+            metaTags: [
+              {
+                name: 'description',
+                content: 'Users leaderboard',
+              },
+              {
+                property: 'og:description',
+                content: 'Users leaderboard',
+              },
+            ],
+          },
         },
         {
           name: 'Settings',
           path: '/profile/settings',
           component: Settings,
+          meta: {
+            auth: true,
+            title: 'Settings',
+            metaTags: [
+              {
+                name: 'description',
+                content: 'Personal settings',
+              },
+              {
+                property: 'og:description',
+                content: 'Personal settings',
+              },
+            ],
+          },
         },
       ]
     },
@@ -350,18 +398,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(r => r.meta?.auth)) {
-    const unsubscribe = onAuthStateChanged(getAuth(), user => {
-      unsubscribe()
-      if (user) {
-        next()
-      } else {
-        next('/')
-      }
-    })
-    return
-  }
-
   const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta?.title)
   const nearestWithMeta = to.matched.slice().reverse().find(r => r.meta?.metaTags)
 
@@ -380,6 +416,19 @@ router.beforeEach((to, from, next) => {
 
     return tag
   }).forEach(tag => document.head.appendChild(tag))
+
+  if (to.matched.some(r => r.meta?.auth)) {
+    const unsubscribe = onAuthStateChanged(getAuth(), user => {
+      unsubscribe()
+      if (user) {
+        next()
+      } else {
+        next('/')
+      }
+    })
+    return
+  }
+
   next()
 })
 

@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { addDoc, collection } from 'firebase/firestore'
+import { addDoc, collection, doc, increment, setDoc } from 'firebase/firestore'
 import api from '@/api'
 import { firestore } from '@/config'
 import { ENEMY_COLOR, MY_COLOR } from '@/config/colors'
@@ -274,6 +274,14 @@ export default {
         sort: this.$route.query.sort || 'all',
         date: Date.now(),
       })
+      await setDoc(
+        doc(firestore, 'users', user.uid),
+        {
+          bot_games: increment(1),
+          total_games: increment(1),
+        },
+        { merge: true }
+      )
     }
   },
 
