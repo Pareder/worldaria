@@ -62,13 +62,22 @@
         </td>
         <td class="bg-shades-transparent">{{ getSort(item.columns.sort) }}</td>
         <td class="bg-shades-transparent">
-          <v-row no-gutters align="center" class="flex-nowrap">
-            <v-avatar :color="stringToColor(item.raw.enemy_id)" size="small" class="mr-2">
-              {{ item.columns.enemy[0] }}
-            </v-avatar>
-            {{ item.columns.enemy }}
-            <v-icon v-if="item.raw.enemy_id === appData?.user?.uid" icon="mdi-account" class="ml-1"></v-icon>
-          </v-row>
+          <router-link
+            class="text-decoration-none"
+            role="button"
+            :to="item.raw.enemy_id === appData?.user?.uid
+              ? '/profile/records'
+              : `/profile/leaderboard/${item.raw.enemy_id}`
+            "
+          >
+            <v-row no-gutters align="center" class="flex-nowrap">
+              <v-avatar :color="stringToColor(item.raw.enemy_id)" size="small" class="mr-2">
+                {{ item.columns.enemy[0] }}
+              </v-avatar>
+              {{ item.columns.enemy }}
+              <v-icon v-if="item.raw.enemy_id === appData?.user?.uid" icon="mdi-account" class="ml-1"></v-icon>
+            </v-row>
+          </router-link>
         </td>
         <td class="bg-shades-transparent">
           <CompetitiveScore :first="item.raw.my_score" :last="item.raw.enemy_score"/>
