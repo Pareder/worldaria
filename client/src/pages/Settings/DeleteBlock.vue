@@ -1,7 +1,7 @@
 <template>
   <v-card variant="outlined" color="error">
     <v-card-item>
-      <v-row no-gutters align="start">
+      <v-row no-gutters align="start" class="flex-nowrap">
         <div class="mt-1 mr-2 pa-2 d-flex bg-red-lighten-5 rounded-circle">
           <v-icon icon="mdi-alert-outline" color="red"></v-icon>
         </div>

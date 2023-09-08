@@ -18,7 +18,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Feature, FeatureCollection } from 'geojson'
-import type { Path } from 'leaflet'
+import type { LeafletMouseEvent, Path } from 'leaflet'
 import api from '@/api'
 import compareRandom from '@/utils/compareRandom'
 import randomColor from '@/utils/randomColor'
@@ -49,7 +49,7 @@ onMounted(async () => {
   await Promise.all([api.getMapJSON(), api.getFullJSON()]).then(([map, full]) => {
     world.value = map
     geojson.value = full
-      .filter(item => !route.query.sort || (
+      .filter(item => route.query.sort === 'all' || (
         item.properties &&
         'pop_est' in item.properties &&
         item.properties.pop_est > (route.query.sort || 0)
@@ -85,23 +85,27 @@ function resetData() {
   }
 }
 
+function onClick(event: LeafletMouseEvent) {
+  const layer = event.target
+  const name = event.target?.feature?.properties?.name || ''
+  if (name === countries.value[game.value.count].name) {
+    game.value.score += game.value.attempts
+    layer.setStyle({ fillColor: randomColor() })
+    layer.off('click', onClick)
+    resetData()
+  } else {
+    game.value.attempts--
+
+    if (game.value.attempts === 0) {
+      game.value.score--
+      resetData()
+    }
+  }
+}
+
 function onEachFeature(feature: Feature, layer: Path) {
   const name = feature.properties?.name || ''
   layer.bindPopup(name)
-  layer.on('click', () => {
-    if (name === countries.value[game.value.count].name) {
-      game.value.score += game.value.attempts
-      layer.setStyle({ fillColor: randomColor() })
-      layer.off('click')
-      resetData()
-    } else {
-      game.value.attempts--
-
-      if (game.value.attempts === 0) {
-        game.value.score--
-        resetData()
-      }
-    }
-  })
+  layer.on('click', onClick)
 }
 </script>

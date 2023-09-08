@@ -65,7 +65,7 @@ import { populationOptions } from '@/config'
 import ModalTrigger from '@/components/ModalTrigger.vue'
 
 const mode = ref('normal')
-const sort = ref('')
+const sort = ref('all')
 const options = [
   {
     id: 'normal',

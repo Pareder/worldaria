@@ -21,7 +21,7 @@
         <p v-else class="text-h6 text-center mb-2">It is a draw!</p>
         <UsersList :users="users"></UsersList>
         <div v-if="revenge" class="text-center">
-          <p>{{ opponent?.name }} wants to get revenge</p>
+          <p class="my-3 text-h6">{{ opponent?.name }} wants to get revenge</p>
           <v-btn variant="elevated" color="primary" size="large" class="mr-2" @click="revengeDecision(true)">
             Accept
           </v-btn>
@@ -34,7 +34,7 @@
             Revenge
           </v-btn>
         </div>
-        <div v-if="revengeDeclined">
+        <div v-if="revengeDeclined" class="mt-3 text-h6 text-center">
           The opponent has declined your revenge
         </div>
       </div>
@@ -60,8 +60,8 @@ const appData = inject<Ref<AppDataType>>('appData')
 const route = useRoute()
 const revenge = ref(false)
 const revengeDeclined = ref(false)
-const me = computed(() => props.users.find(user => user.uid === appData?.value?.user?.uid)!)
-const opponent = computed(() => props.users.find(user => user.uid !== appData?.value?.user?.uid)!)
+const me = computed(() => props.users.find(user => user.uid === (appData?.value?.user?.uid || 'you'))!)
+const opponent = computed(() => props.users.find(user => user.uid !== (appData?.value?.user?.uid || 'you'))!)
 
 onMounted(() => {
   socket.on('opponentsRevenge', () => revenge.value = true)

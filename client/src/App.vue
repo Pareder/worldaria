@@ -25,6 +25,8 @@ onMounted(() => {
     appData.value.user = user
     if (user) {
       socket.emit('sendName', { uid: user.uid, name: user.displayName })
+    } else {
+      socket.emit('signOut')
     }
   })
 

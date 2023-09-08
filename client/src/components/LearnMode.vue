@@ -26,7 +26,6 @@ export default {
       game: {
         count: 0,
         attempts: 5,
-        rightAnswers: 0,
         length: this.geojson.length,
       },
       layers: [],
@@ -37,6 +36,7 @@ export default {
 
   props: {
     geojson: {
+      type: Array,
       required: true,
     },
   },
@@ -53,19 +53,18 @@ export default {
         : ''
       ))
       this.layers.push(layer)
-      layer.on('click', () => {
-        this.show(layer)
-      }, this)
+      layer.on('click', this.show, this)
     },
 
-    show(layer) {
+    show(event) {
+      const layer = event.target
       if (layer.feature.properties.name === this.states[this.game.count]) {
         this.game.count++
         this.game.attempts = 5
         this.guessed.push(layer.feature.properties.name)
         layer.setStyle({ fillColor: randomColor() })
         layer.getElement().classList.remove('guess_me')
-        layer.off('click')
+        layer.off('click', this.show, this)
         this.$emit('clearSearch')
         this.search()
       } else {

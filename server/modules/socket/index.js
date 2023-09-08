@@ -81,8 +81,9 @@ class Socket {
       socket.on('makeDecision', data => {
         if (data.status) {
           if (socket.room) {
-            delete this._rooms[socket.room]
+            this._io.to(this._rooms[socket.room]?.users?.[1]?.socket_id).emit('declineInvite')
             socket.leave(socket.room)
+            delete this._rooms[socket.room]
             socket.room = null
           }
 
@@ -153,10 +154,10 @@ class Socket {
           this._rooms[socket.room].users[0].score = 0
           this._rooms[socket.room].users[1].score = 0
           this._rooms[socket.room].subjects.sort(compareRandom)
-          this._io.sockets.in(socket.room).emit(
-            'revengeGame',
-            this._rooms[socket.room].subjects,
-          )
+          this._io.sockets.in(socket.room).emit('revengeGame', {
+            users: this._rooms[socket.room].users,
+            subjects: this._rooms[socket.room].subjects,
+          })
         } else {
           socket.broadcast.to(socket.room).emit('revengeDecline')
         }

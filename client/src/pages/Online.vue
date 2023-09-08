@@ -120,7 +120,7 @@ export default {
         this.layers
           .find(layer => layer.feature.properties[propertyName] === this.subjects[this.game.count])
           .setStyle({ fillColor: this.users.find(user => user.uid !== this.uid).color })
-          .off('click')
+          .off('click', this.show, this)
       }
 
       this.resetData()
@@ -139,23 +139,21 @@ export default {
       clearInterval(this.interval)
     })
 
-    socket.on('revengeGame', data => {
+    socket.on('revengeGame', ({ users, subjects }) => {
       this.game = {
         count: 0,
         attempts: 5,
         seconds: 15,
       }
-      this.subjects = [...data]
+      this.users = users
+      this.subjects = subjects
 
-      for (let i = 0; i < this.layers.length; i++) {
-        this.layers[i].setStyle({ fillColor: '#fff' })
-
-        if (!this.layers[i].listens('click')) {
-          this.layers[i].on('click', () => {
-            this.show(this.layers[i])
-          }, this)
+      this.layers.forEach(layer => {
+        layer.setStyle({ fillColor: '#fff' })
+        if (!layer.listens('click')) {
+          layer.on('click', this.show, this)
         }
-      }
+      })
 
       if (this.uid === this.users[0].uid) {
         this.enemyTurn = false
@@ -208,17 +206,16 @@ export default {
     onEachFeature(feature, layer) {
       this.layers.push(layer)
       layer.bindPopup(layer.feature.properties.name)
-      layer.on('click', () => {
-        this.show(layer)
-      }, this)
+      layer.on('click', this.show, this)
     },
 
-    show(layer) {
+    show(event) {
+      const layer = event.target
       const propertyName = this.gameType === 'capital' ? 'capital' : 'name'
 
       if (layer.feature.properties[propertyName] === this.subjects[this.game.count]) {
         layer.setStyle({ fillColor: this.users.find(user => user.uid === this.uid).color })
-        layer.off('click')
+        layer.off('click', this.show, this)
         this.enemyTurn = true
         socket.emit('countryClick', this.game.attempts)
         this.center = [0, 0]

@@ -32,6 +32,7 @@ import { doc, setDoc } from 'firebase/firestore'
 import { useNotification } from '@kyvg/vue3-notification'
 import type { AppDataType } from '@/types'
 import { firestore } from '@/config'
+import { socket } from '@/socket'
 
 const { notify } = useNotification()
 const appData = inject<Ref<AppDataType>>('appData')
@@ -49,6 +50,7 @@ function submitNickname() {
   loading.value = true
   updateProfile(user, { displayName: nickname.value })
     .then(() => {
+      socket.emit('sendName', { uid: user.uid, name: nickname.value })
       return setDoc(
         doc(firestore, 'users', user.uid),
         { name: nickname.value },
