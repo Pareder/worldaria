@@ -11,7 +11,7 @@ import Geo from './modules/geo'
 import DB from './modules/db'
 import CONFIG from './config'
 
-const serviceAccount = JSON.parse(readFileSync('./serviceAccountKey.json'))
+const serviceAccount = JSON.parse(readFileSync('../serviceAccountKey.json'))
 // TODO: uncomment when Node.js will support JSON modules https://nodejs.org/docs/latest-v18.x/api/esm.html#json-modules
 // import serviceAccount from './serviceAccountKey.json' assert { type: 'json' }
 
