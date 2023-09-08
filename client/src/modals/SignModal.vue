@@ -26,9 +26,11 @@
 
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import { EmailAuthProvider, GoogleAuthProvider, getAuth } from 'firebase/auth'
+import { EmailAuthProvider, GoogleAuthProvider, getAuth, sendEmailVerification } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
 import * as firebaseui from 'firebaseui'
-import 'firebaseui/dist/firebaseui.css'
+import { firestore } from '@/config'
+import '@/assets/css/firebaseui.css'
 
 const open = ref(false)
 
@@ -39,11 +41,20 @@ function handleOpen() {
     ui.start('#firebaseui-auth-container', {
       signInOptions: [EmailAuthProvider.PROVIDER_ID, GoogleAuthProvider.PROVIDER_ID],
       callbacks: {
-        signInSuccessWithAuthResult: () => {
+        signInSuccessWithAuthResult: (authResult) => {
+          if (authResult.additionalUserInfo?.isNewUser) {
+            sendEmailVerification(authResult.user)
+            setDoc(
+              doc(firestore, 'users', authResult.user.uid),
+              { name: authResult.user.displayName, total_games: 0 },
+              { merge: true }
+            )
+          }
+
           open.value = false
           return false
-        }
-      }
+        },
+      },
     })
   })
 }
@@ -52,14 +63,3 @@ function handleClose() {
   open.value = false
 }
 </script>
-
-<style>
-label[for="ui-sign-in-name-input"] {
-  color: transparent !important;
-}
-
-label[for="ui-sign-in-name-input"]::before {
-  content: "Nickname";
-  color: rgba(0, 0, 0, .54);
-}
-</style>

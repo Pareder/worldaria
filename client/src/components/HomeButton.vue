@@ -1,6 +1,6 @@
 <template>
   <router-link to="/" class="home">
-    <v-btn icon="mdi-arrow-left" color="white"></v-btn>
+    <v-btn icon="mdi-arrow-left" color="secondary"></v-btn>
   </router-link>
 </template>
 

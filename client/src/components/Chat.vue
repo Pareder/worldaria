@@ -34,12 +34,12 @@
             :key="id"
             rounded
             elevation="2"
-            class="message mb-2 py-1 px-2 bg-white"
-            :class="message.user === nickname ? 'my-message' : 'enemy-message'"
+            class="message mb-2 py-1 px-2 bg-secondary"
+            :class="message.user === uid ? 'my-message' : 'enemy-message'"
           >
             <v-badge
               inline
-              :color="message.user === nickname ? myColor : opponent?.color"
+              :color="message.user === uid ? myColor : opponent?.color"
               class="badge elevation-2"
             ></v-badge>
             {{ message.text }}
@@ -69,14 +69,12 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import type { OnlineUserType } from '@/types'
 import { socket } from '@/socket'
 
 const props = defineProps<{
-  nickname: string
-  users: {
-    name: string
-    color: string
-  }[]
+  uid: string
+  users: OnlineUserType[]
 }>()
 const chatMessages = ref<{
   user: string
@@ -87,8 +85,8 @@ const unreadMessages = ref(0)
 const opponentTyping = ref(false)
 const expanded = ref(false)
 const typingTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
-const myColor = computed(() => props.users.find(user => user.name === props.nickname)?.color)
-const opponent = computed(() => props.users.find(user => user.name !== props.nickname))
+const myColor = computed(() => props.users.find(user => user.uid === props.uid)?.color)
+const opponent = computed(() => props.users.find(user => user.uid !== props.uid))
 
 onMounted(() => {
   socket.on('getNewMessages', data => {
@@ -107,7 +105,7 @@ onMounted(() => {
 
 function submitMessage() {
   if (message.value.length > 0) {
-    socket.emit('sendMessage', { user: props.nickname, text: message.value })
+    socket.emit('sendMessage', { user: props.uid, text: message.value })
     message.value = ''
   }
 }

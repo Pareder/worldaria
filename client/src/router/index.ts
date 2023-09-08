@@ -2,13 +2,20 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import Bot from '@/pages/Bot.vue'
 import Details from '@/pages/Details.vue'
-import Game from '@/pages/Game.vue'
+import GameArea from '@/pages/GameArea.vue'
+import GameCapital from '@/pages/GameCapital.vue'
+import GameFlag from '@/pages/GameFlag.vue'
+import GameName from '@/pages/GameName.vue'
 import History from '@/pages/History.vue'
+import Leaderboard from '@/pages/Leaderboard.vue'
+import LeaderboardUser from '@/pages/LeaderboardUser.vue'
 import Online from '@/pages/Online.vue'
+import Profile from '@/pages/Profile.vue'
+import Records from '@/pages/Records.vue'
+import Settings from '@/pages/Settings'
 import Start from '@/pages/Start.vue'
 import Subject from '@/components/Subject.vue'
 import ChooseSubject from '@/components/ChooseSubject.vue'
-import GuessMode from '@/components/GuessMode.vue'
 
 type MetaTagName = {
   name: string,
@@ -41,32 +48,86 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'Worldaria is the first educational geographical game in which you can learn all countries, their capitals, their regions. Learn the world and enjoy!'
+            content: 'Worldaria is the first educational geographical game in which you can learn all countries, their capitals, their regions. Learn the world and enjoy!',
           },
           {
             property: 'og:description',
-            content: 'Worldaria is the first educational geographical game in which you can learn all countries, their capitals, their regions. Learn the world and enjoy!'
-          }
-        ]
-      }
+            content: 'Worldaria is the first educational geographical game in which you can learn all countries, their capitals, their regions. Learn the world and enjoy!',
+          },
+        ],
+      },
     },
     {
-      name: 'Game',
-      path: '/game',
-      component: Game,
+      name: 'GameName',
+      path: '/game/name',
+      component: GameName,
       meta: {
-        title: 'Worldaria game mode',
+        title: 'Worldaria - country name mode',
         metaTags: [
           {
             name: 'description',
-            content: 'Try to guess all the countries and get the best score.'
+            content: 'Try to guess all the countries and get the best score.',
           },
           {
             property: 'og:description',
-            content: 'Try to guess all the countries and get the best score.'
-          }
-        ]
-      }
+            content: 'Try to guess all the countries and get the best score.',
+          },
+        ],
+      },
+    },
+    {
+      name: 'GameFlag',
+      path: '/game/flag',
+      component: GameFlag,
+      meta: {
+        title: 'Worldaria - country flag mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Try to guess countries by their flags.',
+          },
+          {
+            property: 'og:description',
+            content: 'Try to guess countries by their flags.',
+          },
+        ],
+      },
+    },
+    {
+      name: 'GameCapital',
+      path: '/game/capital',
+      component: GameCapital,
+      meta: {
+        title: 'Worldaria - country capital mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Try to guess countries by their capitals.',
+          },
+          {
+            property: 'og:description',
+            content: 'Try to guess countries by their capitals.',
+          },
+        ],
+      },
+    },
+    {
+      name: 'GameArea',
+      path: '/game/area',
+      component: GameArea,
+      meta: {
+        title: 'Worldaria - country area mode',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.',
+          },
+          {
+            property: 'og:description',
+            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.',
+          },
+        ],
+      },
     },
     {
       name: 'Learn',
@@ -77,13 +138,13 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn countries if you don\'t know them.'
+            content: 'You can learn countries if you don\'t know them.',
           },
           {
             property: 'og:description',
-            content: 'You can learn countries if you don\'t know them.'
-          }
-        ]
+            content: 'You can learn countries if you don\'t know them.',
+          },
+        ],
       },
     },
     {
@@ -95,14 +156,14 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn countries if you don\'t know them.'
+            content: 'You can learn countries if you don\'t know them.',
           },
           {
             property: 'og:description',
-            content: 'You can learn countries if you don\'t know them.'
-          }
-        ]
-      }
+            content: 'You can learn countries if you don\'t know them.',
+          },
+        ],
+      },
     },
     {
       path: '/learn/continent',
@@ -114,13 +175,13 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn countries by continents if you don\'t know them.'
+            content: 'You can learn countries by continents if you don\'t know them.',
           },
           {
             property: 'og:description',
-            content: 'You can learn countries by continents if you don\'t know them.'
-          }
-        ]
+            content: 'You can learn countries by continents if you don\'t know them.',
+          },
+        ],
       },
     },
     {
@@ -132,13 +193,13 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn countries by continents if you don\'t know them.'
+            content: 'You can learn countries by continents if you don\'t know them.',
           },
           {
             property: 'og:description',
-            content: 'You can learn countries by continents if you don\'t know them.'
-          }
-        ]
+            content: 'You can learn countries by continents if you don\'t know them.',
+          },
+        ],
       },
     },
     {
@@ -151,13 +212,13 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn regions of the countries if you don\'t know them.'
+            content: 'You can learn regions of the countries if you don\'t know them.',
           },
           {
             property: 'og:description',
-            content: 'You can learn regions of the countries if you don\'t know them.'
-          }
-        ]
+            content: 'You can learn regions of the countries if you don\'t know them.',
+          },
+        ],
       },
     },
     {
@@ -169,14 +230,14 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn regions of the countries if you don\'t know them.'
+            content: 'You can learn regions of the countries if you don\'t know them.',
           },
           {
             property: 'og:description',
-            content: 'You can learn regions of the countries if you don\'t know them.'
-          }
-        ]
-      }
+            content: 'You can learn regions of the countries if you don\'t know them.',
+          },
+        ],
+      },
     },
     {
       path: '/learn/details',
@@ -187,14 +248,14 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn population, area, gdp, temperature of all countries and even more.'
+            content: 'You can learn population, area, gdp, temperature of all countries and even more.',
           },
           {
             property: 'og:description',
-            content: 'You can learn population, area, gdp, temperature of all countries and even more.'
-          }
-        ]
-      }
+            content: 'You can learn population, area, gdp, temperature of all countries and even more.',
+          },
+        ],
+      },
     },
     {
       path: '/learn/history',
@@ -205,14 +266,14 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can learn the history of countries\' creation.'
+            content: 'You can learn the history of countries\' creation.',
           },
           {
             property: 'og:description',
-            content: 'You can learn the history of countries\' creation.'
-          }
-        ]
-      }
+            content: 'You can learn the history of countries\' creation.',
+          },
+        ],
+      },
     },
     {
       name: 'Online',
@@ -224,14 +285,14 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can face other people to try win them if countries\' guessing.'
+            content: 'You can face other people to try win them if countries\' guessing.',
           },
           {
             property: 'og:description',
-            content: 'You can face other people to try win them if countries\' guessing.'
-          }
-        ]
-      }
+            content: 'You can face other people to try win them if countries\' guessing.',
+          },
+        ],
+      },
     },
     {
       name: 'Bot',
@@ -242,107 +303,126 @@ const router = createRouter({
         metaTags: [
           {
             name: 'description',
-            content: 'You can play with bot with different levels of difficulty.'
+            content: 'You can play with bot with different levels of difficulty.',
           },
           {
             property: 'og:description',
-            content: 'You can play with bot with different levels of difficulty.'
-          }
-        ]
-      }
+            content: 'You can play with bot with different levels of difficulty.',
+          },
+        ],
+      },
     },
     {
-      name: 'Hard',
-      path: '/hard',
-      component: GuessMode,
-      props: { guessBy: 'name' },
+      name: 'Profile',
+      path: '/profile',
+      redirect: '/profile/records',
+      component: Profile,
       meta: {
-        title: 'Worldaria bot mode',
+        auth: true,
+        title: 'Profile',
         metaTags: [
           {
             name: 'description',
-            content: 'You can play with bot with different levels of difficulty.'
+            content: 'Personal profile',
           },
           {
             property: 'og:description',
-            content: 'You can play with bot with different levels of difficulty.'
-          }
-        ]
-      }
-    },
-    {
-      name: 'Flag',
-      path: '/flag',
-      component: GuessMode,
-      props: { guessBy: 'flag' },
-      meta: {
-        title: 'Worldaria flag mode',
-        metaTags: [
-          {
-            name: 'description',
-            content: 'Try to guess countries by their flags.'
+            content: 'Personal profile',
           },
-          {
-            property: 'og:description',
-            content: 'Try to guess countries by their flags.'
-          }
-        ]
-      }
-    },
-    {
-      name: 'Capital',
-      path: '/capital',
-      component: GuessMode,
-      props: { guessBy: 'capital' },
-      meta: {
-        title: 'Worldaria capital mode',
-        metaTags: [
-          {
-            name: 'description',
-            content: 'Try to guess countries by their capitals.'
+        ],
+      },
+      children: [
+        {
+          name: 'Records',
+          path: 'records',
+          component: Records,
+          meta: {
+            auth: true,
+            title: 'Records',
+            metaTags: [
+              {
+                name: 'description',
+                content: 'Personal records',
+              },
+              {
+                property: 'og:description',
+                content: 'Personal records',
+              },
+            ],
           },
-          {
-            property: 'og:description',
-            content: 'Try to guess countries by their capitals.'
-          }
-        ]
-      }
-    },
-    {
-      name: 'Area',
-      path: '/area',
-      component: GuessMode,
-      props: { guessBy: 'area' },
-      meta: {
-        title: 'Worldaria area mode',
-        metaTags: [
-          {
-            name: 'description',
-            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.'
+        },
+        {
+          path: 'leaderboard',
+          children: [
+            {
+              name: 'Leaderboard',
+              path: '',
+              component: Leaderboard,
+              meta: {
+                auth: true,
+                title: 'Leaderboard',
+                metaTags: [
+                  {
+                    name: 'description',
+                    content: 'Users leaderboard',
+                  },
+                  {
+                    property: 'og:description',
+                    content: 'Users leaderboard',
+                  },
+                ],
+              },
+            },
+            {
+              name: 'User Details',
+              path: ':uid',
+              component: LeaderboardUser,
+              meta: {
+                auth: true,
+                title: 'User details',
+                metaTags: [
+                  {
+                    name: 'description',
+                    content: 'User details',
+                  },
+                  {
+                    property: 'og:description',
+                    content: 'User details',
+                  },
+                ],
+              },
+            },
+          ]
+        },
+        {
+          name: 'Settings',
+          path: '/profile/settings',
+          component: Settings,
+          meta: {
+            auth: true,
+            title: 'Settings',
+            metaTags: [
+              {
+                name: 'description',
+                content: 'Personal settings',
+              },
+              {
+                property: 'og:description',
+                content: 'Personal settings',
+              },
+            ],
           },
-          {
-            property: 'og:description',
-            content: 'Try to guess countries by their territories dragging country to appropriate place on world map.'
-          }
-        ]
-      }
+        },
+      ]
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/'
-    }
-  ]
+      redirect: '/',
+    },
+  ],
 })
 
-router.beforeEach((to) => {
-  if (to.matched.some(r => r.meta?.auth)) {
-    onAuthStateChanged(getAuth(), user => {
-      if (!user) {
-        return '/'
-      }
-    })
-  }
-
+router.beforeEach((to, from, next) => {
   const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta?.title)
   const nearestWithMeta = to.matched.slice().reverse().find(r => r.meta?.metaTags)
 
@@ -361,6 +441,20 @@ router.beforeEach((to) => {
 
     return tag
   }).forEach(tag => document.head.appendChild(tag))
+
+  if (to.matched.some(r => r.meta?.auth)) {
+    const unsubscribe = onAuthStateChanged(getAuth(), user => {
+      unsubscribe()
+      if (user) {
+        next()
+      } else {
+        next('/')
+      }
+    })
+    return
+  }
+
+  next()
 })
 
 export default router

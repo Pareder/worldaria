@@ -7,6 +7,7 @@
     >
       <v-btn
         :icon="isPlaying ? 'mdi-pause' : 'mdi-play'"
+        color="secondary"
         @click="play"
       ></v-btn>
       <v-slider

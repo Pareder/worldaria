@@ -3,16 +3,12 @@
   <OnlineModal
     v-if="loaded && game.count === geojson.length"
     :users="users"
-    :score="game.scores"
-    nickname="You"
-    enemy="Bot"
     @makeRevenge="revenge"
   />
   <Loader :is-loading="!loaded">
     <Drawer
       v-if="game.count !== geojson.length"
       :game="enemyTurn ? undefined : game"
-      :seconds="seconds"
       :hasTimeLimit="!enemyTurn"
     >
       <template v-if="!enemyTurn" v-slot:header>
@@ -23,7 +19,7 @@
         <div v-else class="mb-2">
           {{ subjects[game.count] }}
         </div>
-        <UsersList :users="users" nickname="You" :score="game.scores" />
+        <UsersList :users="users" />
       </div>
       <div v-else class="text-h6 dot_animation">
         Opponent's Turn<span>.</span><span>.</span><span>.</span>
@@ -34,7 +30,9 @@
 </template>
 
 <script>
+import { addDoc, collection, doc, increment, setDoc } from 'firebase/firestore'
 import api from '@/api'
+import { firestore } from '@/config'
 import { ENEMY_COLOR, MY_COLOR } from '@/config/colors'
 import Loader from '@/components/Loader.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
@@ -53,22 +51,30 @@ export default {
       game: {
         count: 0,
         attempts: 5,
-        scores: {
-          my: 0,
-          enemy: 0,
-        },
+        seconds: 15,
       },
       loaded: false,
-      seconds: 15,
       interval: null,
-      danger: false,
+      timeout: null,
       users: [
-        { name: 'You', color: MY_COLOR },
-        { name: 'Bot', color: ENEMY_COLOR },
+        {
+          uid: this.appData?.user?.uid || 'you',
+          name: 'You',
+          color: MY_COLOR,
+          score: 0,
+        },
+        {
+          uid: 'bot',
+          name: 'Bot',
+          color: ENEMY_COLOR,
+          score: 0,
+        },
       ],
       enemyTurn: false,
     }
   },
+
+  inject: ['appData'],
 
   computed: {
     botMode() {
@@ -78,28 +84,33 @@ export default {
     chance() {
       switch (this.$route.query.mode) {
         case 'hard':
-          return 0.8
+          return 0.5
         case 'extreme':
-          return 0.95
+          return 0.8
         case 'impossible':
-          return 0.95
+          return 0.8
         case 'easy':
         default:
-          return 0.3
+          return 0.1
       }
     },
 
     gameType() {
-      return this.$route.query.by
+      return this.$route.query.type
     },
   },
 
   async created() {
-    if (this.$route.query.sort && this.botMode !== 'impossible') {
+    if (this.$route.query.sort !== 'all' && this.botMode !== 'impossible') {
       await this.getWorld()
     } else {
       await this.getCountries()
     }
+  },
+
+  unmounted() {
+    clearInterval(this.interval)
+    clearTimeout(this.timeout)
   },
 
   methods: {
@@ -114,7 +125,7 @@ export default {
     },
 
     onSuccessfulLoad() {
-      if (this.$route.query.sort) {
+      if (this.$route.query.sort !== 'all') {
         this.geojson = this.geojson.filter(feature => feature.properties.pop_est > this.$route.query.sort)
       }
 
@@ -133,19 +144,18 @@ export default {
     onEachFeature(feature, layer) {
       this.layers.push(layer)
       layer.bindPopup(layer.feature.properties.name)
-      layer.on('click', () => {
-        this.show(layer)
-      }, this)
+      layer.on('click', this.show, this)
     },
 
-    show(layer) {
+    show(event) {
+      const layer = event.target
       if (this.gameType === 'capital'
         ? layer.feature.properties.capital === this.subjects[this.game.count]
         : layer.feature.properties.name === this.subjects[this.game.count]
       ) {
-        layer.setStyle({ fillColor: COLORS.my })
-        layer.off('click')
-        this.game.scores.my++
+        layer.setStyle({ fillColor: MY_COLOR })
+        layer.off('click', this.show, this)
+        this.users[0].score += this.game.attempts
         this.enemyTurn = true
         this.resetData()
 
@@ -168,24 +178,20 @@ export default {
     resetData() {
       clearInterval(this.interval)
       this.game.count++
-
       if (this.game.count === this.geojson.length) {
+        this.saveResult()
         return
       }
+
       this.game.attempts = 5
-      this.seconds = 15
-      this.danger = false
+      this.game.seconds = 15
     },
 
     makeInterval() {
       this.interval = setInterval(() => {
-        this.seconds--
+        this.game.seconds--
 
-        if (this.seconds === 3) {
-          this.danger = true
-        }
-
-        if (this.seconds === 0) {
+        if (this.game.seconds === 0) {
           this.enemyTurn = true
           this.makeBotTurn()
           this.resetData()
@@ -193,19 +199,32 @@ export default {
       }, 1000)
     },
 
-    makeBotTurn() {
-      setTimeout(() => {
-        const chance = Math.random()
+    calculateBotScore(attempts = 5) {
+      if (!attempts) {
+        return 0
+      }
 
-        if (chance < this.chance) {
+      const chance = Math.random()
+      if (chance < this.chance) {
+        return attempts
+      }
+
+      return this.calculateBotScore(attempts - 1)
+    },
+
+    makeBotTurn() {
+      this.timeout = setTimeout(() => {
+        const score = this.calculateBotScore(5)
+
+        if (score) {
           this.layers
             .find(layer => this.gameType === 'capital'
               ? layer.feature.properties.capital === this.subjects[this.game.count]
               : layer.feature.properties.name === this.subjects[this.game.count]
             )
-            .setStyle({ fillColor: COLORS.enemy })
-            .off('click')
-          this.game.scores.enemy++
+            .setStyle({ fillColor: ENEMY_COLOR })
+            .off('click', this.show, this)
+          this.users[1].score += score
         }
 
         this.resetData()
@@ -223,27 +242,47 @@ export default {
       this.game = {
         count: 0,
         attempts: 5,
-        scores: {
-          my: 0,
-          enemy: 0,
-        },
+        seconds: 15,
       }
-      this.seconds = 15
+      this.users[0].score = 0
+      this.users[1].score = 0
 
-      for (let i = 0; i < this.layers.length; i++) {
-        this.layers[i].setStyle({ fillColor: '#fff' })
-
-        if (!this.layers[i].listens('click')) {
-          this.layers[i].on('click', () => {
-            this.show(this.layers[i])
-          }, this)
+      this.layers.forEach(layer => {
+        layer.setStyle({ fillColor: '#fff' })
+        if (!layer.listens('click')) {
+          layer.on('click', this.show, this)
         }
-      }
+      })
 
       this.subjects.sort(this.compareRandom)
       this.enemyTurn = false
       this.makeInterval()
     },
+
+    async saveResult() {
+      const user = this.appData?.user
+      if (!user) {
+        return
+      }
+
+      await addDoc(collection(firestore, 'bot'), {
+        user: user.uid,
+        score: this.users[0].score,
+        bot_score: this.users[1].score,
+        type: this.gameType,
+        mode: this.botMode,
+        sort: this.$route.query.sort || 'all',
+        date: Date.now(),
+      })
+      await setDoc(
+        doc(firestore, 'users', user.uid),
+        {
+          bot_games: increment(1),
+          total_games: increment(1),
+        },
+        { merge: true }
+      )
+    }
   },
 
   components: {

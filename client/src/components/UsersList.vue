@@ -13,24 +13,17 @@
           <span v-bind="props" class="text-truncate">{{ user.name }}</span>
         </template>
       </v-tooltip>
-      <span>{{ user.name === nickname ? score.my : score.enemy }}</span>
+      <span>{{ user.score }}</span>
     </v-row>
   </v-sheet>
 </template>
 
 <script setup lang="ts">
+import type { OnlineUserType } from '@/types'
 import { getContrastColor } from '@/config/colors'
 
 defineProps<{
-  users: {
-    name: string
-    color: string
-  }[]
-  nickname: string
-  score: {
-    my: number
-    enemy: number
-  }
+  users: OnlineUserType[]
 }>()
 </script>
 

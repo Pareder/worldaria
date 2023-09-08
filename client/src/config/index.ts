@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
-import { getDatabase } from 'firebase/database'
+import { getFirestore } from 'firebase/firestore'
 
-function getDatabaseInstance() {
+function getFirestoreInstance() {
   const envVariables = [
     'VITE_APP_API_KEY',
     'VITE_APP_AUTH_DOMAIN',
@@ -26,30 +26,26 @@ function getDatabaseInstance() {
     messagingSenderId: import.meta.env.VITE_APP_MESSAGING_SENDER_ID
   })
 
-  return getDatabase(app)
+  return getFirestore(app)
 }
 
-export const database = getDatabaseInstance()
+export const firestore = getFirestoreInstance()
 
 export const populationOptions = [
   {
-    id: 'all',
-    value: '',
-    name: 'All'
+    value: 'all',
+    title: 'All'
   },
   {
-    id: '5m',
-    value: 5000000,
-    name: '> 5 M'
+    value: '5000000',
+    title: '> 5 M'
   },
   {
-    id: '10m',
-    value: 10000000,
-    name: '> 10 M'
+    value: '10000000',
+    title: '> 10 M'
   },
   {
-    id: '50m',
-    value: 50000000,
-    name: '> 50 M'
+    value: '50000000',
+    title: '> 50 M'
   }
 ]

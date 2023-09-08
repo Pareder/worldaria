@@ -1,7 +1,7 @@
 <template>
   <router-view></router-view>
   <Invite v-if="invite" :invite="invite" @makeDecision="makeDecision" />
-  <notifications group="error" position="top right" />
+  <notifications position="top right" />
 </template>
 
 <script setup lang="ts">
@@ -24,7 +24,9 @@ onMounted(() => {
   onAuthStateChanged(auth, user => {
     appData.value.user = user
     if (user) {
-      socket.emit('sendName', user.displayName)
+      socket.emit('sendName', { uid: user.uid, name: user.displayName })
+    } else {
+      socket.emit('signOut')
     }
   })
 
@@ -41,20 +43,14 @@ function cancelInvite() {
 
 function makeDecision(status: boolean, color: string) {
   socket.emit('makeDecision', {
-    myName: appData.value.user?.displayName,
-    opponentName: invite.value?.myName,
+    to: invite.value?.from.uid,
     color,
     status,
+    room: invite.value?.room,
   })
 
   if (status) {
-    router.push({
-      name: 'Online',
-      query: {
-        sort: invite.value?.sort,
-        type: invite.value?.type,
-      },
-    })
+    router.push('/online')
   }
 
   cancelInvite()

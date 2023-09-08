@@ -11,10 +11,11 @@
           :key="option.id"
           :value="option.id"
           color="primary"
+          class="w-50"
         >
           <template #label>
             <span class="mr-1">{{ option.name }}</span>
-            <v-icon icon="mdi-information-outline" color="black" size="small"></v-icon>
+            <v-icon icon="mdi-information-outline" color="white" size="small"></v-icon>
             <v-tooltip activator="parent" max-width="300" location="top">
               {{ option.description }}
             </v-tooltip>
@@ -25,24 +26,25 @@
       <v-radio-group v-model="sort" inline hide-details>
         <v-radio
           v-for="option in populationOptions"
-          :key="option.id"
+          :key="option.value"
           :value="option.value"
-          :label="option.name"
+          :label="option.title"
           color="primary"
+          class="w-25"
         ></v-radio>
       </v-radio-group>
       <v-row no-gutters justify="space-between" class="mt-2">
-        <router-link :to="{ name: 'Bot', query: { mode, sort, by: 'name' }}">
+        <router-link :to="{ name: 'Bot', query: { mode, sort, type: 'name' }}">
           <v-btn variant="elevated" color="primary">
             Name
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Bot', query: { mode, sort, by: 'flag' }}">
+        <router-link :to="{ name: 'Bot', query: { mode, sort, type: 'flag' }}">
           <v-btn variant="elevated" color="primary">
             Flag
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Bot', query: { mode, sort, by: 'capital' }}">
+        <router-link :to="{ name: 'Bot', query: { mode, sort, type: 'capital' }}">
           <v-btn variant="elevated" color="primary">
             Capital
           </v-btn>
@@ -58,7 +60,7 @@ import { populationOptions } from '@/config'
 import ModalTrigger from '@/components/ModalTrigger.vue'
 
 const mode = ref('easy')
-const sort = ref('')
+const sort = ref('all')
 
 const options = [
   {

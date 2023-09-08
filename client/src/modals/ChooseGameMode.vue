@@ -11,10 +11,11 @@
           :key="option.id"
           :value="option.id"
           color="primary"
+          class="w-50"
         >
           <template #label>
             <span class="mr-1">{{ option.name }}</span>
-            <v-icon icon="mdi-information-outline" color="black" size="small"></v-icon>
+            <v-icon icon="mdi-information-outline" color="white" size="small"></v-icon>
             <v-tooltip activator="parent" max-width="300" location="top">
               {{ option.description }}
             </v-tooltip>
@@ -25,29 +26,30 @@
       <v-radio-group v-model="sort" inline hide-details>
         <v-radio
           v-for="option in populationOptions"
-          :key="option.id"
+          :key="option.value"
           :value="option.value"
-          :label="option.name"
+          :label="option.title"
           color="primary"
+          class="w-25"
         ></v-radio>
       </v-radio-group>
       <v-row no-gutters justify="space-between" class="mt-2">
-        <router-link :to="{ name: mode === 'hard' ? 'Hard' : 'Game', query: { sort } }">
+        <router-link :to="{ name: 'GameName', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Name
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Flag', query: { mode, sort } }">
+        <router-link :to="{ name: 'GameFlag', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Flag
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Capital', query: { mode, sort } }">
+        <router-link :to="{ name: 'GameCapital', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Capital
           </v-btn>
         </router-link>
-        <router-link :to="{ name: 'Area', query: { mode, sort } }">
+        <router-link :to="{ name: 'GameArea', query: { mode, sort } }">
           <v-btn variant="elevated" color="primary">
             Area
           </v-btn>
@@ -63,7 +65,7 @@ import { populationOptions } from '@/config'
 import ModalTrigger from '@/components/ModalTrigger.vue'
 
 const mode = ref('normal')
-const sort = ref('')
+const sort = ref('all')
 const options = [
   {
     id: 'normal',

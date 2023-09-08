@@ -1,5 +1,13 @@
 class Drag {
-  constructor(node, onDrop) {
+  node: HTMLElement
+  clone: HTMLElement | null
+  dragClickOffsetX: number | null
+  dragClickOffsetY: number | null
+  lastDragX: number | null
+  lastDragY: number | null
+  onDrop: (event: DragEvent | TouchEvent | Touch) => void
+
+  constructor(node: HTMLElement, onDrop: (event: DragEvent | TouchEvent | Touch) => void) {
     this.node = node
     this.onDrop = onDrop
 
@@ -23,13 +31,23 @@ class Drag {
     document.addEventListener('dragenter', event => event.preventDefault())
   }
 
-  onDragStart(e) {
+  onDragStart(e: DragEvent | TouchEvent) {
     const event = this.getEvent(e)
-    this.dragClickOffsetX = event.layerX || event.clientX
-    this.dragClickOffsetY = event.layerY || event.clientY
+    this.dragClickOffsetX = ('layerX' in event
+      ? event.layerX as number
+      : 'clientX' in event
+        ? event.clientX
+        : 0
+    ) || 0
+    this.dragClickOffsetY = ('layerY' in event
+        ? event.layerY as number
+        : 'clientY' in event
+          ? event.clientY
+          : 0
+    ) || 0
     this.makeClone()
 
-    this.node.style.opacity = 0
+    this.node.style.opacity = '0'
 
     document.addEventListener('dragover', this.onDragOver)
     document.addEventListener('touchmove', this.onDragOver)
@@ -38,30 +56,26 @@ class Drag {
     document.addEventListener('touchend', this.onDragEnd)
   }
 
-  onDragOver(e) {
+  onDragOver(e: DragEvent | TouchEvent) {
     e.preventDefault()
     const event = this.getEvent(e)
 
-    let { clientX, clientY } = event
-    // Odd glitch
-    if (clientX === 0 && clientY === 0) {
-      clientX = this.lastDragX
-      clientY = this.lastDragY
-    }
+    const clientX = ('clientX' in event ? event.clientX : 0) || this.lastDragX || 0
+    const clientY = ('clientY' in event ? event.clientY : 0) || this.lastDragY || 0
 
     if (clientX === this.lastDragX && clientY === this.lastDragY) {
       return
     }
 
-    this.translate(clientX - this.dragClickOffsetX, clientY - this.dragClickOffsetY)
+    this.translate(clientX - (this.dragClickOffsetX || 0), clientY - (this.dragClickOffsetY || 0))
     this.lastDragX = clientX
     this.lastDragY = clientY
   }
 
-  onDragEnd(e) {
+  onDragEnd(e: DragEvent | TouchEvent) {
     const event = this.getEvent(e)
-    this.node.style.opacity = 1
-    this.clone.parentNode.removeChild(this.clone)
+    this.node.style.opacity = '1'
+    this.clone?.parentNode?.removeChild(this.clone)
     this.clone = null
     this.onDrop(event)
 
@@ -73,27 +87,35 @@ class Drag {
   }
 
   makeClone() {
-    this.clone = this.node.cloneNode(true)
+    this.clone = this.node.cloneNode(true) as HTMLElement
     this.styleClone(this.clone, this.node.offsetWidth, this.node.offsetHeight)
-    this.node.parentNode.insertBefore(this.clone, this.node)
+    this.node.parentNode?.insertBefore(this.clone, this.node)
   }
 
-  styleClone(node, width, height) {
+  styleClone(node: HTMLElement, width: number, height: number) {
     node.style.position = 'fixed'
-    node.style.zIndex = 9999
+    node.style.zIndex = '9999'
     node.style.width = width + 'px'
     node.style.height = height + 'px'
     node.style.left = '-9999px'
-    node.style.margin = 0
-    node.style.padding = 0
+    node.style.margin = '0'
+    node.style.padding = '0'
   }
 
-  translate(x, y) {
+  translate(x: number, y: number) {
+    if (!this.clone) {
+      return
+    }
+
     this.clone.style.left = x + 'px'
     this.clone.style.top = y + 'px'
   }
 
-  getEvent(event) {
+  getEvent(event: DragEvent | TouchEvent) {
+    if (event instanceof DragEvent) {
+      return event
+    }
+
     // To handle touch events because their objects differ from original drag event objects
     return event.targetTouches && event.targetTouches.length
       ? event.targetTouches[0]

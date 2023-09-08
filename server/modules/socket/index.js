@@ -1,21 +1,15 @@
-import { compareRandom } from '../../utils'
+import { compareRandom, randomString } from '../../utils'
 
 class Socket {
-  constructor(io, weatherAPI, geo, filter) {
+  constructor(io, weatherAPI, geo, filter, db) {
     this._io = io
     this._weatherAPI = weatherAPI
     this._geo = geo
     this._filter = filter
+    this._db = db
     this._availableUsers = {}
     this._rooms = {}
-    this._roomNumber = 0
-  }
-
-  static create(io, weatherAPI, geo, filter) {
-    const socketInstance = new Socket(io, weatherAPI, geo, filter)
-    socketInstance.init()
-
-    return socketInstance
+    this.init()
   }
 
   init() {
@@ -33,83 +27,114 @@ class Socket {
 
       // Socket query for logged in user to become available users
       socket.on('sendName', data => {
-        socket.username = data
-        this._availableUsers[data] = socket.id
-        this._io.emit('getOnlineUsers', Object.keys(this._availableUsers))
+        socket.uid = data.uid
+        this._availableUsers[data.uid] = {
+          ...data,
+          socket_id: socket.id,
+        }
+        this._io.emit('getOnlineUsers', Object.values(this._availableUsers))
       })
 
       // Socket query for getting the list of available users
       socket.on('enterOnlineMode', () => {
-        socket.emit('getOnlineUsers', Object.keys(this._availableUsers))
+        socket.emit('getOnlineUsers', Object.values(this._availableUsers))
       })
 
       // Socket query for sending invite to game from user to another user
       socket.on('sendInvite', data => {
-        socket.sortNumber = data.sort
-        socket.gameType = data.type
-        this._io.to(this._availableUsers[data.opponentName]).emit('getInvite', data)
+        const room = randomString(16)
+        socket.room = room
+        socket.join(socket.room)
+        this._rooms[room] = {
+          count: 0,
+          type: data.type,
+          sort: data.sort,
+          users: [
+            {
+              ...this._availableUsers[socket.uid],
+              color: data.color,
+              score: 0,
+            },
+            {
+              ...this._availableUsers[data.to],
+              score: 0,
+            },
+          ],
+          subjects: this._sortSubjects(data.sort, data.type).sort(compareRandom),
+        }
+        this._io.to(this._availableUsers[data.to].socket_id).emit('getInvite', {
+          ...data,
+          from: this._availableUsers[socket.uid],
+          room,
+        })
       })
 
       // Socket query for cancelling invite from inviting side
-      socket.on('cancelInvite', data => {
-        this._io.to(this._availableUsers[data.opponentName]).emit('declineInvite')
+      socket.on('cancelInvite', to => {
+        delete this._rooms[socket.room]
+        socket.leave(socket.room)
+        socket.room = null
+        this._io.to(this._availableUsers[to].socket_id).emit('declineInvite')
       })
 
       // Socket query of invited side for making or declining the game
       socket.on('makeDecision', data => {
         if (data.status) {
           if (socket.room) {
+            this._io.to(this._rooms[socket.room]?.users?.[1]?.socket_id).emit('declineInvite')
+            socket.leave(socket.room)
             delete this._rooms[socket.room]
             socket.room = null
           }
 
-          socket.room = `room${this._roomNumber}`
-          this._rooms[socket.room] = this._rooms[socket.room] || []
-          this._rooms[socket.room].push({ name: data.myName, color: data.color })
+          socket.room = data.room
+          this._rooms[socket.room].users[1].color = data.color
           socket.join(socket.room)
-          delete this._availableUsers[socket.username]
-          this._io.emit('getOnlineUsers', Object.keys(this._availableUsers))
-        }
-
-        this._io.to(this._availableUsers[data.opponentName]).emit('opponentsDecision', data.status)
-      })
-
-      // Socket query for making the socket room for players
-      socket.on('createGame', data => {
-        socket.room = `room${this._roomNumber}`
-        this._rooms[socket.room] = this._rooms[socket.room] || []
-        this._rooms[socket.room].unshift({ name: data.name, color: data.color })
-        socket.join(socket.room)
-
-        if (this._rooms[socket.room].length === 2) {
-          const sortedSubjects = this._sortSubjects(socket.sortNumber, socket.gameType)
-          this._io.sockets.adapter.rooms.get(socket.room).sortedSubjects = sortedSubjects
-          this._io.sockets.in(socket.room).emit('startGame', {
-            sort: socket.sortNumber,
-            type: socket.gameType,
-            users: this._rooms[socket.room],
-            subjects: sortedSubjects.sort(compareRandom),
+          setTimeout(() => {
+            this._io.sockets.in(socket.room).emit('startGame', this._rooms[socket.room])
+          }, 100)
+          this._io.sockets.in(socket.room).fetchSockets().then(sockets => {
+            sockets.forEach(socket => {
+              delete this._availableUsers[socket.uid]
+            })
+            this._io.emit('getOnlineUsers', Object.values(this._availableUsers))
           })
-
-          delete this._availableUsers[socket.username]
-          this._io.emit('getOnlineUsers', Object.keys(this._availableUsers))
-          this._roomNumber++
+        } else {
+          this._io.sockets.in(socket.room).socketsLeave(socket.room)
+          delete this._rooms[data.room]
+          socket.broadcast.to(data.room).emit('opponentDeclined')
         }
       })
 
       // Socket query for clicking the country with the right answer
-      socket.on('countryClick', data => {
-        socket.broadcast.to(socket.room).emit('checkAnswer', data)
+      socket.on('countryClick', score => {
+        const data = this._rooms[socket.room]
+        data.users.find(user => user.uid === socket.uid).score += score
+        data.count++
+        if (data.count === data.subjects.length) {
+          this._db.saveOnlineRecord(
+            data.users.map(user => user.uid),
+            data.users.map(user => user.score),
+            data.type,
+            data.sort,
+          )
+        }
+
+        this._io.sockets.in(socket.room).emit('updateScore', this._rooms[socket.room].users)
+        socket.broadcast.to(socket.room).emit('checkAnswer', score)
       })
 
       // Socket query for leaving the game to delete user from game
-      socket.on('userLeft', () => {
+      socket.on('userLeft', (data) => {
         this._io.sockets.in(socket.room).emit('endMatch')
         delete this._rooms[socket.room]
         socket.leave(socket.room)
 
-        this._availableUsers[socket.username] = socket.id
-        this._io.emit('getOnlineUsers', Object.keys(this._availableUsers))
+        this._availableUsers[data.uid] = {
+          ...data,
+          socket_id: socket.id,
+        }
+        this._io.emit('getOnlineUsers', Object.values(this._availableUsers))
       })
 
       // Socket query for making the revenge
@@ -125,10 +150,14 @@ class Socket {
       // Socket query for making the revenge decision
       socket.on('revengeDecision', (data) => {
         if (data) {
-          this._io.sockets.in(socket.room).emit(
-            'revengeGame',
-            [...this._io.sockets.adapter.rooms.get(socket.room).sortedSubjects.sort(compareRandom)],
-          )
+          this._rooms[socket.room].count = 0
+          this._rooms[socket.room].users[0].score = 0
+          this._rooms[socket.room].users[1].score = 0
+          this._rooms[socket.room].subjects.sort(compareRandom)
+          this._io.sockets.in(socket.room).emit('revengeGame', {
+            users: this._rooms[socket.room].users,
+            subjects: this._rooms[socket.room].subjects,
+          })
         } else {
           socket.broadcast.to(socket.room).emit('revengeDecline')
         }
@@ -153,9 +182,9 @@ class Socket {
         this._io.sockets.in(socket.room).emit('endMatch')
         delete this._rooms[socket.room]
 
-        if (this._availableUsers[socket.username]) {
-          delete this._availableUsers[socket.username]
-          this._io.emit('getOnlineUsers', Object.keys(this._availableUsers))
+        if (this._availableUsers[socket.uid]) {
+          delete this._availableUsers[socket.uid]
+          this._io.emit('getOnlineUsers', Object.values(this._availableUsers))
         }
 
         socket.leave(socket.room)
@@ -163,14 +192,14 @@ class Socket {
 
       // Socket query for signing out to delete user from available
       socket.on('signOut', () => {
-        delete this._availableUsers[socket.username]
-        this._io.emit('getOnlineUsers', Object.keys(this._availableUsers))
+        delete this._availableUsers[socket.uid]
+        this._io.emit('getOnlineUsers', Object.values(this._availableUsers))
       })
     })
   }
 
   _sortSubjects(sort, type) {
-    if (sort) {
+    if (sort !== 'all') {
       const geoData = this._geo.getGeoData()
       const sortedSubjects = []
 

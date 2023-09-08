@@ -8,7 +8,7 @@
       You have been invited to game in mode
       <span class="mode">{{ type }}</span>
       <span class="sort">population: {{ sort }}</span>
-      by <span :style="{ color: invite.color }">{{ invite.myName }}</span>
+      by <span :style="{ color: invite.color }">{{ invite.from.name }}</span>
       <p class="text-subtitle-2 mt-3 mb-1">Choose your color</p>
       <v-color-picker
         v-model="color"
@@ -48,7 +48,7 @@ const color = ref(ENEMY_COLOR)
 const type = capitalize(props.invite.type)
 const sort = computed(() => {
   const option = populationOptions.find(option => option.value === props.invite.sort)
-  return option?.name || 'all'
+  return option?.title || 'all'
 })
 
 function makeDecision(status: boolean) {
