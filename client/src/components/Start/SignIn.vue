@@ -4,6 +4,7 @@
       <template v-slot:activator="{ props }">
         <v-avatar
           :color="appData?.user?.uid ? stringToColor(appData.user.uid) : 'primary'"
+          :image="appData?.user?.photoURL || ''"
           v-bind="props"
           role="button"
         >
