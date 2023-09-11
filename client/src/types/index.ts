@@ -76,9 +76,10 @@ export type OnlineUserType = {
   score: number
 }
 
-export type LeaderboardUserType = {
+export type UserType = {
   uid: string
   name: string
+  avatar?: string
   games?: number
   bot_games?: number
   online_games?: number

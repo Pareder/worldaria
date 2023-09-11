@@ -65,17 +65,22 @@
           <router-link
             class="text-decoration-none"
             role="button"
-            :to="item.raw.enemy_id === appData?.user?.uid
+            :to="item.raw.enemy.id === appData?.user?.uid
               ? '/profile/records'
-              : `/profile/leaderboard/${item.raw.enemy_id}`
+              : `/profile/leaderboard/${item.raw.enemy.id}`
             "
           >
             <v-row no-gutters align="center" class="flex-nowrap">
-              <v-avatar :color="stringToColor(item.raw.enemy_id)" size="small" class="mr-2">
-                {{ item.columns.enemy[0] }}
+              <v-avatar
+                :color="stringToColor(item.raw.enemy.id)"
+                :image="item.raw.enemy.avatar"
+                size="small"
+                class="mr-2"
+              >
+                {{ item.columns.enemy.name[0] }}
               </v-avatar>
-              {{ item.columns.enemy }}
-              <v-icon v-if="item.raw.enemy_id === appData?.user?.uid" icon="mdi-account" class="ml-1"></v-icon>
+              {{ item.columns.enemy.name }}
+              <v-icon v-if="item.raw.enemy.id === appData?.user?.uid" icon="mdi-account" class="ml-1"></v-icon>
             </v-row>
           </router-link>
         </td>
@@ -94,7 +99,7 @@
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore'
-import type { AppDataType, OnlineRecordType } from '@/types'
+import type { AppDataType, OnlineRecordType, UserType } from '@/types'
 import { firestore, populationOptions } from '@/config'
 import capitalize from '@/utils/capitalize'
 import stringToColor from '@/utils/stringToColor'
@@ -102,8 +107,11 @@ import { getSort, getTypeIcon } from './utils'
 import CompetitiveScore from './CompetitiveScore.vue'
 
 type UserOnlineRecordType = OnlineRecordType & {
-  enemy_id: string
-  enemy: string
+  enemy: {
+    id: string
+    name: string
+    avatar?: string
+  }
   my_score: number
   enemy_score: number
 }
@@ -183,12 +191,15 @@ onMounted(async () => {
     promises.push(new Promise(resolve => {
       getDoc(doc(firestore, 'users', record.users[enemyIndex]))
         .then(userDoc => {
-          const enemyUser = userDoc.data() as { name: string }
+          const enemy = userDoc.data() as UserType
           resolve({
             ...record,
             my_score: record.scores[enemyIndex ? 0 : 1],
-            enemy_id: userDoc.id,
-            enemy: enemyUser.name,
+            enemy: {
+              id: userDoc.id,
+              name: enemy.name,
+              avatar: enemy.avatar,
+            },
             enemy_score: record.scores[enemyIndex],
           })
         })
