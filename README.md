@@ -27,7 +27,7 @@ All countries' statistics were found in open sources and updated manually.
 * [Vuetify](https://vuetifyjs.com)
 * [Leaflet](https://leafletjs.com)
 * [Express](https://expressjs.com/)
-* [Firebase](https://firebase.google.com)
+* [Firebase](https://firebase.google.com) (Authentication, Firestore Database, Storage)
 * [socket.io](https://socket.io)
 
 ## Project Setup

@@ -31,7 +31,12 @@
           <tr role="button" @click="onClick(item.raw.uid)">
             <td>
               <v-row no-gutters align="center" class="flex-nowrap">
-                <v-avatar :color="stringToColor(item.raw.uid)" size="small" class="mr-2">
+                <v-avatar
+                  :color="stringToColor(item.raw.uid)"
+                  :image="item.raw.avatar"
+                  size="small"
+                  class="mr-2"
+                >
                   {{ item.columns.name[0] }}
                 </v-avatar>
                 {{ item.columns.name }}
@@ -54,7 +59,7 @@ import { inject, onMounted, ref } from 'vue'
 import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
-import type { AppDataType, LeaderboardUserType } from '@/types'
+import type { AppDataType, UserType } from '@/types'
 import { firestore } from '@/config'
 import stringToColor from '@/utils/stringToColor'
 
@@ -65,8 +70,8 @@ type SortItem = {
 
 const router = useRouter()
 const appData = inject<Ref<AppDataType>>('appData')
-const leaderboard = ref<LeaderboardUserType[]>([])
-const filteredLeaderboard = ref<LeaderboardUserType[]>([])
+const leaderboard = ref<UserType[]>([])
+const filteredLeaderboard = ref<UserType[]>([])
 const loading = ref(true)
 const itemsPerPage = ref(10)
 const sortBy = ref<SortItem[]>([{ key: 'total_games', order: 'desc' }])
@@ -82,12 +87,12 @@ const headers = [
 onMounted(async () => {
   const q = query(collection(firestore, 'users'), orderBy(sortBy.value[0].key, sortBy.value[0].order))
   const snapshot = await getDocs(q)
-  const data: LeaderboardUserType[] = []
+  const data: UserType[] = []
   snapshot.forEach(doc => {
     data.push({
       ...doc.data(),
       uid: doc.id,
-    } as LeaderboardUserType)
+    } as UserType)
   })
   leaderboard.value = data
   filteredLeaderboard.value = data

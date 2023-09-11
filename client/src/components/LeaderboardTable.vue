@@ -33,7 +33,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import type { AppDataType, RecordType } from '@/types'
+import type { AppDataType, RecordType, UserType } from '@/types'
 import { firestore } from '@/config'
 
 type UserRecordType = RecordType & { username: string }
@@ -63,7 +63,7 @@ onMounted(async () => {
       promises.push(new Promise(resolve => {
         getDoc(doc(firestore, 'users', game.user))
           .then(userDoc => {
-            const user = userDoc.data() as { name: string }
+            const user = userDoc.data() as UserType
             resolve({
               ...game,
               username: user?.name,

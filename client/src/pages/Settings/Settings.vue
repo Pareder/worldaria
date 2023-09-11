@@ -1,5 +1,8 @@
 <template>
   <v-row class="text-left">
+    <v-col cols="12">
+      <AvatarBlock/>
+    </v-col>
     <v-col cols="12" md="6">
       <NicknameBlock/>
     </v-col>
@@ -16,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import AvatarBlock from '@/pages/Settings/AvatarBlock.vue'
 import DeleteBlock from './DeleteBlock.vue'
 import EmailBlock from './EmailBlock.vue'
 import NicknameBlock from './NicknameBlock.vue'
