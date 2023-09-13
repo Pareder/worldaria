@@ -2,6 +2,7 @@
   <ModalTrigger
     default-opened
     persistent
+    contained
     :title="inviteTo
       ? 'Waiting for opponent\'s decision'
       : opponentDecline
@@ -35,7 +36,7 @@
         <div
           v-for="user in usersList"
           :key="user.uid"
-          class="user"
+          class="user text-left"
         >
           {{ user.name }}
           <v-radio-group v-model="sort" inline hide-details>

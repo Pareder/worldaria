@@ -1,0 +1,6 @@
+export const GAME_MODE = 'In Game mode you have 5 attempts for each country. Each right answer will give you 1 point. After 5 wrong attempts you will lose 1 point. You can save your current game anytime just quiting it if you are guessing by name.'
+export const ONLINE_MODE = 'In Online mode you will play with real person one by one. Each player has 15 seconds to guess the country. After 5 wrong attempts you will not lose points.'
+export const BOT_MODE = 'In Bot mode you will play with the bot, whose difficulty you can choose. You have 15 seconds to guess the country.'
+export const LEARN_MODE = 'In Learn mode you have unlimited attempts. After 5 wrong attempts the right country will be highlighted. You can use search bar to find the right country.'
+export const DETAILS_MODE = 'In Details mode you can learn additional information (area, population, etc.) about countries.'
+export const HISTORY_MODE = 'In History mode you can learn historical countries of different periods.'

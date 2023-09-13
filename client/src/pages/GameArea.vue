@@ -87,7 +87,7 @@ onMounted(async () => {
   await Promise.all([api.getMapJSON(), api.getFullJSON()]).then(([map, full]) => {
     world.value = map
     geojson.value = full
-      .filter(item => !route.query.sort || (
+      .filter(item => route.query.sort === 'all' || (
         item.properties &&
         'pop_est' in item.properties &&
         item.properties.pop_est > (route.query.sort || 0)

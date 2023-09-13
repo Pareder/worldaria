@@ -1,5 +1,5 @@
 <template>
-  <v-overlay :model-value="loaded && enemyTurn" persistent></v-overlay>
+  <v-overlay :model-value="loaded && enemyTurn" persistent contained></v-overlay>
   <OnlineModal
     v-if="loaded && game.count === geojson.length"
     :users="users"

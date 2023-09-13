@@ -3,7 +3,7 @@
     <template #activator="props">
       <slot v-bind="props"></slot>
     </template>
-    <template #content>
+    <template #content="props">
       <p class="my-2">Mode</p>
       <v-radio-group v-model="mode" inline hide-details>
         <v-radio
@@ -35,17 +35,17 @@
       </v-radio-group>
       <v-row no-gutters justify="space-between" class="mt-2">
         <router-link :to="{ name: 'Bot', query: { mode, sort, type: 'name' }}">
-          <v-btn variant="elevated" color="primary">
+          <v-btn variant="elevated" color="primary" @click="props.close">
             Name
           </v-btn>
         </router-link>
         <router-link :to="{ name: 'Bot', query: { mode, sort, type: 'flag' }}">
-          <v-btn variant="elevated" color="primary">
+          <v-btn variant="elevated" color="primary" @click="props.close">
             Flag
           </v-btn>
         </router-link>
         <router-link :to="{ name: 'Bot', query: { mode, sort, type: 'capital' }}">
-          <v-btn variant="elevated" color="primary">
+          <v-btn variant="elevated" color="primary" @click="props.close">
             Capital
           </v-btn>
         </router-link>

@@ -2,11 +2,17 @@
   <FinishLearn v-if="game.count === states.length" />
   <Drawer v-else :game="game">
     {{ states[game.count] }}
-    <SearchCountriesForm
+    <v-autocomplete
+      label="Search"
+      variant="outlined"
+      density="compact"
+      clearable
+      class="w-100 mt-4"
       :items="states"
-      @search="search"
-      @onClick="zoomCountry"
-    />
+      :custom-filter="customFilter"
+      @input="search($event.target.value)"
+      @update:model-value="zoomCountry"
+    ></v-autocomplete>
   </Drawer>
   <MapComponent :geojson="geojson" :onEachFeature="onEachFeature" :flyBounds="flyBounds" :center="center" />
 </template>
@@ -16,7 +22,6 @@ import randomColor from '@/utils/randomColor'
 import Drawer from '@/components/Drawer.vue'
 import FinishLearn from '@/modals/FinishLearn.vue'
 import MapComponent from '@/components/MapComponent.vue'
-import SearchCountriesForm from '@/components/SearchCountriesForm.vue'
 
 export default {
   data() {
@@ -109,13 +114,16 @@ export default {
         this.$emit('clearSearch')
       }
     },
+
+    customFilter(country, search) {
+      return country.toLowerCase().startsWith(search?.toLowerCase())
+    },
   },
 
   components: {
     Drawer,
     FinishLearn,
     MapComponent,
-    SearchCountriesForm,
   },
 }
 </script>

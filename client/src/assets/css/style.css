@@ -84,3 +84,30 @@ body {
     opacity: .2;
   }
 }
+
+.leaflet-popup-content-wrapper {
+  color: rgb(var(--v-theme-on-surface-variant));
+  border-radius: 4px;
+}
+
+.leaflet-popup-content {
+  margin: 5px 24px 5px 16px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.leaflet-popup-tip-container {
+  display: none;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: rgb(var(--v-theme-on-surface-variant));
+}
+
+.text-primary {
+  color: rgb(var(--v-theme-primary));
+}
+
+.text-secondary {
+  color: rgb(var(--v-theme-secondary));
+}

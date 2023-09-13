@@ -480,6 +480,10 @@ input.firebaseui-input, input.firebaseui-input-invalid {
   width: 100%;
 }
 
+.firebaseui-idp-password {
+  background-color: rgb(var(--v-theme-primary)) !important;
+}
+
 .firebaseui-idp-list > .firebaseui-list-item, .firebaseui-tenant-list > .firebaseui-list-item {
   margin-bottom: 15px;
   text-align: center;

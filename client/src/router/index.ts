@@ -7,13 +7,13 @@ import GameCapital from '@/pages/GameCapital.vue'
 import GameFlag from '@/pages/GameFlag.vue'
 import GameName from '@/pages/GameName.vue'
 import History from '@/pages/History.vue'
+import Home from '@/pages/Home.vue'
 import Leaderboard from '@/pages/Leaderboard.vue'
 import LeaderboardUser from '@/pages/LeaderboardUser.vue'
 import Online from '@/pages/Online.vue'
 import Profile from '@/pages/Profile.vue'
 import Records from '@/pages/Records.vue'
 import Settings from '@/pages/Settings'
-import Start from '@/pages/Start.vue'
 import Subject from '@/components/Subject.vue'
 import ChooseSubject from '@/components/ChooseSubject.vue'
 
@@ -40,9 +40,9 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      name: 'Start',
+      name: 'Home',
       path: '/',
-      component: Start,
+      component: Home,
       meta: {
         title: 'Worldaria - learn the world!',
         metaTags: [
@@ -58,7 +58,7 @@ const router = createRouter({
       },
     },
     {
-      name: 'GameName',
+      name: 'Game by name',
       path: '/game/name',
       component: GameName,
       meta: {
@@ -76,7 +76,7 @@ const router = createRouter({
       },
     },
     {
-      name: 'GameFlag',
+      name: 'Game by flag',
       path: '/game/flag',
       component: GameFlag,
       meta: {
@@ -94,7 +94,7 @@ const router = createRouter({
       },
     },
     {
-      name: 'GameCapital',
+      name: 'Game by capital',
       path: '/game/capital',
       component: GameCapital,
       meta: {
@@ -112,7 +112,7 @@ const router = createRouter({
       },
     },
     {
-      name: 'GameArea',
+      name: 'Game by area',
       path: '/game/area',
       component: GameArea,
       meta: {
@@ -150,7 +150,7 @@ const router = createRouter({
     {
       path: '/learn/full',
       component: Subject,
-      name: 'Subject',
+      name: 'Learn world',
       meta: {
         title: 'Worldaria learn mode',
         metaTags: [
@@ -168,7 +168,7 @@ const router = createRouter({
     {
       path: '/learn/continent',
       component: ChooseSubject,
-      name: 'LearnContinent',
+      name: 'Choose continent',
       props: { subject: 'continents' },
       meta: {
         title: 'Worldaria learn mode',
@@ -187,7 +187,7 @@ const router = createRouter({
     {
       path: '/learn/continent/:name',
       component: Subject,
-      name: 'SubjectContinent',
+      name: 'Learn continent',
       meta: {
         title: 'Worldaria learn mode',
         metaTags: [
@@ -205,7 +205,7 @@ const router = createRouter({
     {
       path: '/learn/countries',
       component: ChooseSubject,
-      name: 'LearnCountry',
+      name: 'Choose country',
       props: { subject: 'regions' },
       meta: {
         title: 'Worldaria learn mode',
@@ -224,7 +224,7 @@ const router = createRouter({
     {
       path: '/learn/countries/:name',
       component: Subject,
-      name: 'SubjectCountry',
+      name: 'Learn country',
       meta: {
         title: 'Worldaria learn mode',
         metaTags: [
@@ -242,7 +242,7 @@ const router = createRouter({
     {
       path: '/learn/details',
       component: Details,
-      name: 'CountryDetails',
+      name: 'Countries details',
       meta: {
         title: 'Worldaria details mode',
         metaTags: [
@@ -260,7 +260,7 @@ const router = createRouter({
     {
       path: '/learn/history',
       component: History,
-      name: 'CountryHistory',
+      name: 'Countries history',
       meta: {
         title: 'Worldaria history mode',
         metaTags: [

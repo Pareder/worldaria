@@ -1,6 +1,6 @@
 <template>
   <Loader :is-loading="!loaded">
-    <v-layout>
+    <v-layout class="fill-height">
       <v-navigation-drawer
         v-model="drawer"
         permanent
@@ -29,11 +29,17 @@
             Clear
           </v-btn>
         </v-row>
-        <SearchCountriesForm
+        <v-autocomplete
+          :model-value="search"
+          label="Search"
+          variant="outlined"
+          density="compact"
+          clearable
+          class="w-100 mt-4"
           :items="countries"
-          :showAmount="false"
-          @onClick="onClick"
-        />
+          :custom-filter="customFilter"
+          @update:model-value="updateSearch"
+        ></v-autocomplete>
         <v-select
           v-for="(select, key) in selectOptions"
           :key="key"
@@ -75,7 +81,6 @@ import selectOptions, { ALL, MAX, MIN } from '@/config/selectOptions'
 import DetailsModal from '@/modals/DetailsModal.vue'
 import Loader from '@/components/Loader.vue'
 import MapComponent from '@/components/MapComponent.vue'
-import SearchCountriesForm from '@/components/SearchCountriesForm.vue'
 
 type Filters = {
   area: SelectValue
@@ -105,6 +110,7 @@ const timezones = ref<FeatureCollection['features']>([])
 const loaded = ref(false)
 const selectedCountry = ref<CountryType>()
 const filters = ref<Filters>({ ...DEFAULT_FILTERS })
+const search = ref<string | null>(null)
 const showTimezone = ref(false)
 const countries = computed(() => {
   return sortedGeojson.value.map(item => item.properties?.name)
@@ -135,6 +141,7 @@ function closeModal() {
 function sortBy(type: keyof Filters) {
   showTimezone.value = false
   sortedGeojson.value = []
+  search.value = null
 
   if (filters.value[type] === MIN || filters.value[type] === MAX) {
     for (const key in filters.value) {
@@ -187,8 +194,10 @@ function totalSort() {
   sortedGeojson.value = newSorted
 }
 
-function onClick(country: string | null) {
+function updateSearch(country: string | null) {
+  search.value = country
   if (!country) {
+    totalSort()
     return
   }
 
@@ -196,13 +205,18 @@ function onClick(country: string | null) {
     item.properties?.name.toLowerCase() === country.toLowerCase()
   ))
   if (searchingCountry) {
-    selectedCountry.value = searchingCountry.properties as CountryType
+    sortedGeojson.value = [searchingCountry]
   }
 }
 
 function clearFilters() {
   filters.value = { ...DEFAULT_FILTERS }
+  search.value = null
   sortedGeojson.value = geojson.value
+}
+
+function customFilter(country: string, search: string) {
+  return country.toLowerCase().startsWith(search?.toLowerCase() || '')
 }
 </script>
 

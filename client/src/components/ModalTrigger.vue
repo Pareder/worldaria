@@ -2,6 +2,7 @@
   <v-dialog
     v-model="open"
     width="500"
+    :contained="contained || false"
     :persistent="persistent || false"
     transition="dialog-bottom-transition"
   >
@@ -13,10 +14,10 @@
         <v-toolbar color="primary">
           <v-icon v-if="icon" :icon="icon" class="ml-4"></v-icon>
           <v-toolbar-title>{{ title }}</v-toolbar-title>
-          <v-btn v-if="!persistent" icon="mdi-close" @click="open = false"></v-btn>
+          <v-btn v-if="!persistent" icon="mdi-close" @click="close"></v-btn>
         </v-toolbar>
         <v-card-text>
-          <slot name="content"></slot>
+          <slot name="content" :close="close"></slot>
         </v-card-text>
       </v-card>
     </template>
@@ -31,8 +32,13 @@ type Props = {
   icon?: string
   defaultOpened?: boolean,
   persistent?: boolean
+  contained?: boolean
 }
 
 const props = defineProps<Props>()
 const open = ref(props.defaultOpened || false)
+
+function close() {
+  open.value = false
+}
 </script>
