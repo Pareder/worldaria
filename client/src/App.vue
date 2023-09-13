@@ -1,19 +1,49 @@
 <template>
-  <router-view></router-view>
+  <v-app>
+    <v-navigation-drawer v-model="drawer">
+      <router-link
+        to="/"
+        class="py-4 d-block text-h5 text-primary text-decoration-none"
+      >
+        WORLDARIA
+      </router-link>
+      <v-divider></v-divider>
+      <Menu/>
+    </v-navigation-drawer>
+    <v-app-bar dark>
+      <v-app-bar-nav-icon
+        :icon="drawer ? 'mdi-menu-open' : 'mdi-menu'"
+        @click.stop="drawer = !drawer"
+      ></v-app-bar-nav-icon>
+      <v-toolbar-title class="text-left">{{ route.name }}</v-toolbar-title>
+      <SignIn/>
+    </v-app-bar>
+    <v-main>
+      <div class="main fill-height position-relative">
+        <router-view></router-view>
+      </div>
+    </v-main>
+  </v-app>
   <Invite v-if="invite" :invite="invite" @makeDecision="makeDecision" />
   <notifications position="top right" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide, ref } from 'vue'
-import { RouterView, useRouter } from 'vue-router'
+import { onMounted, provide, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 import type { AppDataType, InviteType } from '@/types'
 import { socket } from '@/socket'
 import Invite from '@/modals/Invite.vue'
+import Menu from '@/components/Menu.vue'
+import SignIn from '@/components/SignIn.vue'
 
+const route = useRoute()
 const router = useRouter()
+const { mobile } = useDisplay()
+const drawer = ref(!mobile.value)
 const appData = ref<AppDataType>({ user: null })
 const invite = ref<InviteType | null>(null)
 
@@ -37,6 +67,24 @@ onMounted(() => {
   socket.on('declineInvite', cancelInvite)
 })
 
+watch(route, (newRoute) => {
+  if ([
+    '/game/name',
+    '/game/flag',
+    '/game/capital',
+    '/game/area',
+    '/bot',
+    '/online',
+    '/learn/full',
+    '/learn/continent',
+    '/learn/countries',
+    '/learn/details',
+    '/learn/history',
+  ].includes(newRoute.path)) {
+    drawer.value = false
+  }
+})
+
 function cancelInvite() {
   invite.value = null
 }
@@ -56,3 +104,11 @@ function makeDecision(status: boolean, color: string) {
   cancelInvite()
 }
 </script>
+
+<style scoped>
+.main {
+  background-image: url("/img/body_bg.jpg");
+  background-size: cover;
+  background-position: 50% 50%;
+}
+</style>

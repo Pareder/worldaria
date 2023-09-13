@@ -2,6 +2,7 @@
   <ModalTrigger
     default-opened
     persistent
+    contained
     :title="reason === 'leave'
       ? 'Something bad happened'
       : me.score > opponent.score

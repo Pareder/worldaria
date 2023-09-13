@@ -2,11 +2,12 @@
   <ModalTrigger
     default-opened
     persistent
+    contained
     title="Congratulations!"
   >
     <template #content>
       <div class="text-h5 text-center">
-        You have learnt all {{ fullName }}.{{ !routeName ? ' You are now ready for exciting game!': '' }}
+        You have learnt all {{ fullName }}. Now you can try Game mode and get some amazing score!
       </div>
     </template>
   </ModalTrigger>

@@ -4,9 +4,13 @@
     :reason="reason"
     :users="users"
   />
-  <HomeButton v-if="!loaded"></HomeButton>
   <Loader :is-loading="!loaded">
-    <v-overlay :model-value="enemyTurn" persistent style="z-index: 1000"></v-overlay>
+    <v-overlay
+      :model-value="enemyTurn"
+      persistent
+      contained
+      style="z-index: 1000"
+    ></v-overlay>
     <Drawer
       v-if="!enemyLeft && game.count !== geojson.length"
       :hasTimeLimit="!enemyTurn"
@@ -44,7 +48,6 @@ import { socket } from '@/socket'
 import Chat from '@/components/Chat.vue'
 import ChooseOpponent from '@/modals/ChooseOpponent.vue'
 import Drawer from '@/components/Drawer.vue'
-import HomeButton from '@/components/HomeButton.vue'
 import Loader from '@/components/Loader.vue'
 import MapComponent from '@/components/MapComponent.vue'
 import OnlineModal from '@/modals/OnlineModal.vue'
@@ -290,7 +293,6 @@ export default {
     SvgIcon,
     UsersList,
     Chat,
-    HomeButton,
   },
 }
 </script>

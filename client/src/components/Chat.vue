@@ -147,7 +147,7 @@ function typingMessage() {
 }
 
 .chat {
-  position: fixed;
+  position: absolute;
   bottom: 30px;
   left: 30px;
   z-index: 1001;

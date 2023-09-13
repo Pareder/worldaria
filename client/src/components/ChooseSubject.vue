@@ -46,14 +46,10 @@ export default {
     },
 
     changeRoute(layer) {
-      this.$router.push({
-        name: this.subject === 'continents' ? 'SubjectContinent' : 'SubjectCountry',
-        params: {
-          name: this.subject === 'continents'
-            ? layer.feature.properties.continent.replace(/ /g, '').toLowerCase()
-            : layer.feature.properties.name.replace(/ /g, '').toLowerCase(),
-        },
-      })
+      const name = this.subject === 'continents'
+        ? layer.feature.properties.continent.replace(/ /g, '').toLowerCase()
+        : layer.feature.properties.name.replace(/ /g, '').toLowerCase()
+      this.$router.push(this.subject === 'continents' ? `/learn/continent/${name}` : `/learn/countries/${name}`)
     }
   },
 

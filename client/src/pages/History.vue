@@ -110,7 +110,7 @@ function play() {
 
 <style scoped>
 .slider {
-  position: fixed;
+  position: absolute;
   z-index: 800;
   bottom: 20px;
   left: 0;

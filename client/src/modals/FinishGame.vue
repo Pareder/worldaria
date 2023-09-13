@@ -2,12 +2,13 @@
   <ModalTrigger
     default-opened
     persistent
+    contained
     title="Congratulations!"
   >
     <template #content>
       <div class="text-h5 text-center">
         Your score:
-        <span class="text-blue">{{ score }}</span>
+        <span class="text-primary">{{ score }}</span>
       </div>
       <div v-if="!appData?.user" class="mt-4 text-center">
         <SignModal/> to save your record
