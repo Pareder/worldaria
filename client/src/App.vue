@@ -3,8 +3,9 @@
     <v-navigation-drawer v-model="drawer">
       <router-link
         to="/"
-        class="py-4 d-block text-h5 text-primary text-decoration-none"
+        class="py-4 d-flex align-center text-h5 text-primary text-decoration-none"
       >
+        <img :width="40" :height="40" src="/img/logo/128x128.png" class="mr-2"/>
         WORLDARIA
       </router-link>
       <v-divider></v-divider>
