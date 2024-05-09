@@ -165,9 +165,15 @@ class Socket {
 
       // Socket query for sending messages to chat
       socket.on('sendMessage', data => {
+        let text = data.text
+        try {
+          text = this._filter.clean(text)
+        } catch (e) {
+          console.error(e)
+        }
         const message = {
           user: data.user,
-          text: this._filter.clean(data.text),
+          text,
         }
         this._io.sockets.in(socket.room).emit('getNewMessages', message)
       })
