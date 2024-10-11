@@ -20,12 +20,12 @@
     "compression": "^1.7.4",
     "connect-history-api-fallback": "^2.0.0",
     "dotenv": "^16.3.1",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "firebase-admin": "^12.3.1",
     "node-cron": "^3.0.2",
     "node-fetch": "^3.3.1",
     "nodemailer": "^6.9.9",
-    "socket.io": "^4.7.1"
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
     "eslint": "^8.44.0",
