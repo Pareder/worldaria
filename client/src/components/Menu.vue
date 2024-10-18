@@ -63,8 +63,8 @@
       <template v-slot:activator="{ props }">
         <v-list-item
           to="/learn/details"
-          prepend-icon="mdi-information-variant"
-          title="Details"
+          prepend-icon="mdi-wikipedia"
+          title="Wiki"
           v-bind="props"
         ></v-list-item>
       </template>

@@ -22,7 +22,7 @@
         <p v-else class="text-h6 text-center mb-2">It is a draw!</p>
         <UsersList :users="users"></UsersList>
         <div v-if="revenge" class="text-center">
-          <p class="my-3 text-h6">{{ opponent?.name }} wants to get revenge</p>
+          <p class="my-3 text-h6">{{ opponent?.name }} wants to play again</p>
           <v-btn variant="elevated" color="primary" size="large" class="mr-2" @click="revengeDecision(true)">
             Accept
           </v-btn>
@@ -32,11 +32,11 @@
         </div>
         <div v-else class="text-center">
           <v-btn variant="elevated" color="primary" size="large" class="mt-2" @click="getRevenge">
-            Revenge
+            Try again
           </v-btn>
         </div>
         <div v-if="revengeDeclined" class="mt-3 text-h6 text-center">
-          The opponent has declined your revenge
+          The opponent has declined your invite
         </div>
       </div>
     </template>

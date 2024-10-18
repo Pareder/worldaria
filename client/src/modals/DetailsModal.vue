@@ -15,130 +15,141 @@
         <div class="text-center">
           <img :src="`/img/flags/${shortName}.svg`" width="150" height="150">
         </div>
+        <v-btn
+          block
+          prepend-icon="mdi-wikipedia"
+          variant="outlined"
+          style="margin: 12px 0"
+          @click="handleClick"
+        >
+          Go to Wikipedia
+        </v-btn>
         <v-table>
           <tbody>
-            <tr>
-              <td>Full name</td>
-              <td>{{ country?.formal_en ? country.formal_en : country?.name }}</td>
-            </tr>
-            <tr>
-              <td>Capital</td>
-              <td>{{ country?.capital }}</td>
-            </tr>
-            <tr>
-              <td>Language</td>
-              <td>{{ country?.language }}</td>
-            </tr>
-            <tr>
-              <td>Continent</td>
-              <td>{{ country?.continent }}</td>
-            </tr>
-            <tr>
-              <td>Region</td>
-              <td>{{ country?.region_wb }}</td>
-            </tr>
-            <tr>
-              <td>Subregion</td>
-              <td>{{ country?.subregion }}</td>
-            </tr>
-            <tr>
-              <td>Area</td>
-              <td>{{ formatNumber(country?.area) }} km<sup>2</sup></td>
-            </tr>
-            <tr>
-              <td>Type</td>
-              <td>{{ country?.type }}</td>
-            </tr>
-            <tr>
-              <td>Government</td>
-              <td>{{ country?.government }}</td>
-            </tr>
-            <tr v-if="country?.pop_est !== -99">
-              <td>Population</td>
-              <td>{{ formatNumber(country?.pop_est) }}</td>
-            </tr>
-            <tr v-if="country?.growthRate">
-              <td>Growth Rate per year</td>
-              <td>{{ country?.growthRate }} %</td>
-            </tr>
-            <tr v-if="country?.pop_est && country?.area">
-              <td>Population Density</td>
-              <td>{{ (country.pop_est / country.area).toFixed(2) }} per km<sup>2</sup></td>
-            </tr>
-            <tr>
-              <td>Life expectancy</td>
-              <td>{{ country?.expectancy }} years</td>
-            </tr>
-            <tr>
-              <td>Currency</td>
-              <td>{{ country?.currency }}</td>
-            </tr>
-            <tr>
-              <td>Economy</td>
-              <td>{{ formatString(country?.economy) }}</td>
-            </tr>
-            <tr>
-              <td>Income group</td>
-              <td>{{ formatString(country?.income_grp) }}</td>
-            </tr>
-            <tr v-if="country?.gdp !== -99">
-              <td>Gross Domestic Product Per Capita</td>
-              <td>${{ formatNumber(country?.gdp) }}</td>
-            </tr>
-            <tr v-if="country?.military">
-              <td>Military expenditures</td>
-              <td>{{ country.military }} % of GDP</td>
-            </tr>
-            <tr v-if="country?.unemployment">
-              <td>Unemployment rate</td>
-              <td>{{ country.unemployment }} %</td>
-            </tr>
-            <tr>
-              <td>Average Elevation</td>
-              <td>{{ country?.elevation }}</td>
-            </tr>
-            <tr>
-              <td>Average Temperature</td>
-              <td>{{ country?.temperature }} °C</td>
-            </tr>
-            <tr v-if="currentTemperature">
-              <td>Current Temperature</td>
-              <td>{{ currentTemperature.desc }}, {{ currentTemperature.c }} °C</td>
-            </tr>
-            <tr v-if="country?.hdi">
-              <td>
-                <v-row no-gutters align="center">
-                  <span class="mr-1">HDI</span>
-                  <v-icon icon="mdi-information-outline" color="white" size="small"></v-icon>
-                  <v-tooltip activator="parent" max-width="300">
-                    The <strong>Human Development Index</strong> (<strong>HDI</strong>) is a statistic composite index
-                    of life expectancy, education, and per capita income indicators. A country scores a higher HDI when
-                    all indexes are higher.
-                  </v-tooltip>
-                </v-row>
-              </td>
-              <td>{{ country.hdi }}</td>
-            </tr>
-            <tr v-if="country?.homicide">
-              <td>Homicide rate</td>
-              <td>{{ country.homicide }} per 100,000 inhabitants</td>
-            </tr>
-            <tr v-if="country?.iso_a2 != -99">
-              <td>ISO 2</td>
-              <td>{{ country?.iso_a2 }}</td>
-            </tr>
-            <tr v-if="country?.iso_a3 != -99">
-              <td>ISO 3</td>
-              <td>{{ country?.iso_a3 }}</td>
-            </tr>
-            <tr v-if="country?.symbol">
-              <td>National Symbol</td>
-              <td>{{ country.symbol }}</td>
-            </tr>
-            <tr v-if="country?.dish">
-              <td>National Dish</td>
-              <td>{{ country.dish }}</td>
-            </tr>
+          <tr>
+            <td>Full name</td>
+            <td>
+              {{ country?.formal_en ? country.formal_en : country?.name }}
+            </td>
+          </tr>
+          <tr>
+            <td>Capital</td>
+            <td>{{ country?.capital }}</td>
+          </tr>
+          <tr>
+            <td>Language</td>
+            <td>{{ country?.language }}</td>
+          </tr>
+          <tr>
+            <td>Continent</td>
+            <td>{{ country?.continent }}</td>
+          </tr>
+          <tr>
+            <td>Region</td>
+            <td>{{ country?.region_wb }}</td>
+          </tr>
+          <tr>
+            <td>Subregion</td>
+            <td>{{ country?.subregion }}</td>
+          </tr>
+          <tr>
+            <td>Area</td>
+            <td>{{ formatNumber(country?.area) }} km<sup>2</sup></td>
+          </tr>
+          <tr>
+            <td>Type</td>
+            <td>{{ country?.type }}</td>
+          </tr>
+          <tr>
+            <td>Government</td>
+            <td>{{ country?.government }}</td>
+          </tr>
+          <tr v-if="country?.pop_est !== -99">
+            <td>Population</td>
+            <td>{{ formatNumber(country?.pop_est) }}</td>
+          </tr>
+          <tr v-if="country?.growthRate">
+            <td>Growth Rate per year</td>
+            <td>{{ country?.growthRate }} %</td>
+          </tr>
+          <tr v-if="country?.pop_est && country?.area">
+            <td>Population Density</td>
+            <td>{{ (country.pop_est / country.area).toFixed(2) }} per km<sup>2</sup></td>
+          </tr>
+          <tr>
+            <td>Life expectancy</td>
+            <td>{{ country?.expectancy }} years</td>
+          </tr>
+          <tr>
+            <td>Currency</td>
+            <td>{{ country?.currency }}</td>
+          </tr>
+          <tr>
+            <td>Economy</td>
+            <td>{{ formatString(country?.economy) }}</td>
+          </tr>
+          <tr>
+            <td>Income group</td>
+            <td>{{ formatString(country?.income_grp) }}</td>
+          </tr>
+          <tr v-if="country?.gdp !== -99">
+            <td>Gross Domestic Product Per Capita</td>
+            <td>${{ formatNumber(country?.gdp) }}</td>
+          </tr>
+          <tr v-if="country?.military">
+            <td>Military expenditures</td>
+            <td>{{ country.military }} % of GDP</td>
+          </tr>
+          <tr v-if="country?.unemployment">
+            <td>Unemployment rate</td>
+            <td>{{ country.unemployment }} %</td>
+          </tr>
+          <tr>
+            <td>Average Elevation</td>
+            <td>{{ country?.elevation }}</td>
+          </tr>
+          <tr>
+            <td>Average Temperature</td>
+            <td>{{ country?.temperature }} °C</td>
+          </tr>
+          <tr v-if="currentTemperature">
+            <td>Current Temperature</td>
+            <td>{{ currentTemperature.desc }}, {{ currentTemperature.c }} °C</td>
+          </tr>
+          <tr v-if="country?.hdi">
+            <td>
+              <v-row no-gutters align="center">
+                <span class="mr-1">HDI</span>
+                <v-icon icon="mdi-information-outline" color="white" size="small"></v-icon>
+                <v-tooltip activator="parent" max-width="300">
+                  The <strong>Human Development Index</strong> (<strong>HDI</strong>) is a statistic composite index
+                  of life expectancy, education, and per capita income indicators. A country scores a higher HDI when
+                  all indexes are higher.
+                </v-tooltip>
+              </v-row>
+            </td>
+            <td>{{ country.hdi }}</td>
+          </tr>
+          <tr v-if="country?.homicide">
+            <td>Homicide rate</td>
+            <td>{{ country.homicide }} per 100,000 inhabitants</td>
+          </tr>
+          <tr v-if="country?.iso_a2 != -99">
+            <td>ISO 2</td>
+            <td>{{ country?.iso_a2 }}</td>
+          </tr>
+          <tr v-if="country?.iso_a3 != -99">
+            <td>ISO 3</td>
+            <td>{{ country?.iso_a3 }}</td>
+          </tr>
+          <tr v-if="country?.symbol">
+            <td>National Symbol</td>
+            <td>{{ country.symbol }}</td>
+          </tr>
+          <tr v-if="country?.dish">
+            <td>National Dish</td>
+            <td>{{ country.dish }}</td>
+          </tr>
           </tbody>
         </v-table>
       </v-card-text>
@@ -181,6 +192,14 @@ function formatNumber(value?: number) {
   const index = Math.floor(base / 3)
 
   return ((value || 0) / Math.pow(10, 3 * index)).toFixed(2) + schema[index]
+}
+
+function handleClick() {
+  window.open(
+    `https://wikipedia.org/wiki/${props.country?.formal_en ? props.country.formal_en : props.country?.name}`,
+    '_blank',
+    'noopener',
+  )
 }
 </script>
 

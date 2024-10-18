@@ -242,7 +242,7 @@ const router = createRouter({
     {
       path: '/learn/details',
       component: Details,
-      name: 'Countries details',
+      name: 'Countries Wiki',
       meta: {
         title: 'Worldaria details mode',
         metaTags: [

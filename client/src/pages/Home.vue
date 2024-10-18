@@ -86,7 +86,7 @@
           class="btn"
           v-bind="props"
         >
-          Details
+          Wiki
         </v-btn>
       </template>
     </v-tooltip>
